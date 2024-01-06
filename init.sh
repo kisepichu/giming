@@ -6,5 +6,4 @@ if [ -z $contest_id ]; then
     return 1
 fi
 
-source ./env.sh
 source ./prepare-kn.sh $contest_id
