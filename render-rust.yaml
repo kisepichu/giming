@@ -111,20 +111,20 @@ help:
           doc: represents the list of variables
 
 tabstop: 2
-file: main.cpp
+file: main.rs
 type:
-  int32: int
-  int64: long long
-  real: double
-  string: std::string
+  int32: usize
+  int64: usize
+  real: f64
+  string: String
   unknown: unknown
   array: |
     {% if length(dim) == 1 %}
-    std::vector<{{elem}}>
+    Vec<{{elem}}>
     {% elif length(dim) == 2 %}
-    std::vector<std::vector<{{elem}}>>
+    Vec<Vec<{{elem}}>>
     {% elif length(dim) == 3 %}
-    std::vector<std::vector<std::vector<{{elem}}>>>
+    Vec<Vec<Vec<{{elem}}>>>
     {% endif %}
 term:
   var: |
@@ -132,28 +132,31 @@ term:
   param: i{{ param }}
   decl: |
     {% if length(dim) == 0 %}
-    {{ type }} {{ var }};
+    let {{ var }}: {{ type }};
     {% elif length(dim) == 1 %}
-    {{ type }} {{ var }}({{ dim[0] }});
+    let {{ var }}: {{ type }} = vec![Default::default; {{ dim[0] }}];
     {% elif length(dim) == 2 %}
-    {{ type }} {{ var }}({{  dim[0] }}, std::vector<{{ elem }}>({{ dim[1] }}));
+    let {{ var }}: {{ type }} = vec![vec![Default::default; {{ dim[1] }}]; {{ dim[0] }}];
     {% elif length(dim) == 3 %}
-    {{ type }} {{ var }}({{  dim[0] }}, std::vector<std::vector<{{ elem }}>>({{ dim[1] }}, std::vector<{{ elem }}>({{ dim[2] }})));
+    let {{ var }}: {{ type }} = vec![vec![vec![Default::default; {{ dim[2] }}]; {{ dim[1] }}]; {{ dim[0] }}];
     {% endif %}
   scan: |
-    std::cin >> {{ var }}{% for i in index %}[{{ i }}]{% endfor %};
-  main: |
-    #include<bits/stdc++.h>
-    void solve({{vars[0][1]}} {{vars[0][0]}}{% for var in vars[1:] %}, {{ var[1] }} {{ var[0] }}{% endfor %}) {
-
-    }
-    int main(void) {
-      {{ main }}
-      solve({{vars[0][0]}}{% for v in vars[1:] %},{{v[0]}}{% endfor %});
-      return 0;
-    }
-  for: |
-    for(auto {{ param }} = 0; {{ param }} < {{ end }}; ++{{ param }})
     {
+      input! { tmp: {{ elem }} };
+      {{ var }}{% for i in index %}[{{ i }}]{% endfor %} = tmp;
+    }
+  main: |
+    use proconio::{input, fastout};
+    #[fastout]
+    fn solve({{vars[0][0]}}: {{vars[0][1]}}{% for var in vars[1:] %}, {{ var[0] }}: {{ var[1] }}{% endfor %}) {
+      //
+    }
+    fn main() {
+      {{ main }}
+      solve({{vars[0][0]}}{% for v in vars[1:] %}, {{v[0]}}{% endfor %});
+    }
+
+  for: |
+    for {{ param }} in 0..{{ end }} {
       {{ body }}
     }

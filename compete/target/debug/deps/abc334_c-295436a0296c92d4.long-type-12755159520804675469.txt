@@ -1,0 +1,1 @@
+Rev<std::iter::Chain<Scan<Rev<Enumerate<Zip<std::slice::Iter<'_, i64>, Skip<std::slice::Iter<'_, i64>>>>>, i64, [closure@src/bin/c.rs:27:18: 27:36]>, std::iter::Once<i64>>>
