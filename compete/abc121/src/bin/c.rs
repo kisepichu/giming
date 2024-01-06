@@ -1,30 +1,75 @@
-use proconio::{input, fastout};
-fn solve(M: i64, N: i64, A: Vec<i64>, B: Vec<i64>) {
-  //
+use io::*;
+use std::*;
+
+const MOD: i64 = 998244353;
+fn solve(N: i64, M: i64, A: Vec<i64>, B: Vec<i64>) {
+    //
 }
-#[fastout]
+
 fn main() {
-  let M: i64;
-  let N: i64;
-  {
-    input! { tmp: i64 };
-    N = tmp;
-  }
-  {
-    input! { tmp: i64 };
-    M = tmp;
-  }
-  let A: Vec<i64> = vec![i64; N];
-  let B: Vec<i64> = vec![i64; N];
-  for i0 in 0..N {
-    {
-      input! { tmp: i64 };
-      A[i0] = tmp;
+    let con = read_string();
+    let mut scanner = Scanner::new(&con);
+    let mut N: i64;
+    N = scanner.next();
+    let mut M: i64;
+    M = scanner.next();
+    let mut A: Vec<i64> = vec![0i64; (N) as usize];
+    let mut B: Vec<i64> = vec![0i64; (N) as usize];
+    for i in 0..(N) as usize {
+        A[i] = scanner.next();
+        B[i] = scanner.next();
     }
-    {
-      input! { tmp: i64 };
-      B[i0] = tmp;
+    // In order to avoid potential stack overflow, spawn a new thread.
+    let stack_size = 104_857_600; // 100 MB
+    let thd = std::thread::Builder::new().stack_size(stack_size);
+    thd.spawn(move || solve(N, M, A, B)).unwrap().join().unwrap();
+}
+
+pub mod io {
+    use std;
+    use std::str::FromStr;
+
+    pub struct Scanner<'a> {
+        iter: std::str::SplitWhitespace<'a>,
     }
-  }
-  solve(M, N, A, B);
+
+    impl<'a> Scanner<'a> {
+        pub fn new(s: &'a str) -> Scanner<'a> {
+            Scanner {
+                iter: s.split_whitespace(),
+            }
+        }
+
+        pub fn next<T: FromStr>(&mut self) -> T {
+            let s = self.iter.next().unwrap();
+            if let Ok(v) = s.parse::<T>() {
+                v
+            } else {
+                panic!("Parse error")
+            }
+        }
+
+        pub fn next_vec_len<T: FromStr>(&mut self) -> Vec<T> {
+            let n: usize = self.next();
+            self.next_vec(n)
+        }
+
+        pub fn next_vec<T: FromStr>(&mut self, n: usize) -> Vec<T> {
+            (0..n).map(|_| self.next()).collect()
+        }
+    }
+
+    pub fn read_string() -> String {
+        use std::io::Read;
+
+        let mut s = String::new();
+        std::io::stdin().read_to_string(&mut s).unwrap();
+        s
+    }
+
+    pub fn read_line() -> String {
+        let mut s = String::new();
+        std::io::stdin().read_line(&mut s).unwrap();
+        s.trim_right().to_owned()
+    }
 }
