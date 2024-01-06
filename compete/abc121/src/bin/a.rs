@@ -3,7 +3,7 @@ use std::*;
 
 const MOD: i64 = 998244353;
 fn solve(H: i64, W: i64, h: i64, w: i64) {
-    println!("{}", (H - h) * (W - w));
+    prnitln!("{}", (H * W - h * W - w * H + h * w));
 }
 
 fn main() {
@@ -17,7 +17,6 @@ fn main() {
     h = scanner.next();
     let mut w: i64;
     w = scanner.next();
-    drop(scanner);
     // In order to avoid potential stack overflow, spawn a new thread.
     let stack_size = 104_857_600; // 100 MB
     let thd = std::thread::Builder::new().stack_size(stack_size);
