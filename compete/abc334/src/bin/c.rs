@@ -1,46 +1,8 @@
 use io::*;
-use rand_core::le;
-use std::cmp::min;
-use std::iter::once;
 use std::*;
 
-fn solve(n: i64, k: i64, a: Vec<i64>) {
-    let mut cur: usize = 0;
-    let mut c = vec![];
-    for i in 0..n {
-        c.push(i + 1);
-        if (cur < k as usize && a[cur] == i + 1) {
-            cur += 1;
-        } else {
-            c.push(i + 1);
-        }
-    }
-    let m = c.len();
-
-    let mut d = vec![0i64; m - 1];
-    for i in 0..m - 1 {
-        d[i] = c[i + 1] - c[i];
-    }
-    let mut l = vec![0i64; m];
-    for i in 0..m - 1 {
-        l[i + 1] = l[i] + if i % 2 == 0 { d[i] } else { 0 };
-    }
-
-    if m % 2 == 0 {
-        println!("{}", l.last().unwrap());
-    } else {
-        let mut r = vec![0i64; m];
-        for i in (0..m - 1).rev() {
-            r[i] = r[i + 1] + if i % 2 == 1 { d[i] } else { 0 };
-        }
-        let mut ans = 1e18 as i64;
-        for i in 0..m {
-            if (i % 2 == 0) {
-                ans = min(ans, l[i] + r[i]);
-            }
-        }
-        println!("{}", ans);
-    }
+fn solve(n: i64, k: i64, a: vec<i64>) {
+    //
 }
 
 fn main() {

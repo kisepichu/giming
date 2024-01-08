@@ -1,25 +1,33 @@
 use io::*;
 use std::*;
 
-fn solve(a: i64, m: i64, l: i64, r: i64) {
+fn solve(h: i64, w: i64, a: Vec<Vec<i64>>, b: Vec<Vec<i64>>) {
     //
 }
 
 fn main() {
     let con = read_string();
     let mut scanner = Scanner::new(&con);
-    let mut A: i64;
-    A = scanner.next();
-    let mut M: i64;
-    M = scanner.next();
-    let mut L: i64;
-    L = scanner.next();
-    let mut R: i64;
-    R = scanner.next();
+    let mut H: i64;
+    H = scanner.next();
+    let mut W: i64;
+    W = scanner.next();
+    let mut A: Vec<Vec<i64>> = vec![vec![0i64; (W) as usize]; (H) as usize];
+    for i in 0..(H) as usize {
+        for j in 0..(W) as usize {
+            A[i][j] = scanner.next();
+        }
+    }
+    let mut B: Vec<Vec<i64>> = vec![vec![0i64; (W) as usize]; (H) as usize];
+    for i in 0..(H) as usize {
+        for j in 0..(W) as usize {
+            B[i][j] = scanner.next();
+        }
+    }
     // In order to avoid potential stack overflow, spawn a new thread.
     let stack_size = 104_857_600; // 100 MB
     let thd = std::thread::Builder::new().stack_size(stack_size);
-    thd.spawn(move || solve(A, M, L, R)).unwrap().join().unwrap();
+    thd.spawn(move || solve(H, W, A, B)).unwrap().join().unwrap();
 }
 
 pub mod io {

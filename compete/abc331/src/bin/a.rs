@@ -1,25 +1,46 @@
 use io::*;
 use std::*;
 
-fn solve(a: i64, m: i64, l: i64, r: i64) {
-    //
+macro_rules! mm {
+    ($($x:ident),*) => {
+        $(let mut $x = $x;)*
+    };
+}
+
+fn solve(M: i64, D: i64, y: i64, m: i64, d: i64) {
+    mm!(y, m, d);
+    d += 1;
+    if d > D {
+        d = 1;
+        m += 1;
+    }
+    if m > M {
+        m = 1;
+        y += 1;
+    }
+    println!("{} {} {}", y, m, d);
 }
 
 fn main() {
     let con = read_string();
     let mut scanner = Scanner::new(&con);
-    let mut A: i64;
-    A = scanner.next();
     let mut M: i64;
     M = scanner.next();
-    let mut L: i64;
-    L = scanner.next();
-    let mut R: i64;
-    R = scanner.next();
+    let mut D: i64;
+    D = scanner.next();
+    let mut y: i64;
+    y = scanner.next();
+    let mut m: i64;
+    m = scanner.next();
+    let mut d: i64;
+    d = scanner.next();
     // In order to avoid potential stack overflow, spawn a new thread.
     let stack_size = 104_857_600; // 100 MB
     let thd = std::thread::Builder::new().stack_size(stack_size);
-    thd.spawn(move || solve(A, M, L, R)).unwrap().join().unwrap();
+    thd.spawn(move || solve(M, D, y, m, d))
+        .unwrap()
+        .join()
+        .unwrap();
 }
 
 pub mod io {

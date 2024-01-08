@@ -1,25 +1,21 @@
 use io::*;
 use std::*;
 
-fn solve(a: i64, m: i64, l: i64, r: i64) {
+fn solve(r: f64, n: i64) {
     //
 }
 
 fn main() {
     let con = read_string();
     let mut scanner = Scanner::new(&con);
-    let mut A: i64;
-    A = scanner.next();
-    let mut M: i64;
-    M = scanner.next();
-    let mut L: i64;
-    L = scanner.next();
-    let mut R: i64;
-    R = scanner.next();
+    let mut r: f64;
+    r = scanner.next();
+    let mut N: i64;
+    N = scanner.next();
     // In order to avoid potential stack overflow, spawn a new thread.
     let stack_size = 104_857_600; // 100 MB
     let thd = std::thread::Builder::new().stack_size(stack_size);
-    thd.spawn(move || solve(A, M, L, R)).unwrap().join().unwrap();
+    thd.spawn(move || solve(r, N)).unwrap().join().unwrap();
 }
 
 pub mod io {
