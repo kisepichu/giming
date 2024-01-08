@@ -1,0 +1,73 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug a",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc121-a"
+        ],
+        "filter": {
+          "name": "abc121-a",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug b",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc121-b"
+        ],
+        "filter": {
+          "name": "abc121-b",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug c",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc121-c"
+        ],
+        "filter": {
+          "name": "abc121-c",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug d",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc121-d"
+        ],
+        "filter": {
+          "name": "abc121-d",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+  ]
+}
