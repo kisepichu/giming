@@ -1,7 +1,8 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
-fn solve(n: i64, k: i64, s_x: i64, s_y: i64, x: vec<i64>, y: vec<i64>) {
+fn solve(n: i64, k: i64, s_x: i64, s_y: i64, x: Vec<i64>, y: Vec<i64>) {
     //
 }
 
