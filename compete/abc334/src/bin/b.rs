@@ -1,8 +1,11 @@
 use io::*;
+use std::cmp::*;
 use std::*;
 
 fn solve(a: i64, m: i64, l: i64, r: i64) {
-    //
+    let of = 2e18 as i64 / m * m + m;
+    let f = |x: i64| -> i64 { (of + x - a) / m };
+    println!("{}", f(r) - f(l - 1));
 }
 
 fn main() {
@@ -19,7 +22,10 @@ fn main() {
     // In order to avoid potential stack overflow, spawn a new thread.
     let stack_size = 104_857_600; // 100 MB
     let thd = std::thread::Builder::new().stack_size(stack_size);
-    thd.spawn(move || solve(A, M, L, R)).unwrap().join().unwrap();
+    thd.spawn(move || solve(A, M, L, R))
+        .unwrap()
+        .join()
+        .unwrap();
 }
 
 pub mod io {

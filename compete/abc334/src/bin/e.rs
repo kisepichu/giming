@@ -1,7 +1,15 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
 const MOD: i64 = 998244353;
+fn solve() {
+    let con = read_string();
+    let mut scanner = Scanner::new(&con);
+    let read = || scanner.next::<i64>();
+
+    //
+}
 
 fn main() {
     // Failed to predict input format
