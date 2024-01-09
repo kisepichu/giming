@@ -1,5 +1,6 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
 {% if mod %}
 const MOD: i64 = {{ mod }};
@@ -12,6 +13,14 @@ const NO: &'static str = "{{ no_str }}";
 {% endif %}
 {% if prediction_success %}
 fn solve({{ formal_arguments | lower() | replace("vec", "Vec") }}) {
+    //
+}
+{% else %}
+fn solve() {
+    let con = read_string();
+    let mut scanner = Scanner::new(&con);
+    let read = || scanner.next::<i64>();
+
     //
 }
 {% endif %}

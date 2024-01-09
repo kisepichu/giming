@@ -1,7 +1,4 @@
-# in bashrc
-# if [ $(pwd | grep -c "$REPOS/rust-cp") -gt 0 ]; then
-#     source $REPOS/rust-cp/cmd.sh
-# fi
+# $ source cmd.sh
 
 contest_id=$(basename $(pwd))
 
@@ -31,9 +28,9 @@ ts() {
   fi
   cargo compete test $1 --debug
   if [ $? -ne 0 ]; then
-    echo "-- wa"
+    echo -e "\n-- wa"
   else
-    echo "-- ac"
+    echo -e "\n-- ac"
   fi
 }
 
@@ -45,11 +42,11 @@ sub() {
   fi
   cargo compete submit $1 --release
   if [ $? -ne 0 ]; then
-    echo "-- wa"
+    echo -e "\n-- wa"
     code src/bin/$1.rs
     return
   else
-    echo "-- ac"
+    echo -e "\n-- ac"
   fi
 }
 
