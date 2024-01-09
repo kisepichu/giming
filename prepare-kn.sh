@@ -31,18 +31,30 @@ if [ ! -d $contest_id ]; then
   fi
 fi
 
+for ((i = 0; i < 26; i++)); do
+  clr[$i]=1
+done
+
 cd $p/atcoder-tools
-clr=true
-if [ ! -d $contest_id ]; then
+if [ ! -d ../compete/$contest_id ]; then
   atcoder-tools gen $contest_id --lang rust --workspace . --template template/template.rs
 else
-  echo "clear source files? [y/n]: "
+  echo -n "clear source files? [y/n/!abcd to clear except a, b, c, d]: "
   read answer
-  if [ $answer = "n" ] || [ $answer = "N" ]; then
-    $clr = false
-  elif [ $answer != "y" ] && [ $answer != "Y" ]; then
-    echo "n"
-    $clr = true
+
+  if [ $answer = "y" ] || [ $answer = "Y" ]; then
+    rm -rf $p/atcoder-tools/$contest_id
+    atcoder-tools gen $contest_id --lang rust --workspace . --template template/template.rs
+  elif [ "${answer:0:1}" = "!" ]; then
+    for ((i = 1; i < ${#answer}; i++)); do
+      clr[$(printf "%d" \'${answer:$i:1}) - 97]=0
+    done
+    rm -rf $p/atcoder-tools/$contest_id
+    atcoder-tools gen $contest_id --lang rust --workspace . --template template/template.rs
+  else
+    for ((i = 0; i < 26; i++)); do
+      clr[$i]=0
+    done
   fi
 fi
 
@@ -54,7 +66,7 @@ launch_json_body="{
 for i in {a..z}; do
   upper=$(echo $i | tr '[a-z]' '[A-Z]')
   if [ -e $p/atcoder-tools/$contest_id/$upper/main.rs ]; then
-    if [ $clr ]; then
+    if [ ${clr[$(printf "%d" \'$i) - 97]} -eq 1 ]; then
       cp $p/atcoder-tools/$contest_id/$upper/main.rs $p/compete/$contest_id/src/bin/$i.rs
     fi
 
