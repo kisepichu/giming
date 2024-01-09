@@ -1,4 +1,4 @@
-# 突貫 Rust 競プロ環境
+# Rust 競プロ環境
 
 ## 準備
 
@@ -16,7 +16,7 @@
 
 wsl
 ```sh
-rust-cp$ source init.sh abc334
+ac-rs$ source init.sh abc334
 ```
 
 - 勝手に `compete/abc334` で vscode で開くので解く
@@ -42,8 +42,8 @@ $ o a # ソースを開く
 .bashrc
 ```
 # いい書き方わからず
-if [ $(pwd | grep -c "$REPOS/rust-cp") -gt 0 ]; then
-    source $REPOS/rust-cp/cmd.sh
+if [ $(pwd | grep -c "$REPOS/ac-rs") -gt 0 ]; then
+    source $REPOS/ac-rs/cmd.sh
 fi
 ```
 - 初回はビルドに時間がかかるけど target に残ってるから次から速い
