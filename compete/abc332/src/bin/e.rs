@@ -1,5 +1,6 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
 fn solve(n: i64, d: i64, w: Vec<i64>) {
     //
