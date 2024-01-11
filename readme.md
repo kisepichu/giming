@@ -9,6 +9,17 @@
     - [Even Better TOML](https://marketplace.visualstudio.com/items?itemName=tamasfe.even-better-toml)
 - cargo-compete とか atcoder-tools とかインストール
   - atcoder-tools は言われた条件に加えて `MarkupSafe` がバグってるので注意 `pip install MarkupSafe==2.0.1` 互換性つけて
+
+```
+$ cargo install cargo-compete
+$ # エラーに合わせて適当に
+$ rustup install 1.42.0-x86_64-unknown-linux-gnu
+$ sudo apt install libssl-dev
+
+$ pip install MarkupSafe==2.0.1 # 他のソフトでもっと上使ってるときは注意
+$ pip install atcoder-tools
+```
+
 - `cargo compete login` とか atcoder-tools 一回使ってログイン
 - テンプレート [atcoder-tools/template/template.rs](atcoder-tools/template/template.rs) 書く
 

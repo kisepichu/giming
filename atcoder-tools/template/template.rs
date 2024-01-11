@@ -12,7 +12,7 @@ const YES: &'static str = "{{ yes_str }}";
 const NO: &'static str = "{{ no_str }}";
 {% endif %}
 {% if prediction_success %}
-fn solve({{ formal_arguments | lower() | replace("vec", "Vec") }}) {
+fn solve({{ formal_arguments | lower() | replace("vec", "Vec") | replace("string", "String") }}) {
     //
 }
 {% else %}
