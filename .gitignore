@@ -4,3 +4,8 @@ atcoder-tools/*
 !atcoder-tools/template
 nohup.out
 target
+
+
+# Added by cargo
+
+/target
