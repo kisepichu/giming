@@ -1,8 +1,11 @@
 use clap::{Parser, Subcommand};
 
+mod console;
+mod init;
+
 /// ac-rs: Contest directory generator
 /// init: Create contest directory
-/// sh: Start contest console
+/// console: Start contest console
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -15,29 +18,9 @@ struct Cli {
 #[derive(Subcommand, Debug)]
 enum Commands {
     /// Create contest directory
-    Init(InitArgs),
+    Init(init::InitArgs),
     /// Start contest console
-    Sh(ShArgs),
-}
-
-#[derive(Parser, Debug)]
-#[command(version, about)]
-struct InitArgs {
-    /// Contest id or url
-    #[clap(short, long)]
-    contest: String,
-
-    /// Solution files to overwrite when exists
-    #[clap(short, long, default_value = "")]
-    overwrite: String,
-}
-
-#[derive(Parser, Debug)]
-#[command(version, about)]
-struct ShArgs {
-    /// Contest id or url
-    #[clap(short, long)]
-    contest: String,
+    Console(console::ConsoleArgs),
 }
 
 fn main() {
@@ -45,10 +28,10 @@ fn main() {
 
     match cli.command {
         Commands::Init(args) => {
-            println!("Init: {:?}", args);
+            init::init(args);
         }
-        Commands::Sh(args) => {
-            println!("Sh: {:?}", args);
+        Commands::Console(args) => {
+            console::console(args);
         }
     }
 }
