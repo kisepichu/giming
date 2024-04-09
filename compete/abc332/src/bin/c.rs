@@ -1,7 +1,8 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
-fn solve(n: i64, m: i64, s: string) {
+fn solve(n: i64, m: i64, s: String) {
     //
 }
 

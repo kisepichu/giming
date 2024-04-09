@@ -1,8 +1,23 @@
 use io::*;
 use std::*;
+use std::cmp::*;
 
 fn solve(k: i64, g: i64, m: i64) {
-    //
+    let mut cg = g;
+    let mut cm = m;
+    for _ in 0..k {
+        if cg == g {
+            cg = 0;
+        } else if cm == 0 {
+            cm = m;
+        } else {
+            let ng = cg + min(cm, g - cg);
+            let nm = cm - min(cm, g - cg);
+            cg = ng;
+            cm = nm;
+        }
+    }
+    println!("{} {}", cg, cm);
 }
 
 fn main() {
