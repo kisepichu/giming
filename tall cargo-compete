@@ -1,0 +1,86 @@
+[33mcommit 73651ee06bf3eda519da67de2cc07b655cd0b8e1[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Fri Jan 12 00:00:07 2024 +0900
+
+    abc332_b
+
+[33mcommit 7b7186da34da547b962ae7274cd37b6f736b8ee1[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Merge: 55f3f49 a9ce947
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Wed Jan 10 00:30:50 2024 +0900
+
+    Merge branch 'atcodertools'
+
+[33mcommit a9ce947ce734529976df3297bceff60e8a516675[m[33m ([m[1;31morigin/atcodertools[m[33m)[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Wed Jan 10 00:30:35 2024 +0900
+
+    change repo name
+
+[33mcommit 3e519254f5670b9b415540abacbb42bb82aadd91[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Tue Jan 9 11:47:17 2024 +0900
+
+    Fix prepare-kn.sh clear
+
+[33mcommit 55f3f497ac559242543015a924a36c497d2ecad0[m
+Merge: 5c5c42f ba9f392
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Tue Jan 9 02:13:08 2024 +0900
+
+    Merge branch 'atcodertools'
+
+[33mcommit ba9f39225d161ae62d5bea06a21329f8ca3d49a0[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Tue Jan 9 02:11:26 2024 +0900
+
+    Wait until contest starts
+
+[33mcommit b26c15a304dd3983e350bc7f2c87b2ccbd55f8e0[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Tue Jan 9 02:10:45 2024 +0900
+
+    Wait until contest starts
+
+[33mcommit ca0e1a3348b4b0314e8f9c525faf26b712828141[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Sat Jan 6 22:09:54 2024 +0900
+
+    clean
+    add readme
+
+[33mcommit 7da9c41c6f2d411a5e07bc4555cd2bd4ad32a0cb[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Sat Jan 6 20:08:03 2024 +0900
+
+    ignore target
+
+[33mcommit 6c8d41b73faba39b2d4c6623a9179458d159d8ab[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Sat Jan 6 20:01:50 2024 +0900
+
+    generate launch.json
+
+[33mcommit c8d62ef0abaa0f6b292e5d048265df02753a6849[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Sat Jan 6 16:02:55 2024 +0900
+
+    impl
+
+[33mcommit ebe07bc09c45c3a4b35226b4821883ec5e57a078[m[33m ([m[1;31morigin/dev[m[33m)[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Sat Jan 6 03:04:24 2024 +0900
+
+    impl scripts
+
+[33mcommit 342686bbaa6daa3b7e6e842445e3ce046a69428d[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Fri Jan 5 15:19:16 2024 +0900
+
+    setup
+
+[33mcommit 5c5c42f527aae85735c591d82d0dc7a464005bc8[m
+Author: tqkoh <shktmygs@gmail.com>
+Date:   Fri Jan 5 11:53:03 2024 +0900
+
+    initial commit
