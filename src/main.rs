@@ -1,7 +1,7 @@
 use clap::{Parser, Subcommand};
 
-mod console;
 mod init;
+mod terminal;
 
 /// ac-rs: Contest directory generator
 /// init: Create contest directory
@@ -19,8 +19,9 @@ struct Cli {
 enum Commands {
     /// Create contest directory
     Init(init::InitArgs),
-    /// Start contest console
-    Console(console::ConsoleArgs),
+    #[command(alias = "t")]
+    /// Start contest terminal
+    Terminal(terminal::TerminalArgs),
 }
 
 fn main() {
@@ -30,8 +31,8 @@ fn main() {
         Commands::Init(args) => {
             init::init(args);
         }
-        Commands::Console(args) => {
-            console::console(args);
+        Commands::Terminal(args) => {
+            terminal::terminal(args);
         }
     }
 }
