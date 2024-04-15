@@ -1,6 +1,8 @@
-use chrono::{Date, DateTime, TimeZone, Utc};
+use chrono::{format, Date, DateTime, TimeZone, Utc};
 use clap::Parser;
-use std::fs;
+use serde::{Deserialize, Serialize};
+use serde_yaml;
+use std::fs::{self, File};
 use std::process::Output;
 use std::{env, path::Path};
 use std::{io::BufRead, process::Command};
@@ -23,6 +25,10 @@ fn change_dir(path: &str) {
     env::set_current_dir(Path::new(path)).unwrap();
 }
 
+fn rename_file(src: &str, dst: &str) {
+    fs::rename(src, dst).unwrap();
+}
+
 fn to_contest_id(contest_id_or_url: String) -> String {
     if contest_id_or_url.starts_with("https://atcoder.jp/contests/") {
         let split = contest_id_or_url.split("/").collect::<Vec<&str>>();
@@ -42,18 +48,39 @@ fn cargo_compete_new(contest_id: &String) -> Output {
         .expect("failed to execute process")
 }
 
-fn create_contest_dir_after_start(contest_id: &String) -> Output {
-    let maybe_before = cargo_compete_new(&contest_id);
-    return if maybe_before.status.success() {
-        maybe_before
+fn create_contest_dir_after_start(contest_id: &String, overwrite: String) -> Option<Output> {
+    let mut overwrite = overwrite;
+    if Path::new(format!("{}", contest_id).as_str()).exists() {
+        if overwrite == "" {
+            println!(
+                "{} already exists, overwrite? [y/n/!abcd to overwrite except a, b, c, d]: ",
+                contest_id
+            );
+            std::io::stdin().read_line(&mut overwrite).unwrap();
+        }
+        if overwrite.starts_with("!") {
+            for i in 1..overwrite.len() {
+                let problem_id = overwrite.chars().nth(i).unwrap();
+
+                rename_file(
+                    format!("{}/src/bin/{}.rs", contest_id, problem_id).as_str(),
+                    format!("{}_bak/src/bin/{}.rs", contest_id, problem_id).as_str(),
+                )
+            }
+        }
+    }
+
+    let mut result = cargo_compete_new(&contest_id);
+    return if result.status.success() {
+        Some(result)
     } else {
-        let stderr_last_line = maybe_before.stderr.lines().last().unwrap().unwrap();
+        let stderr_last_line = result.stderr.lines().last().unwrap().unwrap();
         if !stderr_last_line.contains("will begin at") {
             // コンテスト開始前エラー以外のエラー
             panic!("cargo compete failed: {}", stderr_last_line)
         }
 
-        // 開始時刻 1 秒前まで、 10 秒おき(秒数 1 の位が 0 の時)に現在時刻を表示
+        // 開始時刻 1 秒前まで待つ
         let start_time_str = stderr_last_line
             .split("will begin at ")
             .collect::<Vec<&str>>()[1];
@@ -65,24 +92,38 @@ fn create_contest_dir_after_start(contest_id: &String) -> Output {
             std::thread::sleep(std::time::Duration::from_secs(1));
         }
         // 成功するまで F5
-        let mut result = cargo_compete_new(&contest_id);
+        result = cargo_compete_new(&contest_id);
         while !result.status.success() {
             std::thread::sleep(std::time::Duration::from_millis(F5_INTERVAL_MS));
             result = cargo_compete_new(&contest_id);
         }
-        result
+        Some(result)
     };
 }
 
+#[derive(Debug, Deserialize)]
 struct TestCase {
+    name: String,
+    #[serde(alias = "in")]
     input: String,
+    #[serde(alias = "out")]
     output: String,
+}
+
+#[derive(Debug, Deserialize)]
+struct TestCases {
+    #[serde(rename = "type")]
+    type_: String,
+    timelimit: usize,
+    #[serde(rename = "match")]
+    match_: String,
+    cases: Vec<TestCase>,
 }
 
 struct SolutionContext {
     contest_id: String,
     problem_id: String,
-    testcases: Vec<TestCase>,
+    testcases: TestCases,
 }
 
 pub fn init(args: InitArgs) {
@@ -92,7 +133,7 @@ pub fn init(args: InitArgs) {
 
     change_dir("compete");
 
-    create_contest_dir_after_start(&contest_id);
+    create_contest_dir_after_start(&contest_id, args.overwrite);
 
     change_dir(&contest_id);
 
@@ -105,7 +146,6 @@ pub fn init(args: InitArgs) {
     for file in paths {
         if file.file_type().unwrap().is_file() {
             let file_name = file.file_name();
-            // .rs を消す
             let problem_id = file_name
                 .to_str()
                 .unwrap()
@@ -115,6 +155,9 @@ pub fn init(args: InitArgs) {
                 .unwrap()
                 .to_string();
             println!("{}_{}", contest_id, problem_id);
+            let testcase_file = format!("testcases/{}.yml", problem_id);
+            let _testcases: TestCases =
+                serde_yaml::from_str(&fs::read_to_string(&testcase_file).unwrap()).unwrap();
         }
     }
 }
