@@ -1,2 +1,2 @@
-pub mod model;
+pub mod repository_impl;
 pub mod shell;
