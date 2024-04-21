@@ -15,11 +15,6 @@ pub struct GetProblemArgs {
     pub problem_id: String,
 }
 
-pub trait AtcoderService {
-    fn login(&self, args: LoginArgs) -> Result<(), String>;
-    fn get_problem(&self, args: GetProblemArgs) -> Result<domain::Problem, String>;
-}
-
 pub struct Atcoder<'r, R> {
     repository: &'r R,
 }

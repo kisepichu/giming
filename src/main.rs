@@ -1,19 +1,9 @@
 use clap::Parser;
 
-use ac_rs::infrastructure::shell;
-
-#[derive(Parser, Debug)]
-#[command(version, about)]
-#[command(propagate_version = true)]
-struct Cli {
-    #[arg(default_value = "")]
-    contest: String,
-}
+use ac_rs::infrastructure::shell::{self, Cli};
 
 fn main() {
-    let cli = Cli::parse();
-
-    let code = shell::run(cli.contest);
+    let code = shell::run(Cli::parse());
 
     std::process::exit(code);
 }
