@@ -1,7 +1,7 @@
 use std::io::{BufRead, Write};
 
-use crate::infrastructure::repository_impl::atcoder::AtcoderRepository;
-use crate::usecases::service::atcoder::Atcoder;
+use crate::infrastructure::repository_impl::RepositoryImpl;
+use crate::usecases::service::Service;
 
 use clap::Parser;
 mod commands;
@@ -36,8 +36,8 @@ pub fn run(cli: Cli) -> i32 {
         tera.render_str(&config.prompt, &prompt_context).unwrap()
     };
 
-    let atcoder_repository = AtcoderRepository::new();
-    let atcoder = Atcoder::new(&atcoder_repository);
+    let atcoder_repository = RepositoryImpl::new();
+    let atcoder = Service::new(&atcoder_repository);
 
     let mut stdin_iter = std::io::stdin().lock().lines();
     loop {

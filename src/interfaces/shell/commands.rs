@@ -1,8 +1,8 @@
 use clap::{Parser, Subcommand};
 
 use crate::{
-    infrastructure::repository_impl::atcoder::AtcoderRepository,
-    usecases::service::atcoder::{Atcoder, LoginArgs},
+    infrastructure::repository_impl::RepositoryImpl,
+    usecases::service::{LoginArgs, Service},
 };
 
 #[derive(Parser, Debug)]
@@ -43,7 +43,7 @@ pub enum Command {
     Login(LoginShellArgs),
 }
 
-pub fn login(args: LoginShellArgs, atcoder: &Atcoder<'_, AtcoderRepository>) {
+pub fn login(args: LoginShellArgs, atcoder: &Service<'_, RepositoryImpl>) {
     match atcoder.login(LoginArgs {
         username: args.username,
         password: args.password,
