@@ -1,11 +1,8 @@
 use std::io::{BufRead, Write};
 use std::iter::once;
 
-use crate::infrastructure::repository_impl::RepositoryImpl;
 use crate::interfaces::controller::Controller;
-use crate::usecases::repository::{self, Repository};
-use crate::usecases::service::{self, Service};
-use crate::usecases::service_impl::ServiceImpl;
+use crate::usecases::service::Service;
 
 use clap::Parser;
 mod commands;
@@ -23,8 +20,8 @@ fn to_contest_id(contest_id_or_url: String) -> String {
 
 // ターミナルプロンプト
 pub struct Shell<'s, S: Service> {
-    prompt: String,
     controller: Controller<'s, S>,
+    prompt: String,
 }
 
 impl<'s, S: Service> Shell<'s, S> {
@@ -35,45 +32,36 @@ impl<'s, S: Service> Shell<'s, S> {
         prompt_context.insert("contest_id", &contest_id);
         let mut tera = tera::Tera::default();
         Self {
-            prompt: tera.render_str(&prompt, &prompt_context).unwrap(),
             controller: Controller::new(service),
+            prompt: tera.render_str(&prompt, &prompt_context).unwrap(),
         }
     }
     fn print_prompt(&self) {
         print!("{}", self.prompt);
+        std::io::stdout().flush().unwrap();
     }
     pub fn run(&self) -> i32 {
-        let repository = RepositoryImpl::new();
-        let service = ServiceImpl::new(&repository);
-
         let mut stdin_iter = std::io::stdin().lock().lines();
-        loop {
-            self.print_prompt();
-            std::io::stdout().flush().unwrap();
 
-            match stdin_iter.next() {
-                Some(r) => {
-                    match ShellCommand::try_parse_from(
-                        once("").chain(r.unwrap().split_whitespace()),
-                    ) {
-                        Ok(shell) => match shell.command {
-                            Command::Exit(exit_args) => {
-                                if exit_args.code == 0 {
-                                    println!("bye");
-                                }
-                                return exit_args.code;
-                            }
-                            Command::Login(login_args) => {
-                                self.controller.login(login_args);
-                            }
-                        },
-                        Err(e) => println!("{}", e),
+        self.print_prompt();
+        while let Some(r) = stdin_iter.next() {
+            match ShellCommand::try_parse_from(once("").chain(r.unwrap().split_whitespace())) {
+                Ok(shell) => match shell.command {
+                    Command::Exit(exit_args) => {
+                        if exit_args.code == 0 {
+                            println!("bye");
+                        }
+                        return exit_args.code;
                     }
-                }
-                None => {
-                    break;
-                }
+                    Command::Login(login_args) => {
+                        self.controller
+                            .login(login_args)
+                            .unwrap_or_else(|e| eprintln!("{}", e));
+                    }
+                },
+                Err(e) => println!("{}", e),
             }
+            self.print_prompt();
         }
         0
     }
