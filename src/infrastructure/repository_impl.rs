@@ -1,5 +1,9 @@
+#[cfg(test)]
+use mockall::automock;
+
+use crate::domain::error::{Error, Result};
 use crate::infrastructure::external::oj_tools_api::OjToolsApi;
-use crate::usecases::repository::{InitError, LoginError, Repository};
+use crate::usecases::repository::{GetContestArgs, LoginArgs, Repository, SubmitArgs};
 
 use super::external::oj_tools_api::{LoginServiceResponse, OjToolsJson};
 
@@ -16,11 +20,12 @@ impl RepositoryImpl {
 }
 
 impl Repository for RepositoryImpl {
-    fn login(&self, username: String, password: String) -> Result<(), LoginError> {
-        match self
-            .oj_tools_api
-            .login_service(username, password, "https://atcoder.jp".to_string())
-        {
+    fn login(&self, args: LoginArgs) -> Result<()> {
+        match self.oj_tools_api.login_service(
+            args.username,
+            args.password,
+            "https://atcoder.jp".to_string(),
+        ) {
             OjToolsJson {
                 status: _,
                 messages: _,
@@ -30,12 +35,14 @@ impl Repository for RepositoryImpl {
                 status,
                 messages: _,
                 result: LoginServiceResponse { logged_in: false },
-            } if status == "forbidden" => Err(LoginError::InvalidCredentials),
-            _ => Err(LoginError::Unknown),
+            } if status == "forbidden" => Err(Error::InvalidCredentials),
+            _ => Err(Error::Unknown),
         }
     }
-    fn init(&self, _contest_id: String) -> Result<(), InitError> {
-        // TODO
-        Ok(())
+    fn get_contest(&self, _args: GetContestArgs) -> Result<()> {
+        todo!()
+    }
+    fn submit(&self, _args: SubmitArgs) -> Result<()> {
+        todo!()
     }
 }
