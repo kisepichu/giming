@@ -1,26 +1,12 @@
-use crate::usecases::repository::{LoginError, Repository};
+use crate::domain::error::Result;
 
-pub struct LoginArgs {
-    pub username: String,
-    pub password: String,
+use super::repository::LoginArgs;
+
+pub struct InitArgs {
+    pub contest_id: String,
 }
 
-pub struct GetProblemArgs {
-    pub problem_id: String,
-}
-
-pub struct Service<'r, R> {
-    repository: &'r R,
-}
-
-impl<'r, R> Service<'r, R> {
-    pub fn new(repository: &'r R) -> Self {
-        Self { repository }
-    }
-}
-
-impl<'r, R: Repository> Service<'r, R> {
-    pub fn login(&self, args: LoginArgs) -> Result<(), LoginError> {
-        self.repository.login(args.username, args.password)
-    }
+pub trait Service {
+    fn login(&self, args: LoginArgs) -> Result<()>;
+    fn init(&self, args: InitArgs) -> Result<()>;
 }

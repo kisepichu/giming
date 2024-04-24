@@ -1,9 +1,18 @@
+use ac_rs::{
+    infrastructure::{
+        repository_impl::RepositoryImpl,
+        shell::{Cli, Shell},
+    },
+    usecases::service_impl::ServiceImpl,
+};
 use clap::Parser;
 
-use ac_rs::interfaces::shell::{self, Cli};
-
 fn main() {
-    let code = shell::run(Cli::parse());
+    let cli = Cli::parse();
 
-    std::process::exit(code);
+    let repository = RepositoryImpl::new();
+    let service = ServiceImpl::new(&repository);
+    let shell = Shell::new(&service, "{{contest_id}}> ".to_string(), &cli);
+
+    std::process::exit(shell.run());
 }

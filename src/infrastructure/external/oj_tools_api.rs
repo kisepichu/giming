@@ -1,6 +1,5 @@
 use serde::{Deserialize, Serialize};
 
-// TODO: mock
 pub struct OjToolsApi {}
 
 #[derive(Serialize, Deserialize)]

@@ -1,20 +1,20 @@
-use thiserror::Error;
+use crate::domain::error::Result;
 
-#[derive(Debug, Error)]
-pub enum LoginError {
-    #[error("invalid username or password")]
-    InvalidCredentials,
-    #[error("login failed with unknown error")]
-    Unknown,
+pub struct LoginArgs {
+    pub username: String,
+    pub password: String,
 }
 
-#[derive(Debug, Error)]
-pub enum InitError {
-    #[error("init failed with unknown error")]
-    Unknown,
+pub struct GetContestArgs {
+    pub contest_id: String,
+}
+
+pub struct SubmitArgs {
+    pub solution_id: String,
 }
 
 pub trait Repository {
-    fn login(&self, username: String, password: String) -> Result<(), LoginError>;
-    fn init(&self, contest_id: String) -> Result<(), InitError>;
+    fn login(&self, args: LoginArgs) -> Result<()>;
+    fn get_contest(&self, args: GetContestArgs) -> Result<()>;
+    fn submit(&self, args: SubmitArgs) -> Result<()>;
 }
