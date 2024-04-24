@@ -1,10 +1,6 @@
 use clap::{Parser, Subcommand};
 
-use crate::{
-    infrastructure::repository_impl::RepositoryImpl,
-    interfaces::controller::dto::{ExitArgsDTO, LoginArgsDTO},
-    usecases::{repository::LoginArgs, service::Service, service_impl::ServiceImpl},
-};
+use crate::interfaces::controller::input::{ExitInput, LoginInput};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -24,10 +20,39 @@ pub struct ShellCommand {
     pub command: Command,
 }
 
+#[derive(Parser, Debug)]
+pub struct ExitCommand {
+    #[clap(default_value = "0")]
+    pub code: i32,
+}
+
+impl ExitInput for ExitCommand {
+    fn code(&self) -> i32 {
+        self.code
+    }
+}
+
+#[derive(Parser, Debug)]
+pub struct LoginCommand {
+    #[clap(default_value = "")]
+    pub username: String,
+    #[clap(default_value = "")]
+    pub password: String,
+}
+
+impl LoginInput for LoginCommand {
+    fn username(&self) -> String {
+        self.username.clone()
+    }
+    fn password(&self) -> String {
+        self.password.clone()
+    }
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Exit
-    Exit(ExitArgsDTO),
+    Exit(ExitCommand),
     /// Login
-    Login(LoginArgsDTO),
+    Login(LoginCommand),
 }
