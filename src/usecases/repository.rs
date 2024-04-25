@@ -13,6 +13,7 @@ pub struct SubmitArgs {
     pub solution_id: String,
 }
 
+#[cfg_attr(feature = "mock", automock)]
 pub trait Repository {
     fn login(&self, args: LoginArgs) -> Result<()>;
     fn get_contest(&self, args: GetContestArgs) -> Result<()>;
