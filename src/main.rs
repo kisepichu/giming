@@ -10,7 +10,7 @@ use clap::Parser;
 fn main() {
     let cli = Cli::parse();
 
-    let repository = RepositoryImpl::new();
+    let repository = RepositoryImpl::new().unwrap();
     let service = ServiceImpl::new(&repository);
     let shell = Shell::new(&service, "{{contest_id}}> ".to_string(), &cli);
 

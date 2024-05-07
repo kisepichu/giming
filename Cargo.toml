@@ -9,7 +9,10 @@ edition = "2021"
 chrono = "0.4.37"
 clap = { version = "4.4.14", features = ["derive"] }
 mockall = "0.12.1"
+reqwest = { version = "0.12.4", features = ["blocking", "cookies", "json"] }
+scraper = "0.19.0"
 serde = { version = "1.0.197", features = ["derive"] }
+serde_urlencoded = "0.7.1"
 serde_yaml = "0.9.34"
 tera = "1.19.1"
 thiserror = "1.0.58"

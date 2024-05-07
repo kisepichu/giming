@@ -1,5 +1,6 @@
 use crate::domain::error::Result;
 
+#[derive(Debug)]
 pub struct LoginArgs {
     pub username: String,
     pub password: String,

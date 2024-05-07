@@ -59,7 +59,9 @@ impl<'s, S: Service> Shell<'s, S> {
                             .unwrap_or_else(|e| eprintln!("{}", e));
                     }
                 },
-                Err(e) => println!("{}", e),
+                Err(e) => {
+                    eprintln!("{}", e);
+                }
             }
             self.print_prompt();
         }
