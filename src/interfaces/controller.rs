@@ -1,5 +1,5 @@
 use crate::{
-    domain::error::{Error, Result},
+    domain::error::Result,
     usecases::service::{
         online_judge::{LoginArgs, OnlineJudge},
         Service,

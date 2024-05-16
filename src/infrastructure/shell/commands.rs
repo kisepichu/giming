@@ -55,6 +55,6 @@ pub enum Command {
     Exit(ExitCommand),
     /// Login
     ///
-    /// if username or password are not provided as arguments, they will be read from environment variables ATCODER_USERNAME and ATCODER_PASSWORD
+    /// if username is not provided as arguments, they will be read from environment variables ATCODER_USERNAME and ATCODER_PASSWORD
     Login(LoginCommand),
 }
