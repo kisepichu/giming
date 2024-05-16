@@ -1,18 +1,23 @@
 use crate::{
-    domain::error::Result,
-    usecases::{repository::LoginArgs, service::Service},
+    domain::error::{Error, Result},
+    usecases::service::{
+        online_judge::{LoginArgs, OnlineJudge},
+        Service,
+    },
 };
 
-use self::input::LoginInput;
 pub mod input;
+use input::LoginInput;
 
-pub struct Controller<'s, S: Service> {
-    pub service: &'s S,
+pub struct Controller<'o, O: OnlineJudge> {
+    pub service: Service<'o, O>,
 }
 
-impl<'s, S: Service> Controller<'s, S> {
-    pub fn new(service: &'s S) -> Self {
-        Self { service }
+impl<'o, O: OnlineJudge> Controller<'o, O> {
+    pub fn new(online_judge: &'o O) -> Self {
+        Self {
+            service: Service::new(online_judge),
+        }
     }
     pub fn login<T: LoginInput>(&self, args: T) -> Result<()> {
         self.service.login(LoginArgs {

@@ -15,7 +15,7 @@ pub struct SubmitArgs {
 }
 
 #[cfg_attr(feature = "mock", automock)]
-pub trait Repository {
+pub trait OnlineJudge {
     fn login(&self, args: LoginArgs) -> Result<()>;
     fn get_contest(&self, args: GetContestArgs) -> Result<()>;
     fn submit(&self, args: SubmitArgs) -> Result<()>;

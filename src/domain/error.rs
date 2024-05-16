@@ -6,8 +6,8 @@ pub enum Error {
     InvalidCredentials,
     #[error("environment variable error: {0}")]
     EnvVar(&'static str),
-    #[error("environment variable error: {0}\n\nFor more information, run 'help login'")]
-    AtcoderEnvVar(&'static str),
+    #[error("ATCODER_USERNAME not set\n\nFor more information, run 'help login'")]
+    AtcoderEnvVar,
     #[error("invalid status code: {0}")]
     InvalidStatusCode(reqwest::StatusCode),
     #[error("reqwest error: {0}")]
