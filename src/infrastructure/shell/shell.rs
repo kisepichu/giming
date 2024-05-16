@@ -2,7 +2,6 @@ use std::io::{BufRead, Write};
 use std::iter::once;
 use std::{env, io};
 
-use crate::domain::error::Result;
 use crate::interfaces::controller::Controller;
 use crate::usecases::service::online_judge::OnlineJudge;
 
