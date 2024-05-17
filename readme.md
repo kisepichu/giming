@@ -1,11 +1,4 @@
-# 競プロ環境
+# 競プロ環境(WIP)
 
-[oj](https://github.com/online-judge-tools/oj) みたいなもの
-
-## 使い方
-
-### コンテストのワークスペースを作成
-
-```
-$ cargo run -- abc334
-```
+- [oj](https://github.com/online-judge-tools/oj) みたいなもの
+- 競プロ中にする操作を集めた CLI ツール +α
