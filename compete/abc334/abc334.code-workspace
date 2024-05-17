@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "name": "src",
+      "path": "src/bin"
+    },
+    {
+      "name": "root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "ac-rs": {
+        "path": "bash",
+        "args": ["-c", "cd ../.. && cargo run -- abc334"]
+      }
+    }
+    // "terminal.integrated.defaultProfile.linux": "ac-rs"
+  }
+}

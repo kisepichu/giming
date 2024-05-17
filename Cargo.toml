@@ -10,6 +10,7 @@ chrono = "0.4.37"
 clap = { version = "4.4.14", features = ["derive"] }
 mockall = "0.12.1"
 reqwest = { version = "0.12.4", features = ["blocking", "cookies", "json"] }
+rpassword = "7.3.1"
 scraper = "0.19.0"
 serde = { version = "1.0.197", features = ["derive"] }
 serde_urlencoded = "0.7.1"
