@@ -1,19 +1,21 @@
 [package]
-name = "ac-rs"
-version = "0.1.1"
+name = "giming"
+version = "0.1.0"
+authors = ["kisepichu <kisepichu@gmail.com>"]
 edition = "2021"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+default-run = "gm"
 
 [dependencies]
-chrono = "0.4.37"
-clap = { version = "4.4.14", features = ["derive"] }
-mockall = "0.12.1"
-reqwest = { version = "0.12.4", features = ["blocking", "cookies", "json"] }
-rpassword = "7.3.1"
-scraper = "0.19.0"
-serde = { version = "1.0.197", features = ["derive"] }
-serde_urlencoded = "0.7.1"
-serde_yaml = "0.9.34"
-tera = "1.19.1"
-thiserror = "1.0.58"
+clap = "4.5.4"
+infrastructure = { path = "crates/infrastructure" }
+
+[[bin]]
+name = "gm"
+path = "src/bin/main.rs"
+
+
+[workspace]
+members = [
+  "crates/domain", "crates/infrastructure", "crates/interfaces", "crates/usecases",
+]
+resolver = "2"

@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "name": "domain",
+      "path": "crates/domain"
+    },
+    {
+      "name": "usecases",
+      "path": "crates/usecases"
+    },
+    {
+      "name": "interfaces",
+      "path": "crates/interfaces"
+    },
+    {
+      "name": "infrastructure",
+      "path": "crates/infrastructure"
+    },
+    {
+      "name": "root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "rust-analyzer.showUnlinkedFileNotification": false
+  }
+}
