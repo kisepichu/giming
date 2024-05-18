@@ -16,7 +16,7 @@ pub struct SubmitArgs {
     pub solution_id: String,
 }
 
-#[cfg_attr(feature = "mock", automock)]
+#[mockall::automock]
 pub trait OnlineJudge<E: Error + 'static> {
     fn login(&self, args: LoginArgs) -> Result<(), Box<ServiceError<E>>>;
     fn get_contest(&self, args: GetContestArgs) -> Result<(), Box<ServiceError<E>>>;

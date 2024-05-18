@@ -5,6 +5,7 @@ pub enum ServiceError<E: Error + 'static> {
     LoginFailed(E),
     GetContestFailed(E),
     SubmitFailed(E),
+    Unknown,
 }
 
 impl<E: Error + 'static> std::fmt::Display for ServiceError<E> {
@@ -13,6 +14,7 @@ impl<E: Error + 'static> std::fmt::Display for ServiceError<E> {
             ServiceError::LoginFailed(_) => write!(f, "login failed"),
             ServiceError::GetContestFailed(_) => write!(f, "get contest failed"),
             ServiceError::SubmitFailed(_) => write!(f, "submit failed"),
+            ServiceError::Unknown => write!(f, "unknown error"),
         }
     }
 }
@@ -23,6 +25,7 @@ impl<E: std::error::Error + 'static> std::error::Error for ServiceError<E> {
             ServiceError::LoginFailed(e) => Some(e),
             ServiceError::GetContestFailed(e) => Some(e),
             ServiceError::SubmitFailed(e) => Some(e),
+            ServiceError::Unknown => None,
         }
     }
 }

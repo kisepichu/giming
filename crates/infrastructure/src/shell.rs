@@ -57,7 +57,7 @@ impl<O: OnlineJudge<DetailError>> Shell<O> {
                     }
                     Command::Login(login_args) => {
                         self.login(&mut stdin_iter, login_args).unwrap_or_else(|e| {
-                            e.print_chain();
+                            eprintln!("{}", e.error_chain());
                         })
                     }
                 },

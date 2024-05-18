@@ -8,12 +8,12 @@ use usecases::service::{
 
 use scraper::{Html, Selector};
 
-pub struct Atcoder<'r, R: AtcoderRequester> {
-    requester: &'r R,
+pub struct Atcoder<R: AtcoderRequester> {
+    requester: R,
 }
 
-impl<'r, R: AtcoderRequester> Atcoder<'r, R> {
-    pub fn new(requester: &'r R) -> Result<Self, DetailError> {
+impl<R: AtcoderRequester> Atcoder<R> {
+    pub fn new(requester: R) -> Result<Self, DetailError> {
         Ok(Self { requester })
     }
 
@@ -39,7 +39,7 @@ impl<'r, R: AtcoderRequester> Atcoder<'r, R> {
     }
 }
 
-impl<'r, R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<'r, R> {
+impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
     fn login(&self, args: LoginArgs) -> Result<(), Box<ServiceError<DetailError>>> {
         (|| -> Result<(), DetailError> {
             let res = self.requester.login(&args.username, &args.password)?;
@@ -69,5 +69,41 @@ impl<'r, R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<'r, R> {
     }
     fn submit(&self, _args: SubmitArgs) -> Result<(), Box<ServiceError<DetailError>>> {
         todo!()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+
+    use std::io::Write;
+
+    use reqwest::blocking::Response;
+
+    use crate::external::atcoder_requester::{
+        atcoder_requester_impl::AtcoderRequesterImpl, MockAtcoderRequester,
+    };
+
+    use super::*;
+
+    #[test]
+    fn test_whoami() -> Result<(), String> {
+        let requester = MockAtcoderRequester::new();
+        let mut atcoder = Atcoder::new(requester).map_err(|e| format!("{:?}", e))?;
+
+        {
+            let body =
+                std::fs::read_to_string("tests/responses/atcoder_get_home_logged_in.html").unwrap();
+            atcoder
+                .requester
+                .expect_get_home()
+                .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
+            let result = atcoder.whoami();
+            if let Ok(username) = result {
+                assert_eq!(username, "user");
+            } else {
+                return Err("failed to get username".to_string());
+            }
+        }
+        Ok(())
     }
 }
