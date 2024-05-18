@@ -2,7 +2,7 @@ use reqwest::blocking::{Client, Response};
 use scraper::{Html, Selector};
 use serde::Serialize;
 
-use crate::error::Error;
+use crate::error::DetailError;
 
 use super::AtcoderRequester;
 
@@ -16,7 +16,7 @@ pub struct AtcoderRequesterImpl {
 }
 
 impl AtcoderRequesterImpl {
-    pub fn new() -> Result<Self, Error> {
+    pub fn new() -> Result<Self, DetailError> {
         let client = Client::builder().cookie_store(true).build()?;
         let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
         let html = Html::parse_document(&res.text()?);
@@ -24,10 +24,10 @@ impl AtcoderRequesterImpl {
         let csrf_token = html
             .select(&selector)
             .next()
-            .ok_or(Error::ParsingElementNotFound)?
+            .ok_or(DetailError::ParsingElementNotFound)?
             .value()
             .attr("value")
-            .ok_or(Error::ParsingElementNotFound)?
+            .ok_or(DetailError::ParsingElementNotFound)?
             .to_string();
         Ok(Self { client, csrf_token })
     }
@@ -41,10 +41,10 @@ struct AtcoderLoginRequest {
 }
 
 impl AtcoderRequester for AtcoderRequesterImpl {
-    fn get_home(&self) -> Result<Response, Error> {
+    fn get_home(&self) -> Result<Response, DetailError> {
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
-    fn login(&self, username: &str, password: &str) -> Result<Response, Error> {
+    fn login(&self, username: &str, password: &str) -> Result<Response, DetailError> {
         let form_data = AtcoderLoginRequest {
             username: username.to_string(),
             password: password.to_string(),
@@ -56,7 +56,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
             .form(&form_data)
             .send()?)
     }
-    fn get_contest(&self, _contest_id: &str) -> Result<Response, Error> {
+    fn get_contest(&self, _contest_id: &str) -> Result<Response, DetailError> {
         todo!()
     }
     fn submit(
@@ -65,7 +65,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
         _problem_id: &str,
         _language: usize,
         _source: &str,
-    ) -> Result<Response, Error> {
+    ) -> Result<Response, DetailError> {
         todo!()
     }
 }

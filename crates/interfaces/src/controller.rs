@@ -1,4 +1,6 @@
+use domain::error::Error;
 use usecases::service::{
+    error::ServiceError,
     online_judge::{LoginArgs, OnlineJudge},
     Service,
 };
@@ -6,17 +8,17 @@ use usecases::service::{
 pub mod input;
 use input::LoginInput;
 
-pub struct Controller<'o, E, O: OnlineJudge<E>> {
-    pub service: Service<'o, E, O>,
+pub struct Controller<E: Error + 'static, O: OnlineJudge<E>> {
+    pub service: Service<E, O>,
 }
 
-impl<'o, E, O: OnlineJudge<E>> Controller<'o, E, O> {
-    pub fn new(online_judge: &'o O) -> Self {
+impl<E: Error + 'static, O: OnlineJudge<E>> Controller<E, O> {
+    pub fn new(online_judge: O) -> Self {
         Self {
             service: Service::new(online_judge),
         }
     }
-    pub fn login<T: LoginInput>(&self, args: T) -> Result<(), E> {
+    pub fn login<T: LoginInput>(&self, args: T) -> Result<(), Box<ServiceError<E>>> {
         self.service.login(LoginArgs {
             username: args.username(),
             password: args.password(),

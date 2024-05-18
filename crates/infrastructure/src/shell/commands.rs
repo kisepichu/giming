@@ -38,6 +38,8 @@ pub struct LoginCommand {
     pub username: String,
     #[clap(default_value = "")]
     pub password: String,
+    #[clap(default_value = "atcoder")]
+    pub online_judge: String,
 }
 
 impl LoginInput for LoginCommand {
@@ -55,6 +57,7 @@ pub enum Command {
     Exit(ExitCommand),
     /// Login
     ///
-    /// if username is not provided as arguments, they will be read from environment variables ATCODER_USERNAME and ATCODER_PASSWORD
+    /// Please set the following envvars to avoid prompting:
+    /// `ATCODER_USERNAME` and `ATCODER_PASSWORD` for AtCoder
     Login(LoginCommand),
 }
