@@ -1,5 +1,5 @@
 ### open workspace
 
 ```
-$ code ./ac-rs.code-workspace
+$ code ./giming.code-workspace
 ```

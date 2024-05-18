@@ -18,7 +18,10 @@
       "options": {
         "shell": {
           "executable": "bash",
-          "args": ["-c", "cd ../.. && cargo run -- abc334"]
+          "args": [
+            "-c",
+            "cd ../.. && source env.sh || (echo 'env.sh not found:'; ls); cargo run -- abc334"
+          ]
         }
       },
       "command": "",
