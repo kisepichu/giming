@@ -22,6 +22,7 @@
     }
   ],
   "settings": {
-    "rust-analyzer.showUnlinkedFileNotification": false
+    "rust-analyzer.showUnlinkedFileNotification": false,
+    "terminal.integrated.shellIntegration.enabled": false
   }
 }

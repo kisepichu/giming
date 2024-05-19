@@ -2,7 +2,7 @@ use reqwest::blocking::Response;
 
 use crate::error::DetailError;
 
-#[cfg_attr(feature = "mock", automock)]
+#[mockall::automock]
 pub trait AtcoderRequester {
     fn get_home(&self) -> Result<Response, DetailError>;
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError>;

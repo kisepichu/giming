@@ -42,6 +42,18 @@ struct AtcoderLoginRequest {
 
 impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_home(&self) -> Result<Response, DetailError> {
+        // {
+        //     let body = self
+        //         .client
+        //         .get(BASE_URL.to_string() + HOME_URL)
+        //         .send()?
+        //         .text()?;
+        //     let current_dir = std::env::current_dir().unwrap();
+        //     eprintln!("current_dir = {:?}", current_dir);
+        //     let mut file =
+        //         std::fs::File::create("tests/responses/atcoder_get_home_logged_in.html").unwrap();
+        //     file.write_all(body.as_bytes()).unwrap();
+        // }
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError> {

@@ -8,10 +8,16 @@ default-run = "gm"
 [dependencies]
 clap = "4.5.4"
 infrastructure = { path = "crates/infrastructure" }
+regex = "1.10.4"
+rstest = "0.19.0"
 
 [[bin]]
 name = "gm"
 path = "src/bin/main.rs"
+
+[[bin]]
+name = "sanitize-testing-html"
+path = "src/bin/sanitize_testing_html.rs"
 
 
 [workspace]
