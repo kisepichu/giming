@@ -1,0 +1,21 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {% for problem in problems %}
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug {{ problem.num }}",
+      "cargo": {
+        "args": ["build", "--bin={{ problem.id }}"],
+        "filter": {
+          "name": "{{ problem.id }}",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {% endfor %}
+  ]
+}
