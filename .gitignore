@@ -5,6 +5,7 @@ atcoder-tools/*
 nohup.out
 target
 *.html
+!*.sanitized.html
 
 # Added by cargo
 

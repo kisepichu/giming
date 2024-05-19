@@ -45,6 +45,7 @@ mod tests {
     #[test]
     fn test_login() -> Result<(), String> {
         // login はそのまま受け渡すだけなのであまり意味はないが、小さい例としてテストを書く
+        // test the minimal function login() as an example
         let online_judge = MockOnlineJudge::<DummyDetailError>::new();
         let mut service = Service::new(online_judge);
 
@@ -53,6 +54,7 @@ mod tests {
             service
                 .online_judge
                 .expect_login()
+                .times(1)
                 .returning(|_| Err(Box::new(ServiceError::LoginFailed(DummyDetailError::new()))));
             let args = LoginArgs {
                 username: "user".to_string(),
@@ -68,28 +70,36 @@ mod tests {
                     ));
                 }
             } else {
-                return Err("Expected Err, but got Ok(())".to_string());
+                return Err(format!("Expected Err, but got {:?}", result));
             }
         }
         // success
         {
-            service.online_judge.expect_login().returning(|_| Ok(()));
+            service
+                .online_judge
+                .expect_login()
+                .times(1)
+                .returning(|_| Ok(()));
             let args = LoginArgs {
                 username: "user".to_string(),
                 password: "pass".to_string(),
             };
             let result = service.login(args);
-            result.map_err(|e| format!("Expected Ok(()), but got {:?}", e))?;
+            result.map_err(|e| format!("Expected Ok, but got {:?}", e))?;
         }
         // already logged in
         {
-            service.online_judge.expect_login().returning(|_| Ok(()));
+            service
+                .online_judge
+                .expect_login()
+                .times(1)
+                .returning(|_| Ok(()));
             let args = LoginArgs {
                 username: "".to_string(),
                 password: "".to_string(),
             };
             let result = service.login(args);
-            result.map_err(|e| format!("Expected Ok(()), but got {:?}", e))?;
+            result.map_err(|e| format!("Expected Ok, but got {:?}", e))?;
         }
         Ok(())
     }

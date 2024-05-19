@@ -49,6 +49,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             let text = res.text().unwrap();
             if url.contains(HOME_URL) {
                 println!("login success");
+                println!("username: {}", self.whoami()?);
                 Ok(())
             } else if text.contains("You have already signed in.") {
                 println!("login success(already signed in)");
@@ -75,13 +76,9 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
 #[cfg(test)]
 mod tests {
 
-    use std::io::Write;
-
     use reqwest::blocking::Response;
 
-    use crate::external::atcoder_requester::{
-        atcoder_requester_impl::AtcoderRequesterImpl, MockAtcoderRequester,
-    };
+    use crate::external::atcoder_requester::MockAtcoderRequester;
 
     use super::*;
 
@@ -91,17 +88,50 @@ mod tests {
         let mut atcoder = Atcoder::new(requester).map_err(|e| format!("{:?}", e))?;
 
         {
-            let body =
-                std::fs::read_to_string("tests/responses/atcoder_get_home_logged_in.html").unwrap();
+            let body = std::fs::read_to_string(
+                "tests/responses/atcoder_get_home_logged_in.sanitized.html",
+            )
+            .unwrap();
             atcoder
                 .requester
                 .expect_get_home()
+                .times(1)
                 .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
+
             let result = atcoder.whoami();
             if let Ok(username) = result {
-                assert_eq!(username, "user");
+                assert_eq!(
+                    username, "kisepichu",
+                    "Expected kisepichu, but got {}",
+                    username
+                );
             } else {
-                return Err("failed to get username".to_string());
+                return Err(format!("Expected Ok, but got {:?}", result));
+            }
+        }
+
+        {
+            let body = std::fs::read_to_string(
+                "tests/responses/atcoder_get_home_not_logged_in.sanitized.html",
+            )
+            .unwrap();
+            atcoder
+                .requester
+                .expect_get_home()
+                .times(1)
+                .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
+
+            let result = atcoder.whoami();
+            if let Err(e) = result {
+                if let DetailError::ParsingElementNotFound = e {
+                } else {
+                    return Err(format!(
+                        "Expected DetailError::ParsingElementNotFound, but got {:?}",
+                        e
+                    ));
+                }
+            } else if let Ok(_) = result {
+                return Err(format!("Expected Err, but got {:?}", result));
             }
         }
         Ok(())
