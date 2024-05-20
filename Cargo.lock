@@ -677,6 +677,7 @@ name = "giming"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "domain",
  "infrastructure",
  "regex",
  "rstest",
@@ -955,6 +956,7 @@ dependencies = [
  "mockall",
  "reqwest",
  "rpassword",
+ "rstest",
  "scraper",
  "serde",
  "tera",
