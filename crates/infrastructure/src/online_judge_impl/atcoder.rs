@@ -82,12 +82,6 @@ mod tests {
 
     use super::*;
 
-    impl PartialEq for DetailError {
-        fn eq(&self, other: &Self) -> bool {
-            format!("{:?}", self) == format!("{:?}", other)
-        }
-    }
-
     #[rstest::rstest(path, expected,
         case("tests/responses/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
         case("tests/responses/atcoder_get_home_not_logged_in.sanitized.html", Err(DetailError::ParsingElementNotFound)),
