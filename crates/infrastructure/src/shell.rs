@@ -2,7 +2,6 @@ use std::io::{BufRead, Write};
 use std::iter::once;
 
 use domain::error::Error;
-use domain::error::ResultChain;
 use interfaces::controller::Controller;
 use usecases::service::online_judge::OnlineJudge;
 
