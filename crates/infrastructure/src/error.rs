@@ -50,3 +50,9 @@ impl From<anyhow::Error> for DetailError {
 }
 
 impl std::error::Error for DetailError {}
+
+impl PartialEq for DetailError {
+    fn eq(&self, other: &Self) -> bool {
+        format!("{:?}", self) == format!("{:?}", other)
+    }
+}
