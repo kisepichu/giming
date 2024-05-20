@@ -1,6 +1,7 @@
 use reqwest::blocking::{Client, Response};
 use scraper::{Html, Selector};
 use serde::Serialize;
+use usecases::service::error::ServiceError;
 
 use crate::error::DetailError;
 
@@ -16,20 +17,23 @@ pub struct AtcoderRequesterImpl {
 }
 
 impl AtcoderRequesterImpl {
-    pub fn new() -> Result<Self, DetailError> {
-        let client = Client::builder().cookie_store(true).build()?;
-        let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
-        let html = Html::parse_document(&res.text()?);
-        let selector = Selector::parse("input[name=csrf_token]")?;
-        let csrf_token = html
-            .select(&selector)
-            .next()
-            .ok_or(DetailError::ParsingElementNotFound)?
-            .value()
-            .attr("value")
-            .ok_or(DetailError::ParsingElementNotFound)?
-            .to_string();
-        Ok(Self { client, csrf_token })
+    pub fn new() -> Result<Self, ServiceError<Box<DetailError>>> {
+        || -> Result<Self, DetailError> {
+            let client = Client::builder().cookie_store(true).build()?;
+            let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
+            let html = Html::parse_document(&res.text()?);
+            let selector = Selector::parse("input[name=csrf_token]")?;
+            let csrf_token = html
+                .select(&selector)
+                .next()
+                .ok_or(DetailError::ParsingElementNotFound)?
+                .value()
+                .attr("value")
+                .ok_or(DetailError::ParsingElementNotFound)?
+                .to_string();
+            Ok(Self { client, csrf_token })
+        }()
+        .map_err(|e| ServiceError::InstantiateFailed(Box::new(e)))
     }
 }
 
