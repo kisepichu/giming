@@ -31,3 +31,20 @@ impl std::fmt::Display for DummyDetailError {
 }
 
 impl std::error::Error for DummyDetailError {}
+
+// custom Result implements unwrap_chain() to print error chain
+pub trait ResultChain<T, E: Error> {
+    fn unwrap_chain(self) -> T;
+}
+
+impl<T, E: Error> ResultChain<T, E> for Result<T, E> {
+    fn unwrap_chain(self) -> T {
+        match self {
+            Ok(value) => value,
+            Err(err) => {
+                eprintln!("{}", err.error_chain());
+                panic!();
+            }
+        }
+    }
+}

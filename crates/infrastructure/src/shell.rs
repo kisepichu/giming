@@ -2,6 +2,7 @@ use std::io::{BufRead, Write};
 use std::iter::once;
 
 use domain::error::Error;
+use domain::error::ResultChain;
 use interfaces::controller::Controller;
 use usecases::service::online_judge::OnlineJudge;
 
@@ -58,7 +59,7 @@ impl<O: OnlineJudge<DetailError>> Shell<O> {
                     Command::Login(login_args) => {
                         self.login(&mut stdin_iter, login_args).unwrap_or_else(|e| {
                             eprintln!("{}", e.error_chain());
-                        })
+                        });
                     }
                 },
                 Err(e) => {

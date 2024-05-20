@@ -13,8 +13,8 @@ pub struct Atcoder<R: AtcoderRequester> {
 }
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub fn new(requester: R) -> Result<Self, DetailError> {
-        Ok(Self { requester })
+    pub fn new(requester: R) -> Self {
+        Self { requester }
     }
 
     pub fn whoami(&self) -> Result<String, DetailError> {
@@ -82,58 +82,29 @@ mod tests {
 
     use super::*;
 
-    #[test]
-    fn test_whoami() -> Result<(), String> {
+    impl PartialEq for DetailError {
+        fn eq(&self, other: &Self) -> bool {
+            format!("{:?}", self) == format!("{:?}", other)
+        }
+    }
+
+    #[rstest::rstest(path, expected,
+        case("tests/responses/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
+        case("tests/responses/atcoder_get_home_not_logged_in.sanitized.html", Err(DetailError::ParsingElementNotFound)),
+    )]
+    fn test_whoami(path: &str, expected: Result<String, DetailError>) -> Result<(), String> {
         let requester = MockAtcoderRequester::new();
-        let mut atcoder = Atcoder::new(requester).map_err(|e| format!("{:?}", e))?;
+        let mut atcoder = Atcoder::new(requester);
 
-        {
-            let body = std::fs::read_to_string(
-                "tests/responses/atcoder_get_home_logged_in.sanitized.html",
-            )
-            .unwrap();
-            atcoder
-                .requester
-                .expect_get_home()
-                .times(1)
-                .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
+        let body = std::fs::read_to_string(path).unwrap();
+        atcoder
+            .requester
+            .expect_get_home()
+            .times(1)
+            .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
 
-            let result = atcoder.whoami();
-            if let Ok(username) = result {
-                assert_eq!(
-                    username, "kisepichu",
-                    "Expected kisepichu, but got {}",
-                    username
-                );
-            } else {
-                return Err(format!("Expected Ok, but got {:?}", result));
-            }
-        }
-
-        {
-            let body = std::fs::read_to_string(
-                "tests/responses/atcoder_get_home_not_logged_in.sanitized.html",
-            )
-            .unwrap();
-            atcoder
-                .requester
-                .expect_get_home()
-                .times(1)
-                .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
-
-            let result = atcoder.whoami();
-            if let Err(e) = result {
-                if let DetailError::ParsingElementNotFound = e {
-                } else {
-                    return Err(format!(
-                        "Expected DetailError::ParsingElementNotFound, but got {:?}",
-                        e
-                    ));
-                }
-            } else if let Ok(_) = result {
-                return Err(format!("Expected Err, but got {:?}", result));
-            }
-        }
+        let result = atcoder.whoami();
+        assert_eq!(result, expected);
         Ok(())
     }
 }
