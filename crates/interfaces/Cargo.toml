@@ -1,0 +1,8 @@
+[package]
+name = "interfaces"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+domain = { path = "../domain" }
+usecases = { path = "../usecases" }

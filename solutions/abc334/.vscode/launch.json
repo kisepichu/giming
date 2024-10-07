@@ -1,0 +1,124 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug a",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-a"
+        ],
+        "filter": {
+          "name": "abc334-a",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug b",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-b"
+        ],
+        "filter": {
+          "name": "abc334-b",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug c",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-c"
+        ],
+        "filter": {
+          "name": "abc334-c",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug d",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-d"
+        ],
+        "filter": {
+          "name": "abc334-d",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug e",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-e"
+        ],
+        "filter": {
+          "name": "abc334-e",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug f",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-f"
+        ],
+        "filter": {
+          "name": "abc334-f",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug g",
+      "cargo": {
+        "args": [
+          "build",
+          "--bin=abc334-g"
+        ],
+        "filter": {
+          "name": "abc334-g",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+  ]
+}
