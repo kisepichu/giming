@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "name": "src",
+      "path": "src/bin"
+    },
+    {
+      "name": "root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "ac-rs": {
+        "path": "bash",
+        "args": [
+          "-c",
+          "cd ../.. && source env.sh || (echo 'env.sh not found:'; ls); cargo run -- abc334"
+        ]
+      }
+    }
+    // "terminal.integrated.defaultProfile.linux": "ac-rs"
+  }
+}
