@@ -15,7 +15,7 @@ mod login;
 
 fn to_contest_id(contest_id_or_url: String) -> String {
     if contest_id_or_url.starts_with("http") {
-        contest_id_or_url.split("/").last().unwrap().to_string()
+        contest_id_or_url.split('/').last().unwrap().to_string()
     } else {
         contest_id_or_url
     }

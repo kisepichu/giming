@@ -17,18 +17,18 @@ pub enum DetailError {
 impl fmt::Display for DetailError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match self {
-            DetailError::EnvVarNotFound(v) => write!(f, "environment variable {} not found\n", v),
-            DetailError::InvalidInput(v) => write!(f, "invalid input: {}\n", v),
-            DetailError::InvalidCredentials => write!(f, "invalid username or password\n"),
+            DetailError::EnvVarNotFound(v) => writeln!(f, "environment variable {} not found", v),
+            DetailError::InvalidInput(v) => writeln!(f, "invalid input: {}", v),
+            DetailError::InvalidCredentials => writeln!(f, "invalid username or password"),
             DetailError::UnexpectedStatusCode(status_code) => {
-                write!(f, "unexpected status code: {}\n", status_code)
+                writeln!(f, "unexpected status code: {}", status_code)
             }
-            DetailError::UnexpectedResponse => write!(f, "unexpected response\n"),
-            DetailError::Reqwest(err) => write!(f, "reqwest error: {}\n", err),
-            DetailError::Scraper(err) => write!(f, "scraper error: {}\n", err),
-            DetailError::ParsingElementNotFound => write!(f, "element not found\n"),
-            DetailError::ParsingError => write!(f, "parsing error\n"),
-            DetailError::Unknown(err) => write!(f, "unknown error: {}\n", err),
+            DetailError::UnexpectedResponse => writeln!(f, "unexpected response"),
+            DetailError::Reqwest(err) => writeln!(f, "reqwest error: {}", err),
+            DetailError::Scraper(err) => writeln!(f, "scraper error: {}", err),
+            DetailError::ParsingElementNotFound => writeln!(f, "element not found"),
+            DetailError::ParsingError => writeln!(f, "parsing error"),
+            DetailError::Unknown(err) => writeln!(f, "unknown error: {}", err),
         }
     }
 }

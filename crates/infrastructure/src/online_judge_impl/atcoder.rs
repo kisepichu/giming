@@ -31,7 +31,7 @@ impl<R: AtcoderRequester> Atcoder<R> {
             .ok_or(DetailError::ParsingElementNotFound)?
             .to_string();
         let username = href
-            .split("/")
+            .split('/')
             .last()
             .ok_or(DetailError::ParsingError)?
             .to_string();

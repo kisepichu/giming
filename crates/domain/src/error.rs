@@ -18,6 +18,12 @@ impl<E: std::error::Error> Error for E {
 #[derive(Debug)]
 pub struct DummyDetailError;
 
+impl Default for DummyDetailError {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl DummyDetailError {
     pub fn new() -> Self {
         Self
