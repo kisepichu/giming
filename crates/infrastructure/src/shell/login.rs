@@ -50,11 +50,12 @@ fn get_username(
         username
     };
     if username.is_empty() {
-        return Err(Box::new(ServiceError::LoginFailed(
+        Err(Box::new(ServiceError::LoginFailed(
             DetailError::InvalidInput("username is empty".to_string()),
-        )));
+        )))
+    } else {
+        Ok(username)
     }
-    Ok(username)
 }
 
 fn get_password(
@@ -75,9 +76,10 @@ fn get_password(
         password
     };
     if password.is_empty() {
-        return Err(Box::new(ServiceError::LoginFailed(
+        Err(Box::new(ServiceError::LoginFailed(
             DetailError::InvalidInput("password is empty".to_string()),
-        )));
+        )))
+    } else {
+        Ok(password)
     }
-    Ok(password)
 }
