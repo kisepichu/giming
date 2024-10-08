@@ -54,7 +54,7 @@ fn get_username(
             DetailError::InvalidInput("username is empty".to_string()),
         )));
     }
-    return Ok(username);
+    Ok(username)
 }
 
 fn get_password(
@@ -79,5 +79,5 @@ fn get_password(
             DetailError::InvalidInput("password is empty".to_string()),
         )));
     }
-    return Ok(password);
+    Ok(password)
 }

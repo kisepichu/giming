@@ -3,11 +3,11 @@ use rstest::rstest;
 use std::io::{Read, Write};
 
 fn replace_tokens(s: String) -> String {
-    let patterns = vec![r"[A-Za-z0-9+/]{13,}={1,2}", r"[A-Za-z0-9\-+_]{13,}"];
-    let exclude_patterns = vec![r"[a-z\-]+", r#"[A-Z][a-z]*(\-[A-Z][a-z]*)*"#];
+    let patterns = [r"[A-Za-z0-9+/]{13,}={1,2}", r"[A-Za-z0-9\-+_]{13,}"];
+    let exclude_patterns = [r"[a-z\-]+", r#"[A-Z][a-z]*(\-[A-Z][a-z]*)*"#];
 
-    let pattern = format!(r"{}", patterns.join("|"));
-    let exclude_pattern = format!(r"{}", exclude_patterns.join("|"));
+    let pattern = patterns.join("|").to_string();
+    let exclude_pattern = exclude_patterns.join("|").to_string();
 
     let r = Regex::new(pattern.as_str()).unwrap();
     let re = Regex::new(exclude_pattern.as_str()).unwrap();
@@ -38,7 +38,7 @@ fn process_dir(dir: &str) {
         let entry = entry.unwrap();
         let path = entry.path();
         if path.is_dir() {
-            process_dir(&path.to_str().unwrap());
+            process_dir(path.to_str().unwrap());
         } else if path.to_str().unwrap().ends_with(".html")
             && !path.to_str().unwrap().ends_with(".sanitized.html")
         {
