@@ -35,7 +35,7 @@ fn get_username(
             Ok(u) => u,
             Err(_) => {
                 eprintln!(
-                    "  - tips: Set envvars to avoid prompting. For more information, run 'help login'"
+                    "  - tips: Set envvars for auto login. For more information, run 'help login'"
                 );
                 print!("username: ");
                 io::stdout().flush().unwrap();

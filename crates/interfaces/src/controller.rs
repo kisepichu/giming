@@ -1,9 +1,5 @@
 use domain::error::Error;
-use usecases::service::{
-    error::ServiceError,
-    online_judge::{LoginArgs, OnlineJudge},
-    Service,
-};
+use usecases::service::{error::ServiceError, online_judge::OnlineJudge, Service};
 
 pub mod input;
 use input::LoginInput;
@@ -19,9 +15,6 @@ impl<E: Error + 'static, O: OnlineJudge<E>> Controller<E, O> {
         }
     }
     pub fn login<T: LoginInput>(&self, args: T) -> Result<(), Box<ServiceError<E>>> {
-        self.service.login(LoginArgs {
-            username: args.username(),
-            password: args.password(),
-        })
+        self.service.login(args.username(), args.password())
     }
 }
