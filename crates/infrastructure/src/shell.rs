@@ -24,22 +24,25 @@ fn to_contest_id(contest_id_or_url: String) -> String {
 pub struct Shell<O: OnlineJudge<DetailError>> {
     controller: Controller<DetailError, O>,
     prompt: String,
+    contest_id: String,
 }
 
 impl<O: OnlineJudge<DetailError>> Shell<O> {
     pub fn new(online_judge: O, prompt: String, cli: &Cli) -> Self {
-        let contest_id = to_contest_id(cli.contest.clone());
-
-        let mut prompt_context = tera::Context::new();
-        prompt_context.insert("contest_id", &contest_id);
-        let mut tera = tera::Tera::default();
         Self {
             controller: Controller::new(online_judge),
-            prompt: tera.render_str(&prompt, &prompt_context).unwrap(),
+            prompt,
+            contest_id: to_contest_id(cli.contest.clone()),
         }
     }
     fn print_prompt(&self) {
-        print!("{}", self.prompt);
+        let mut prompt_context = tera::Context::new();
+        prompt_context.insert("contest_id", &self.contest_id);
+        let mut tera = tera::Tera::default();
+        print!(
+            "{}",
+            tera.render_str(&self.prompt, &prompt_context).unwrap()
+        );
         std::io::stdout().flush().unwrap();
     }
     pub fn run(&self) -> i32 {
