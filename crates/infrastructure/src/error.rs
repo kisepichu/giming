@@ -9,6 +9,7 @@ pub enum DetailError {
     UnexpectedResponse,
     Reqwest(reqwest::Error),
     Scraper(scraper::error::SelectorErrorKind<'static>),
+    Confy(confy::ConfyError),
     ParsingElementNotFound,
     ParsingError,
     Unknown(anyhow::Error),
@@ -26,6 +27,7 @@ impl fmt::Display for DetailError {
             DetailError::UnexpectedResponse => writeln!(f, "unexpected response"),
             DetailError::Reqwest(err) => writeln!(f, "reqwest error: {}", err),
             DetailError::Scraper(err) => writeln!(f, "scraper error: {}", err),
+            DetailError::Confy(err) => writeln!(f, "confy error: {}", err),
             DetailError::ParsingElementNotFound => writeln!(f, "element not found"),
             DetailError::ParsingError => writeln!(f, "parsing error"),
             DetailError::Unknown(err) => writeln!(f, "unknown error: {}", err),
@@ -43,6 +45,12 @@ impl From<scraper::error::SelectorErrorKind<'static>> for DetailError {
         DetailError::Scraper(err)
     }
 }
+impl From<confy::ConfyError> for DetailError {
+    fn from(err: confy::ConfyError) -> Self {
+        DetailError::Confy(err)
+    }
+}
+
 impl From<anyhow::Error> for DetailError {
     fn from(err: anyhow::Error) -> Self {
         DetailError::Unknown(err)
