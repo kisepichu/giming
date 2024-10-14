@@ -15,6 +15,7 @@ use crate::online_judge_impl::atcoder::Atcoder;
 
 pub mod commands;
 use commands::{Cli, Command, ShellCommand};
+mod init;
 mod login;
 
 fn to_contest_id(contest_id_or_url: String) -> String {
@@ -25,9 +26,7 @@ fn to_contest_id(contest_id_or_url: String) -> String {
     }
 }
 
-fn oj_from_cli(
-    _cli: &Cli,
-) -> Result<Box<dyn OnlineJudge<DetailError>>, ServiceError<Box<DetailError>>> {
+fn oj_from_cli(_cli: &Cli) -> Result<Box<dyn OnlineJudge<DetailError>>, ServiceError<DetailError>> {
     // cli.contest...
     let atcoder_requester = AtcoderRequesterImpl::new()?;
     let atcoder = Atcoder::new(atcoder_requester);
@@ -41,7 +40,7 @@ pub struct Shell {
 }
 
 impl Shell {
-    pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<Box<DetailError>>> {
+    pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<DetailError>> {
         let oj = oj_from_cli(cli)?;
         Ok(Self {
             controller: Controller::new(oj),
@@ -71,6 +70,11 @@ impl Shell {
                             println!("bye");
                         }
                         return exit_args.code;
+                    }
+                    Command::Init(init_args) => {
+                        self.init(init_args).unwrap_or_else(|e| {
+                            eprintln!("{}", e.error_chain());
+                        });
                     }
                     Command::Login(login_args) => {
                         self.login(&mut stdin_iter, login_args).unwrap_or_else(|e| {

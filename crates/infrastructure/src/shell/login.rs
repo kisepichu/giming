@@ -14,14 +14,14 @@ impl Shell {
     pub fn login(
         &self,
         stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
-        login_args: LoginCommand,
+        args: LoginCommand,
     ) -> Result<(), Box<ServiceError<DetailError>>> {
-        let username = get_username(stdin_iter, login_args.username)?;
-        let password = get_password(&username, login_args.password)?;
+        let username = get_username(stdin_iter, args.username)?;
+        let password = get_password(&username, args.password)?;
         self.controller.login(LoginCommand {
             username,
             password,
-            online_judge: login_args.online_judge,
+            online_judge: args.online_judge,
         })
     }
 }
@@ -35,7 +35,7 @@ fn get_username(
             Ok(u) => u,
             Err(_) => {
                 eprintln!(
-                    "  - tips: Set envvars for auto login. For more information, run 'help login'"
+                    "  tip: Set envvars for auto login. For more information, run 'help login'"
                 );
                 print!("username: ");
                 io::stdout().flush().unwrap();
