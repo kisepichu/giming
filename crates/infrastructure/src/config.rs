@@ -21,8 +21,8 @@ impl Default for Config {
 }
 
 impl Config {
-    pub fn load() -> Result<Self, ServiceError<Box<DetailError>>> {
+    pub fn load() -> Result<Self, ServiceError<DetailError>> {
         confy::load::<Config>("giming", "config")
-            .map_err(|e| ServiceError::InstantiateFailed(Box::new(DetailError::from(e))))
+            .map_err(|e| ServiceError::InstantiateFailed(DetailError::from(e)))
     }
 }

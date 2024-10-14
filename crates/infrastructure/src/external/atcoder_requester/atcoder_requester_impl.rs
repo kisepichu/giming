@@ -17,7 +17,7 @@ pub struct AtcoderRequesterImpl {
 }
 
 impl AtcoderRequesterImpl {
-    pub fn new() -> Result<Self, ServiceError<Box<DetailError>>> {
+    pub fn new() -> Result<Self, ServiceError<DetailError>> {
         || -> Result<Self, DetailError> {
             let client = Client::builder().cookie_store(true).build()?;
             let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
@@ -33,7 +33,7 @@ impl AtcoderRequesterImpl {
                 .to_string();
             Ok(Self { client, csrf_token })
         }()
-        .map_err(|e| ServiceError::InstantiateFailed(Box::new(e)))
+        .map_err(ServiceError::InstantiateFailed) // |e| ServiceError::InstantiateFailed(e)
     }
 }
 

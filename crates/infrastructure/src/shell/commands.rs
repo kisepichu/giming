@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 
-use interfaces::controller::input::{ExitInput, LoginInput};
+use interfaces::controller::input::{ExitInput, InitInput, LoginInput};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -51,13 +51,27 @@ impl LoginInput for LoginCommand {
     }
 }
 
+#[derive(Parser, Debug)]
+pub struct InitCommand {
+    #[clap(default_value = "")]
+    pub contest_id: String,
+}
+
+impl InitInput for InitCommand {
+    fn contest_id(&self) -> String {
+        self.contest_id.clone()
+    }
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Exit
     Exit(ExitCommand),
-    /// Login
+    /// Login to the online judge
     ///
     /// Please set the following envvars to avoid prompting:
     /// `ATCODER_USERNAME` and `ATCODER_PASSWORD` for AtCoder
     Login(LoginCommand),
+    /// Initialize the directory structure for the contest
+    Init(InitCommand),
 }
