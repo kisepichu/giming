@@ -7,7 +7,6 @@ default-run = "gm"
 
 [dependencies]
 clap = "4.5.4"
-confy = "0.6.1"
 domain = { path = "crates/domain" }
 infrastructure = { path = "crates/infrastructure" }
 regex = "1.10.4"

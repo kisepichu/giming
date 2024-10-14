@@ -5,14 +5,17 @@ use usecases::service::error::ServiceError;
 use crate::error::DetailError;
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(default)]
 pub struct Config {
     pub prompt: String,
+    pub contest_dir: String,
 }
 
 impl Default for Config {
     fn default() -> Self {
         Self {
             prompt: "{{contest_id}}> ".to_string(),
+            contest_dir: "~/repos/giming/solutions".to_string(),
         }
     }
 }
