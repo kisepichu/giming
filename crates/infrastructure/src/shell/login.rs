@@ -4,13 +4,13 @@ use std::{
 };
 
 use rpassword::read_password;
-use usecases::service::{error::ServiceError, online_judge::OnlineJudge};
+use usecases::service::error::ServiceError;
 
 use crate::error::DetailError;
 
 use super::{commands::LoginCommand, Shell};
 
-impl<O: OnlineJudge<DetailError>> Shell<O> {
+impl Shell {
     pub fn login(
         &self,
         stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,

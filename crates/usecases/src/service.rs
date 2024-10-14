@@ -13,15 +13,15 @@ pub struct InitArgs {
     pub contest_id: String,
 }
 
-pub struct Service<E: Error + 'static, O: OnlineJudge<E>> {
-    online_judge: O,
+pub struct Service<E: Error + 'static> {
+    online_judge: Box<dyn OnlineJudge<E>>,
     _phantom: PhantomData<E>,
 }
 
-impl<E: Error + 'static, O: OnlineJudge<E>> Service<E, O> {
-    pub fn new(online_judge: O) -> Self {
+impl<E: Error + 'static> Service<E> {
+    pub fn new(oj: Box<dyn OnlineJudge<E>>) -> Self {
         Self {
-            online_judge,
+            online_judge: oj,
             _phantom: PhantomData,
         }
     }
@@ -46,18 +46,14 @@ mod tests {
     fn test_login() -> Result<(), String> {
         // login はそのまま受け渡すだけなのであまり意味はないが、小さい例としてテストを書く
         // test the minimal function login() as an example
-        let online_judge = MockOnlineJudge::<DummyDetailError>::new();
-        let mut service = Service::new(online_judge);
 
         // invalid username or password
         {
-            service
-                .online_judge
-                .expect_login()
-                .times(1)
-                .returning(|_, _| {
-                    Err(Box::new(ServiceError::LoginFailed(DummyDetailError::new())))
-                });
+            let mut online_judge = MockOnlineJudge::<DummyDetailError>::new();
+            online_judge.expect_login().times(1).returning(|_, _| {
+                Err(Box::new(ServiceError::LoginFailed(DummyDetailError::new())))
+            });
+            let service = Service::new(Box::new(online_judge));
 
             let username = "user".to_string();
             let password = "pass".to_string();
@@ -76,11 +72,13 @@ mod tests {
         }
         // success
         {
-            service
-                .online_judge
+            let mut online_judge = MockOnlineJudge::<DummyDetailError>::new();
+            online_judge
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
+            let service = Service::new(Box::new(online_judge));
+
             let username = "user".to_string();
             let password = "pass".to_string();
             let result = service.login(username, password);

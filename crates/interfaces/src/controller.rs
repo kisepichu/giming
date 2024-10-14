@@ -4,14 +4,14 @@ use usecases::service::{error::ServiceError, online_judge::OnlineJudge, Service}
 pub mod input;
 use input::LoginInput;
 
-pub struct Controller<E: Error + 'static, O: OnlineJudge<E>> {
-    pub service: Service<E, O>,
+pub struct Controller<E: Error + 'static> {
+    pub service: Service<E>,
 }
 
-impl<E: Error + 'static, O: OnlineJudge<E>> Controller<E, O> {
-    pub fn new(online_judge: O) -> Self {
+impl<E: Error + 'static> Controller<E> {
+    pub fn new(oj: Box<dyn OnlineJudge<E>>) -> Self {
         Self {
-            service: Service::new(online_judge),
+            service: Service::new(oj),
         }
     }
     pub fn login<T: LoginInput>(&self, args: T) -> Result<(), Box<ServiceError<E>>> {

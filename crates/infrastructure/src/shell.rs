@@ -3,11 +3,15 @@ use std::iter::once;
 
 use domain::error::Error;
 use interfaces::controller::Controller;
+use usecases::service::error::ServiceError;
 use usecases::service::online_judge::OnlineJudge;
 
 use clap::Parser;
 
+use crate::config::Config;
 use crate::error::DetailError;
+use crate::external::atcoder_requester::atcoder_requester_impl::AtcoderRequesterImpl;
+use crate::online_judge_impl::atcoder::Atcoder;
 
 pub mod commands;
 use commands::{Cli, Command, ShellCommand};
@@ -21,19 +25,29 @@ fn to_contest_id(contest_id_or_url: String) -> String {
     }
 }
 
-pub struct Shell<O: OnlineJudge<DetailError>> {
-    controller: Controller<DetailError, O>,
+fn oj_from_cli(
+    _cli: &Cli,
+) -> Result<Box<dyn OnlineJudge<DetailError>>, ServiceError<Box<DetailError>>> {
+    // cli.contest...
+    let atcoder_requester = AtcoderRequesterImpl::new()?;
+    let atcoder = Atcoder::new(atcoder_requester);
+    Ok(Box::new(atcoder))
+}
+
+pub struct Shell {
+    controller: Controller<DetailError>,
     prompt: String,
     contest_id: String,
 }
 
-impl<O: OnlineJudge<DetailError>> Shell<O> {
-    pub fn new(online_judge: O, prompt: String, cli: &Cli) -> Self {
-        Self {
-            controller: Controller::new(online_judge),
-            prompt,
+impl Shell {
+    pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<Box<DetailError>>> {
+        let oj = oj_from_cli(cli)?;
+        Ok(Self {
+            controller: Controller::new(oj),
+            prompt: cfg.prompt,
             contest_id: to_contest_id(cli.contest.clone()),
-        }
+        })
     }
     fn print_prompt(&self) {
         let mut prompt_context = tera::Context::new();
