@@ -1,6 +1,6 @@
 use confy;
 use serde::{Deserialize, Serialize};
-use usecases::service::error::ServiceError;
+use usecases::error::ServiceError;
 
 use crate::error::DetailError;
 

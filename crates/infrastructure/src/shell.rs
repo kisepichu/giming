@@ -3,10 +3,10 @@ use std::iter::once;
 
 use domain::error::Error;
 use interfaces::controller::Controller;
-use usecases::service::error::ServiceError;
-use usecases::service::online_judge::OnlineJudge;
 
 use clap::Parser;
+use usecases::error::ServiceError;
+use usecases::online_judge::OnlineJudge;
 
 use crate::config::Config;
 use crate::error::DetailError;

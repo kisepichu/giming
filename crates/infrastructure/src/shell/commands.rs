@@ -66,12 +66,15 @@ impl InitInput for InitCommand {
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Exit
+    #[clap(visible_aliases = ["quit", "q"])]
     Exit(ExitCommand),
     /// Login to the online judge
     ///
     /// Please set the following envvars to avoid prompting:
     /// `ATCODER_USERNAME` and `ATCODER_PASSWORD` for AtCoder
+    #[clap(visible_aliases = ["l"])]
     Login(LoginCommand),
     /// Initialize the directory structure for the contest
+    #[clap(visible_aliases = ["i"])]
     Init(InitCommand),
 }
