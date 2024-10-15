@@ -2,6 +2,7 @@ use crate::error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
 
+use domain::entity::Problem;
 use scraper::{Html, Selector};
 use usecases::{error::ServiceError, online_judge::OnlineJudge};
 
@@ -62,8 +63,17 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         })()
         .map_err(ServiceError::LoginFailed)
     }
-    fn get_contest(&self, _contest_id: String) -> Result<(), ServiceError<DetailError>> {
-        todo!()
+    fn get_problems(&self, contest_id: String) -> Result<Vec<Problem>, ServiceError<DetailError>> {
+        || -> Result<Vec<Problem>, DetailError> {
+            let res = self.requester.get_tasks_print(&contest_id)?;
+
+            let _status = res.status();
+            let _url = res.url().to_string();
+            let _text = res.text().unwrap();
+
+            todo!()
+        }()
+        .map_err(ServiceError::InitFailed)
     }
     fn submit(&self, _solution_id: String) -> Result<(), ServiceError<DetailError>> {
         todo!()
@@ -81,7 +91,7 @@ mod tests {
 
     #[rstest::rstest(path, expected,
         case("tests/responses/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
-        case("tests/responses/atcoder_get_home_not_logged_in.sanitized.html", Err(DetailError::ParsingElementNotFound)),
+        case("tests/responses/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound)),
     )]
     fn test_whoami(path: &str, expected: Result<String, DetailError>) -> Result<(), String> {
         let requester = MockAtcoderRequester::new();
