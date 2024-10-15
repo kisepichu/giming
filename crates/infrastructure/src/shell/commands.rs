@@ -53,7 +53,6 @@ impl LoginInput for LoginCommand {
 
 #[derive(Parser, Debug)]
 pub struct InitCommand {
-    #[clap(default_value = "")]
     pub contest_id: String,
 }
 

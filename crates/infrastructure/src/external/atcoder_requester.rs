@@ -7,6 +7,7 @@ pub trait AtcoderRequester {
     fn get_home(&self) -> Result<Response, DetailError>;
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError>;
     fn get_contest(&self, contest_id: &str) -> Result<Response, DetailError>;
+    fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError>;
     fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError>;
     fn submit(
         &self,

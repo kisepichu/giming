@@ -11,6 +11,11 @@ pub struct Problem {
     pub memory_limit: usize,
 }
 
+pub struct ProblemSummary {
+    pub id: String,
+    pub code: String,
+}
+
 pub struct Sample {
     pub input: String,
     pub output: String,

@@ -2,7 +2,7 @@ use crate::error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
 
-use domain::entity::Problem;
+use domain::entity::{Problem, ProblemSummary};
 use scraper::{Html, Selector};
 use usecases::{error::ServiceError, online_judge::OnlineJudge};
 
@@ -63,15 +63,51 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         })()
         .map_err(ServiceError::LoginFailed)
     }
-    fn get_problems(&self, contest_id: String) -> Result<Vec<Problem>, ServiceError<DetailError>> {
+    fn get_problems_summary(
+        &self,
+        contest_id: String,
+    ) -> Result<Vec<domain::entity::ProblemSummary>, ServiceError<DetailError>> {
+        || -> Result<Vec<ProblemSummary>, DetailError> {
+            let _res = self.requester.get_tasks(&contest_id)?;
+            todo!()
+        }()
+        .map_err(ServiceError::InitFailed)
+    }
+    fn get_problems_detail(
+        &self,
+        contest_id: String,
+    ) -> Result<Vec<Problem>, ServiceError<DetailError>> {
         || -> Result<Vec<Problem>, DetailError> {
             let res = self.requester.get_tasks_print(&contest_id)?;
 
             let _status = res.status();
-            let _url = res.url().to_string();
-            let _text = res.text().unwrap();
-
-            todo!()
+            let text = res.text()?;
+            let html = Html::parse_document(&text);
+            let selector = Selector::parse("#main-container>.row>div:nth-of-type(odd)")?;
+            let elements = html.select(&selector);
+            let res = elements
+                .enumerate()
+                .map(|(_i, e)| -> Result<Problem, DetailError> {
+                    let selector = Selector::parse("span.h2")?;
+                    let title = e
+                        .select(&selector)
+                        .next()
+                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .text()
+                        .collect::<Vec<_>>()
+                        .first()
+                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .to_string(); // "A - Problem"
+                    let _code = title
+                        .split(' ')
+                        .next()
+                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .to_string();
+                    todo!()
+                    // Ok(Problem { title, code })
+                })
+                .collect::<Result<Vec<_>, DetailError>>()?;
+            Ok(res)
         }()
         .map_err(ServiceError::InitFailed)
     }
