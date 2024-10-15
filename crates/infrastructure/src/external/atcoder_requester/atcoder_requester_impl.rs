@@ -46,20 +46,25 @@ struct AtcoderLoginRequest {
     csrf_token: String,
 }
 
+const DOWNLOAD: bool = false;
+
+impl AtcoderRequesterImpl {
+    fn download_testing_html(&self, url: String, path: &str) -> Result<(), DetailError> {
+        if DOWNLOAD {
+            let body = self.client.get(url).send()?.text()?;
+            let mut file = std::fs::File::create(path).unwrap();
+            file.write_all(body.as_bytes()).unwrap();
+        }
+        Ok(())
+    }
+}
+
 impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_home(&self) -> Result<Response, DetailError> {
-        // {
-        //     let body = self
-        //         .client
-        //         .get(BASE_URL.to_string() + HOME_URL)
-        //         .send()?
-        //         .text()?;
-        //     let current_dir = std::env::current_dir().unwrap();
-        //     eprintln!("current_dir = {:?}", current_dir);
-        //     let mut file =
-        //         std::fs::File::create("tests/responses/atcoder_get_home_logged_in.html").unwrap();
-        //     file.write_all(body.as_bytes()).unwrap();
-        // }
+        self.download_testing_html(
+            "https://atcoder.jp/home".to_string(),
+            "crates/infrastructure/tests/responses/atcoder_get_home_logged_in.html",
+        )?;
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError> {
@@ -78,38 +83,20 @@ impl AtcoderRequester for AtcoderRequesterImpl {
         todo!()
     }
     fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
-        {
-            let body = self
-                .client
-                .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
-                .send()?
-                .text()?;
-            let current_dir = std::env::current_dir().unwrap();
-            eprintln!("current_dir = {:?}", current_dir);
-            let mut file = std::fs::File::create(
-                "crates/infrastructure/tests/responses/atcoder_get_tasks_logged_in.html",
-            )
-            .unwrap();
-            file.write_all(body.as_bytes()).unwrap();
-        }
+        self.download_testing_html(
+            format!("https://atcoder.jp/contests/{}/tasks", contest_id),
+            "crates/infrastructure/tests/responses/atcoder_get_tasks_logged_in.html",
+        )?;
         Ok(self
             .client
             .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
             .send()?)
     }
     fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError> {
-        {
-            let url = BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print";
-            println!("url = {:?}", url);
-            let body = self.client.get(url).send()?.text()?;
-            let current_dir = std::env::current_dir().unwrap();
-            eprintln!("current_dir = {:?}", current_dir);
-            let mut file = std::fs::File::create(
-                "crates/infrastructure/tests/responses/atcoder_get_tasks_print_logged_in.html",
-            )
-            .unwrap();
-            file.write_all(body.as_bytes()).unwrap();
-        }
+        self.download_testing_html(
+            format!("https://atcoder.jp/contests/{}/tasks_print", contest_id),
+            "crates/infrastructure/tests/responses/atcoder_get_tasks_print_logged_in.html",
+        )?;
         Ok(self
             .client
             .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print")
