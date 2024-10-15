@@ -1,5 +1,5 @@
 use domain::error::Error;
-use usecases::service::{error::ServiceError, online_judge::OnlineJudge, Service};
+use usecases::{error::ServiceError, online_judge::OnlineJudge, service::Service};
 
 pub mod input;
 use input::LoginInput;
@@ -16,10 +16,10 @@ impl<E: Error + 'static> Controller<E> {
             service: Service::new(oj),
         }
     }
-    pub fn login<T: LoginInput>(&self, args: T) -> Result<(), Box<ServiceError<E>>> {
+    pub fn login<T: LoginInput>(&self, args: T) -> Result<(), ServiceError<E>> {
         self.service.login(args.username(), args.password())
     }
-    pub fn init<T: InitInput>(&self, args: T) -> Result<(), Box<ServiceError<E>>> {
+    pub fn init<T: InitInput>(&self, args: T) -> Result<(), ServiceError<E>> {
         self.service.init(args.contest_id())
     }
 }

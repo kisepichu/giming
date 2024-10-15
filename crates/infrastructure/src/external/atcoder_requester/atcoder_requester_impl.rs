@@ -1,7 +1,7 @@
 use reqwest::blocking::{Client, Response};
 use scraper::{Html, Selector};
 use serde::Serialize;
-use usecases::service::error::ServiceError;
+use usecases::error::ServiceError;
 
 use crate::error::DetailError;
 

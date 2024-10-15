@@ -1,9 +1,9 @@
 use crate::error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
-use usecases::service::{error::ServiceError, online_judge::OnlineJudge};
 
 use scraper::{Html, Selector};
+use usecases::{error::ServiceError, online_judge::OnlineJudge};
 
 pub struct Atcoder<R: AtcoderRequester> {
     requester: R,
@@ -37,11 +37,7 @@ impl<R: AtcoderRequester> Atcoder<R> {
 }
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
-    fn login(
-        &self,
-        username: String,
-        password: String,
-    ) -> Result<(), Box<ServiceError<DetailError>>> {
+    fn login(&self, username: String, password: String) -> Result<(), ServiceError<DetailError>> {
         (|| -> Result<(), DetailError> {
             let res = self.requester.login(&username, &password)?;
 
@@ -64,12 +60,12 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 Err(DetailError::UnexpectedResponse)
             }
         })()
-        .map_err(|e| Box::new(ServiceError::LoginFailed(e)))
+        .map_err(ServiceError::LoginFailed)
     }
-    fn get_contest(&self, _contest_id: String) -> Result<(), Box<ServiceError<DetailError>>> {
+    fn get_contest(&self, _contest_id: String) -> Result<(), ServiceError<DetailError>> {
         todo!()
     }
-    fn submit(&self, _solution_id: String) -> Result<(), Box<ServiceError<DetailError>>> {
+    fn submit(&self, _solution_id: String) -> Result<(), ServiceError<DetailError>> {
         todo!()
     }
 }
