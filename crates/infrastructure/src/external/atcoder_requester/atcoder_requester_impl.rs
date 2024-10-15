@@ -12,7 +12,6 @@ use super::AtcoderRequester;
 pub const BASE_URL: &str = "https://atcoder.jp";
 pub const LOGIN_URL: &str = "/login";
 pub const HOME_URL: &str = "/home";
-pub const TASKS_PRINT_URL: &str = "/tasks_print";
 
 pub struct AtcoderRequesterImpl {
     client: Client,
@@ -78,11 +77,11 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_contest(&self, _contest_id: &str) -> Result<Response, DetailError> {
         todo!()
     }
-    fn get_tasks_print(&self, _contest_id: &str) -> Result<Response, DetailError> {
+    fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
         {
             let body = self
                 .client
-                .get(BASE_URL.to_string() + TASKS_PRINT_URL)
+                .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
                 .send()?
                 .text()?;
             let current_dir = std::env::current_dir().unwrap();
@@ -93,7 +92,28 @@ impl AtcoderRequester for AtcoderRequesterImpl {
             .unwrap();
             file.write_all(body.as_bytes()).unwrap();
         }
-        todo!()
+        Ok(self
+            .client
+            .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
+            .send()?)
+    }
+    fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError> {
+        {
+            let url = BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print";
+            println!("url = {:?}", url);
+            let body = self.client.get(url).send()?.text()?;
+            let current_dir = std::env::current_dir().unwrap();
+            eprintln!("current_dir = {:?}", current_dir);
+            let mut file = std::fs::File::create(
+                "crates/infrastructure/tests/responses/atcoder_get_tasks_print_logged_in.html",
+            )
+            .unwrap();
+            file.write_all(body.as_bytes()).unwrap();
+        }
+        Ok(self
+            .client
+            .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print")
+            .send()?)
     }
     fn submit(
         &self,

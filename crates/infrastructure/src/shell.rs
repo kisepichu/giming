@@ -65,19 +65,19 @@ impl Shell {
         while let Some(r) = stdin_iter.next() {
             match ShellCommand::try_parse_from(once("").chain(r.unwrap().split_whitespace())) {
                 Ok(shell) => match shell.command {
-                    Command::Exit(exit_args) => {
-                        if exit_args.code == 0 {
+                    Command::Exit(args) => {
+                        if args.code == 0 {
                             println!("bye");
                         }
-                        return exit_args.code;
+                        return args.code;
                     }
-                    Command::Init(init_args) => {
-                        self.init(init_args).unwrap_or_else(|e| {
+                    Command::Init(args) => {
+                        self.init(args).unwrap_or_else(|e| {
                             eprintln!("{}", e.error_chain());
                         });
                     }
-                    Command::Login(login_args) => {
-                        self.login(&mut stdin_iter, login_args).unwrap_or_else(|e| {
+                    Command::Login(args) => {
+                        self.login(&mut stdin_iter, args).unwrap_or_else(|e| {
                             eprintln!("{}", e.error_chain());
                         });
                     }

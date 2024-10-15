@@ -8,7 +8,9 @@ enum AppError {
     Regex(regex::Error),
     Io(std::io::Error),
     Path,
+    #[allow(unused)]
     RegexNotFound,
+    Unknown,
 }
 
 impl std::fmt::Display for AppError {
@@ -18,6 +20,7 @@ impl std::fmt::Display for AppError {
             AppError::Io(e) => write!(f, "IO error: {}", e),
             AppError::Path => write!(f, "Path error"),
             AppError::RegexNotFound => write!(f, "Regex not found"),
+            AppError::Unknown => write!(f, "Unknown error"),
         }
     }
 }
@@ -57,13 +60,8 @@ fn replace_tokens(s: String) -> Result<String, AppError> {
     let mut result = s.clone();
     for m in r.find_iter(s.as_str()) {
         let matched = m.as_str();
-        if matched.len()
-            == re
-                .find(matched)
-                .ok_or(AppError::RegexNotFound)?
-                .as_str()
-                .len()
-        {
+        let find = re.find(matched);
+        if find.is_some() && matched.len() == find.ok_or(AppError::Unknown)?.as_str().len() {
             continue;
         }
         result = result.replace(matched, "SANITIZED");
@@ -72,6 +70,7 @@ fn replace_tokens(s: String) -> Result<String, AppError> {
 }
 
 fn process_file(path: &str) -> Result<(), AppError> {
+    println!("path: {:?}", path);
     let mut file = std::fs::File::open(path)?;
     let mut contents = String::new();
     file.read_to_string(&mut contents)?;
