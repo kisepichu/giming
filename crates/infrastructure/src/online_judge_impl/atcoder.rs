@@ -66,10 +66,31 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
     fn get_problems_summary(
         &self,
         contest_id: String,
-    ) -> Result<Vec<domain::entity::ProblemSummary>, ServiceError<DetailError>> {
+    ) -> Result<Vec<ProblemSummary>, ServiceError<DetailError>> {
         || -> Result<Vec<ProblemSummary>, DetailError> {
-            let _res = self.requester.get_tasks(&contest_id)?;
-            todo!()
+            let res = self.requester.get_tasks(&contest_id)?;
+
+            let text = res.text()?;
+            let html = Html::parse_document(&text);
+            let selector = Selector::parse("#main-container>div.row tbody>tr>td:first-child>a")?;
+            let elements = html.select(&selector);
+            elements
+                .map(|e| -> Result<ProblemSummary, DetailError> {
+                    let code = e.text().collect::<String>();
+                    let url = e
+                        .value()
+                        .attr("href")
+                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .to_string();
+                    let id = url
+                        .split('/')
+                        .last()
+                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .to_string();
+                    println!("code: {}, id: {}", code, id);
+                    Ok(ProblemSummary { id, code })
+                })
+                .collect::<Result<Vec<_>, DetailError>>()
         }()
         .map_err(ServiceError::InitFailed)
     }
@@ -77,6 +98,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         &self,
         contest_id: String,
     ) -> Result<Vec<Problem>, ServiceError<DetailError>> {
+        let summary = self.get_problems_summary(contest_id.clone())?;
         || -> Result<Vec<Problem>, DetailError> {
             let res = self.requester.get_tasks_print(&contest_id)?;
 
@@ -87,24 +109,35 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             let elements = html.select(&selector);
             let res = elements
                 .enumerate()
-                .map(|(_i, e)| -> Result<Problem, DetailError> {
-                    let selector = Selector::parse("span.h2")?;
-                    let title = e
-                        .select(&selector)
-                        .next()
-                        .ok_or(DetailError::ParsingElementNotFound)?
-                        .text()
-                        .collect::<Vec<_>>()
-                        .first()
-                        .ok_or(DetailError::ParsingElementNotFound)?
-                        .to_string(); // "A - Problem"
-                    let _code = title
-                        .split(' ')
-                        .next()
-                        .ok_or(DetailError::ParsingElementNotFound)?
-                        .to_string();
-                    todo!()
-                    // Ok(Problem { title, code })
+                .map(|(i, e)| -> Result<Problem, DetailError> {
+                    let _id = summary[i].id.clone();
+                    let title = {
+                        let selector = Selector::parse("span.h2")?;
+                        e.select(&selector)
+                            .next()
+                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .text()
+                            .collect::<Vec<_>>()
+                            .first()
+                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .to_string() // "A - Problem"
+                    };
+                    println!("title: {}", title);
+                    {
+                        let selector = Selector::parse(
+                            ":scope>div#task-statement>span>span.lang-en>div:first-of-type",
+                        )?;
+                        let statement = e
+                            .select(&selector)
+                            .next()
+                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .text()
+                            .collect::<Vec<_>>()
+                            .join("\n");
+                        println!("statement: {}", statement);
+                    }
+                    todo!();
+                    // Ok(Problem { title, code, id })
                 })
                 .collect::<Result<Vec<_>, DetailError>>()?;
             Ok(res)

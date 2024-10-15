@@ -24,7 +24,7 @@
 		gtag('js', new Date());
 		gtag('set', 'SANITIZED', {
 			
-				'login_status': 'logged_out',
+				'login_status': 'logged_in',
 			
 		});
 		gtag('config', 'G-RC512FD18N');
@@ -58,7 +58,7 @@
 	<script src="//img.atcoder.jp/public/fec04c8/js/cdn/moment_js-ja.js"></script>
 	<script>
 		var LANG = "en";
-		var SANITIZED = "";
+		var SANITIZED = "kisepichu";
 		var csrfToken = "SANITIZED"
 	</script>
 	<script src="//img.atcoder.jp/public/fec04c8/js/utils.js"></script>
@@ -151,8 +151,24 @@
 					</li>
 					
 					
-						<li><a href="/register?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc375%SANITIZED">Sign Up</a></li>
-						<li><a href="/login?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc375%SANITIZED">Sign In</a></li>
+						<li class="dropdown">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+								<span class="glyphicon glyphicon-cog" aria-hidden="true"></span> kisepichu (Guest) <span class="caret"></span>
+							</a>
+							<ul class="dropdown-menu">
+								<li><a href="/users/kisepichu"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> My Profile</a></li>
+								<li class="divider"></li>
+								<li><a href="/settings"><span class="glyphicon glyphicon-wrench" aria-hidden="true"></span> General Settings</a></li>
+								<li><a href="/settings/icon"><span class="glyphicon glyphicon-picture" aria-hidden="true"></span> Change Photo</a></li>
+								<li><a href="/settings/password"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span> Change Password</a></li>
+								<li><a href="/settings/fav"><span class="glyphicon glyphicon-star" aria-hidden="true"></span> Manage Fav</a></li>
+								
+								
+								
+								<li class="divider"></li>
+								<li><a href="javascript:void(form_logout.submit())"><span class="glyphicon glyphicon-log-out" aria-hidden="true"></span> Sign Out</a></li>
+							</ul>
+						</li>
 					
 				</ul>
 			</div>
@@ -160,7 +176,7 @@
 	</nav>
 
 	<form method="POST" name="form_logout" action="/logout?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc375%SANITIZED">
-		<input type="hidden" name="csrf_token" value="SANITIZED" />
+		<input type="hidden" name="csrf_token" value="SANITIZED/xr&#43;SANITIZED" />
 	</form>
 	<div id="main-container" class="container"
 		 	style="">
