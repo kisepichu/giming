@@ -66,3 +66,5 @@ impl PartialEq for DetailError {
         format!("{:?}", self) == format!("{:?}", other)
     }
 }
+
+impl Eq for DetailError {}

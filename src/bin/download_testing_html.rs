@@ -10,7 +10,7 @@ fn main() {
     //     let current_dir = std::env::current_dir().unwrap();
     //     eprintln!("current_dir = {:?}", current_dir);
     //     let mut file =
-    //         std::fs::File::create("tests/responses/atcoder_get_home_logged_in.html").unwrap();
+    //         std::fs::File::create("tests/external/atcoder_get_home_logged_in.html").unwrap();
     //     file.write_all(body.as_bytes()).unwrap();
     // }
 
@@ -22,7 +22,7 @@ fn main() {
         .text()
         .unwrap();
     let mut file = std::fs::File::create(
-        "crates/infrastructure/tests/responses/atcoder_get_tasks_not_started.html",
+        "crates/infrastructure/tests/external/atcoder_get_tasks_not_started.html",
     )
     .unwrap();
     file.write_all(body.as_bytes()).unwrap();

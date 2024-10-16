@@ -63,7 +63,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_home(&self) -> Result<Response, DetailError> {
         self.download_testing_html(
             "https://atcoder.jp/home".to_string(),
-            "crates/infrastructure/tests/responses/atcoder_get_home_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_home_logged_in.html",
         )?;
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
@@ -85,7 +85,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks", contest_id),
-            "crates/infrastructure/tests/responses/atcoder_get_tasks_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_tasks_logged_in.html",
         )?;
         Ok(self
             .client
@@ -95,7 +95,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks_print", contest_id),
-            "crates/infrastructure/tests/responses/atcoder_get_tasks_print_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_tasks_print_logged_in.html",
         )?;
         Ok(self
             .client

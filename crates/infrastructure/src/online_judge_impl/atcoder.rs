@@ -325,21 +325,41 @@ mod tests {
     use super::*;
 
     #[rstest::rstest(path, expected,
-        case("tests/responses/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
-        case("tests/responses/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound("whoami href"))),
+        case("tests/external/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
+        case("tests/external/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound("whoami href"))),
     )]
     fn test_whoami(path: &str, expected: Result<String, DetailError>) -> Result<(), String> {
-        let requester = MockAtcoderRequester::new();
-        let mut atcoder = Atcoder::new(requester);
-
         let body = std::fs::read_to_string(path).unwrap();
-        atcoder
-            .requester
+        let mut requester = MockAtcoderRequester::new();
+        requester
             .expect_get_home()
             .times(1)
             .returning(move || Ok(Response::from(http::response::Response::new(body.clone()))));
 
+        let atcoder = Atcoder::new(requester);
         let result = atcoder.whoami();
+        assert_eq!(result, expected);
+        Ok(())
+    }
+    #[rstest::rstest(path, args_contest_id, expected,
+        case("tests/external/atcoder_get_tasks_logged_in.sanitized.html",
+        "abc375",
+        include!("../../tests/online_judge_impl/atcoder_get_problems_summary_abc375_logged_in.txt"))
+    )]
+    fn test_get_problems_summary(
+        path: &str,
+        args_contest_id: &str,
+        expected: Result<Vec<ProblemSummary>, ServiceError<DetailError>>,
+    ) -> Result<(), String> {
+        let body = std::fs::read_to_string(path).unwrap();
+        let mut requester = MockAtcoderRequester::new();
+        requester
+            .expect_get_tasks()
+            .times(1)
+            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+
+        let atcoder = Atcoder::new(requester);
+        let result = atcoder.get_problems_summary(args_contest_id.to_string());
         assert_eq!(result, expected);
         Ok(())
     }
