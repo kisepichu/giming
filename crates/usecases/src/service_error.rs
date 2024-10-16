@@ -1,6 +1,6 @@
 use domain::error::Error;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ServiceError<E: Error + 'static> {
     InstantiateFailed(E),
     InitFailed(E),

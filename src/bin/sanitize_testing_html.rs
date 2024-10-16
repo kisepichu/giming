@@ -96,7 +96,7 @@ fn process_dir(dir: &str) -> Result<(), AppError> {
 }
 
 fn main() {
-    let res = process_dir("crates/infrastructure/tests/responses");
+    let res = process_dir("crates/infrastructure/tests/external");
     if let Err(e) = res {
         println!("{:?}", e);
         let mut source = e.source();
