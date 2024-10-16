@@ -4,9 +4,9 @@ use std::{
 };
 
 use rpassword::read_password;
-use usecases::error::ServiceError;
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 use super::{commands::LoginCommand, Shell};
 

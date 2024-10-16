@@ -1,6 +1,6 @@
 use domain::error::Error;
 
-use crate::error::ServiceError;
+use crate::service_error::ServiceError;
 
 use super::Service;
 
@@ -14,7 +14,7 @@ impl<E: Error + 'static> Service<E> {
 mod tests {
     use domain::error::DummyDetailError;
 
-    use crate::{error::ServiceError, online_judge::MockOnlineJudge, service::Service};
+    use crate::{online_judge::MockOnlineJudge, service::Service, service_error::ServiceError};
 
     #[test]
     fn test_login() -> Result<(), String> {

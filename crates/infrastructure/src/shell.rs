@@ -5,11 +5,11 @@ use domain::error::Error;
 use interfaces::controller::Controller;
 
 use clap::Parser;
-use usecases::error::ServiceError;
 use usecases::online_judge::OnlineJudge;
+use usecases::service_error::ServiceError;
 
 use crate::config::Config;
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::AtcoderRequesterImpl;
 use crate::online_judge_impl::atcoder::Atcoder;
 

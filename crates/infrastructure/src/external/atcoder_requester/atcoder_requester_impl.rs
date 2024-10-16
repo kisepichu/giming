@@ -3,9 +3,9 @@ use std::io::Write;
 use reqwest::blocking::{Client, Response};
 use scraper::{Html, Selector};
 use serde::Serialize;
-use usecases::error::ServiceError;
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 use super::AtcoderRequester;
 

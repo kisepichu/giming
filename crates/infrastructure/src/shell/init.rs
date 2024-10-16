@@ -1,6 +1,6 @@
-use usecases::error::ServiceError;
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 use super::{commands::InitCommand, Shell};
 

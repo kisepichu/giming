@@ -1,5 +1,5 @@
 use domain::error::Error;
-use usecases::{error::ServiceError, online_judge::OnlineJudge, service::Service};
+use usecases::{online_judge::OnlineJudge, service::Service, service_error::ServiceError};
 
 pub mod input;
 use input::LoginInput;

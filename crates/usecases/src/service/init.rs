@@ -1,6 +1,6 @@
 use domain::error::Error;
 
-use crate::error::ServiceError;
+use crate::service_error::ServiceError;
 
 use super::Service;
 

@@ -1,10 +1,10 @@
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
 
 use domain::entity::{Problem, ProblemSummary, Sample};
 use scraper::{ElementRef, Html, Selector};
-use usecases::{error::ServiceError, online_judge::OnlineJudge};
+use usecases::{online_judge::OnlineJudge, service_error::ServiceError};
 
 pub struct Atcoder<R: AtcoderRequester> {
     requester: R,
@@ -157,18 +157,16 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                             .first()
                             .ok_or(DetailError::Parsing("get_problems_detail limits_str"))?;
 
-                        let re = Regex::new(
-                            r"Time Limit: (\d+)(?:\s*(ms|sec)) / Memory Limit: (\d+)\s*MB",
-                        )
-                        .map_err(|_| DetailError::Internal("get_problems_detail regex error"))?;
+                        let re = Regex::new(r"Time Limit: ([\d\.]+)(?:\s*(ms|sec)) / Memory Limit: (\d+)\s*MB")
+                            .map_err(|_| DetailError::Internal("get_problems_detail regex error"))?;
 
                         if let Some(captures) = re.captures(limits_str) {
-                            let time_value: usize = captures[1]
+                            let time_value: f64 = captures[1]
                                 .parse()
                                 .map_err(|_| DetailError::Parsing("get_problems_detail time_value"))?;
                             let time_limit = match &captures[2] {
-                                "ms" => time_value,
-                                _ => time_value * 1000,
+                                "ms" => time_value as usize,
+                                _ => (time_value * 1000.) as usize,
                             };
 
                             let memory_limit: usize = captures[3]
@@ -262,6 +260,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                                 .collect::<Vec<_>>()
                                 .join("\n");
                         }
+                        println!("input_format: {}", input_format);
 
                         loop {
                             task_e = match next_div(task_e, |_| true) {
