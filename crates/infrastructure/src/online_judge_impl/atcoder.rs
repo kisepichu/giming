@@ -40,16 +40,15 @@ impl<R: AtcoderRequester> Atcoder<R> {
 use regex::Regex;
 
 fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef> {
-    let mut e = element;
-    while let Some(node) = e.next_sibling() {
+    let mut node = element.next_sibling()?;
+    loop {
         if let Some(ne) = ElementRef::wrap(node) {
             if ne.value().name() == "div" && f(ne) {
                 return Some(ne);
             }
-            e = ne;
         }
+        node = node.next_sibling()?;
     }
-    None
 }
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
@@ -176,6 +175,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                                 .parse()
                                 .map_err(|_| DetailError::Parsing("get_problems_detail memory_limit"))?;
 
+                            println!("time_limit: {}, memory_limit: {}", time_limit, memory_limit);
                             Ok((time_limit, memory_limit))
                         } else {
                             Err(DetailError::Parsing(
@@ -208,7 +208,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                             .next()
                             .ok_or(DetailError::ParsingElementNotFound("get_problems_detail task_e point"))?;
                         {
-                            let selector = Selector::parse("span.katex")?;
+                            let selector = Selector::parse(":scope>var")?;
                             let point_string = task_e
                                 .select(&selector)
                                 .next()
@@ -218,6 +218,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                                 .join("");
                             point = point_string.parse().map_err(|_| DetailError::Parsing("get_problems_detail point"))?;
                         }
+                        println!("point: {}", point);
 
                         // let next_div = |element: ElementRef,
                         //                 f: fn(ElementRef) -> bool|
@@ -235,7 +236,9 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                         // };
 
                         task_e = next_div(task_e, |_| true).ok_or(DetailError::Parsing("get_problems_detail task_e statement"))?;
+                        println!("statement"); 
                         statement = task_e.text().collect::<Vec<_>>().join("\n");
+                        println!("statement:\n{}", statement); 
 
                         task_e = next_div(task_e, |_| true).ok_or(DetailError::Parsing("get_problems_detail task_e constraints"))?;
                         {
@@ -283,6 +286,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                                 .collect::<Vec<_>>()
                                 .join("");
 
+                            println!("input:\n{}\noutput:\n{}", sample_input.clone(), sample_output.clone());
                             samples.push(Sample {
                                 input: sample_input,
                                 output: sample_output,
