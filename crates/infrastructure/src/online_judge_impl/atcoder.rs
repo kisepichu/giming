@@ -2,8 +2,8 @@ use crate::error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
 
-use domain::entity::{Problem, ProblemSummary};
-use scraper::{Html, Selector};
+use domain::entity::{Problem, ProblemSummary, Sample};
+use scraper::{ElementRef, Html, Selector};
 use usecases::{error::ServiceError, online_judge::OnlineJudge};
 
 pub struct Atcoder<R: AtcoderRequester> {
@@ -23,18 +23,33 @@ impl<R: AtcoderRequester> Atcoder<R> {
         let href = html
             .select(&selector)
             .next()
-            .ok_or(DetailError::ParsingElementNotFound)?
+            .ok_or(DetailError::ParsingElementNotFound("whoami href"))?
             .value()
             .attr("href")
-            .ok_or(DetailError::ParsingElementNotFound)?
+            .ok_or(DetailError::ParsingElementNotFound("whoami href attr"))?
             .to_string();
         let username = href
             .split('/')
             .last()
-            .ok_or(DetailError::ParsingError)?
+            .ok_or(DetailError::Parsing("username"))?
             .to_string();
         Ok(username)
     }
+}
+
+use regex::Regex;
+
+fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef> {
+    let mut e = element;
+    while let Some(node) = e.next_sibling() {
+        if let Some(ne) = ElementRef::wrap(node) {
+            if ne.value().name() == "div" && f(ne) {
+                return Some(ne);
+            }
+            e = ne;
+        }
+    }
+    None
 }
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
@@ -80,12 +95,16 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                     let url = e
                         .value()
                         .attr("href")
-                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .ok_or(DetailError::ParsingElementNotFound(
+                            "get_problems_summary url",
+                        ))?
                         .to_string();
                     let id = url
                         .split('/')
                         .last()
-                        .ok_or(DetailError::ParsingElementNotFound)?
+                        .ok_or(DetailError::ParsingElementNotFound(
+                            "get_problems_summary id",
+                        ))?
                         .to_string();
                     println!("code: {}, id: {}", code, id);
                     Ok(ProblemSummary { id, code })
@@ -110,34 +129,178 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             let res = elements
                 .enumerate()
                 .map(|(i, e)| -> Result<Problem, DetailError> {
-                    let _id = summary[i].id.clone();
                     let title = {
-                        let selector = Selector::parse("span.h2")?;
+                        let selector = Selector::parse(":scope>span.h2")?;
                         e.select(&selector)
                             .next()
-                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .ok_or(DetailError::ParsingElementNotFound(
+                                "get_problems_detail title",
+                            ))?
                             .text()
                             .collect::<Vec<_>>()
                             .first()
-                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .ok_or(DetailError::ParsingElementNotFound(
+                                "get_problems_detail title first",
+                            ))?
                             .to_string() // "A - Problem"
                     };
                     println!("title: {}", title);
-                    {
-                        let selector = Selector::parse(
-                            ":scope>div#task-statement>span>span.lang-en>div:first-of-type",
-                        )?;
-                        let statement = e
+
+                    let (time_limit, memory_limit) = {
+                        let selector = Selector::parse(":scope>p")?;
+                        let limits_vec = e
                             .select(&selector)
                             .next()
-                            .ok_or(DetailError::ParsingElementNotFound)?
+                            .ok_or(DetailError::ParsingElementNotFound("get_problems_detail limits_vec"))?
                             .text()
-                            .collect::<Vec<_>>()
-                            .join("\n");
-                        println!("statement: {}", statement);
+                            .collect::<Vec<_>>();
+                        let limits_str = limits_vec
+                            .first()
+                            .ok_or(DetailError::Parsing("get_problems_detail limits_str"))?;
+
+                        let re = Regex::new(
+                            r"Time Limit: (\d+)(?:\s*(ms|sec)) / Memory Limit: (\d+)\s*MB",
+                        )
+                        .map_err(|_| DetailError::Internal("get_problems_detail regex error"))?;
+
+                        if let Some(captures) = re.captures(limits_str) {
+                            let time_value: usize = captures[1]
+                                .parse()
+                                .map_err(|_| DetailError::Parsing("get_problems_detail time_value"))?;
+                            let time_limit = match &captures[2] {
+                                "ms" => time_value,
+                                _ => time_value * 1000,
+                            };
+
+                            let memory_limit: usize = captures[3]
+                                .parse()
+                                .map_err(|_| DetailError::Parsing("get_problems_detail memory_limit"))?;
+
+                            Ok((time_limit, memory_limit))
+                        } else {
+                            Err(DetailError::Parsing(
+                                "get_problems_detail time_limit line not found or unexpected format",
+                            ))
+                        }
+                    }?;
+
+                    let point: usize;
+                    let statement: String;
+                    let constraints: Vec<String>;
+                    let input_format: String;
+                    let mut samples: Vec<Sample> = Vec::new();
+                    {
+                        // {
+                        //     let test = |s: &str| -> Option<ElementRef> {
+                        //         let selector = Selector::parse(s).unwrap();
+                        //         e.select(&selector).next()
+                        //     };
+                        //     test(":scope>div").unwrap();
+                        //     test(":scope>div#task-statement").unwrap();
+                        //     test(":scope>div#task-statement>span").unwrap();
+                        //     test(":scope>div#task-statement>span>span.lang-en").unwrap();
+                        //     test(":scope>div#task-statement>span>span.lang-en>p").unwrap();
+                        // }
+                        let selector =
+                            Selector::parse(":scope>div#task-statement>span>span.lang-en>p")?;
+                        let mut task_e = e
+                            .select(&selector)
+                            .next()
+                            .ok_or(DetailError::ParsingElementNotFound("get_problems_detail task_e point"))?;
+                        {
+                            let selector = Selector::parse("span.katex")?;
+                            let point_string = task_e
+                                .select(&selector)
+                                .next()
+                                .ok_or(DetailError::ParsingElementNotFound("get_problems_detail point_string"))?
+                                .text()
+                                .collect::<Vec<_>>()
+                                .join("");
+                            point = point_string.parse().map_err(|_| DetailError::Parsing("get_problems_detail point"))?;
+                        }
+
+                        // let next_div = |element: ElementRef,
+                        //                 f: fn(ElementRef) -> bool|
+                        //  -> Option<ElementRef> {
+                        //     let mut e = element;
+                        //     while let Some(node) = e.next_sibling() {
+                        //         if let Some(ne) = ElementRef::wrap(node) {
+                        //             if ne.value().name() == "div" && f(ne) {
+                        //                 return Some(ne);
+                        //             }
+                        //             e = ne;
+                        //         }
+                        //     }
+                        //     None
+                        // };
+
+                        task_e = next_div(task_e, |_| true).ok_or(DetailError::Parsing("get_problems_detail task_e statement"))?;
+                        statement = task_e.text().collect::<Vec<_>>().join("\n");
+
+                        task_e = next_div(task_e, |_| true).ok_or(DetailError::Parsing("get_problems_detail task_e constraints"))?;
+                        {
+                            let selector = Selector::parse(":scope ul>li")?;
+                            constraints = task_e
+                                .select(&selector)
+                                .map(|e| e.text().collect())
+                                .collect();
+                        }
+                        println!("constraints: {:?}", constraints);
+
+                        task_e = next_div(task_e, |e| e.value().attr("class") == Some("io-style"))
+                            .ok_or(DetailError::Parsing("get_problems_detail task_e input_format"))?;
+                        {
+                            let selector = Selector::parse(":scope>div:first-child pre")?;
+                            input_format = task_e
+                                .select(&selector)
+                                .next()
+                                .ok_or(DetailError::ParsingElementNotFound("get_problems_detail input_format"))?
+                                .text()
+                                .collect::<Vec<_>>()
+                                .join("\n");
+                        }
+
+                        loop {
+                            task_e = match next_div(task_e, |_| true) {
+                                Some(e) => e,
+                                None => break,
+                            };
+                            let selector = Selector::parse(":scope>section>pre")?;
+                            let sample_input = task_e
+                                .select(&selector)
+                                .next()
+                                .ok_or(DetailError::ParsingElementNotFound("get_problems_detail sample_input"))?
+                                .text()
+                                .collect::<Vec<_>>()
+                                .join("");
+
+                            task_e = next_div(task_e, |_| true).ok_or(DetailError::Parsing("get_problems_detail task_e sample_output"))?;
+                            let sample_output = task_e
+                                .select(&selector)
+                                .next()
+                                .ok_or(DetailError::ParsingElementNotFound("get_problems_detail sample_output"))?
+                                .text()
+                                .collect::<Vec<_>>()
+                                .join("");
+
+                            samples.push(Sample {
+                                input: sample_input,
+                                output: sample_output,
+                            });
+                        }
                     }
-                    todo!();
-                    // Ok(Problem { title, code, id })
+                    Ok(Problem {
+                        title,
+                        id: summary[i].id.clone(),
+                        code: summary[i].code.clone(),
+                        statement,
+                        constraints,
+                        input_format,
+                        samples,
+                        point,
+                        time_limit,
+                        memory_limit,
+                    })
                 })
                 .collect::<Result<Vec<_>, DetailError>>()?;
             Ok(res)
@@ -160,7 +323,7 @@ mod tests {
 
     #[rstest::rstest(path, expected,
         case("tests/responses/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
-        case("tests/responses/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound)),
+        case("tests/responses/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound("whoami href"))),
     )]
     fn test_whoami(path: &str, expected: Result<String, DetailError>) -> Result<(), String> {
         let requester = MockAtcoderRequester::new();

@@ -28,10 +28,10 @@ impl AtcoderRequesterImpl {
             let csrf_token = html
                 .select(&selector)
                 .next()
-                .ok_or(DetailError::ParsingElementNotFound)?
+                .ok_or(DetailError::ParsingElementNotFound("new csrf_token"))?
                 .value()
                 .attr("value")
-                .ok_or(DetailError::ParsingElementNotFound)?
+                .ok_or(DetailError::ParsingElementNotFound("new csrf_token attr"))?
                 .to_string();
             Ok(Self { client, csrf_token })
         }()
