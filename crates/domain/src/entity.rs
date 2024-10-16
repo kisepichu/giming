@@ -3,10 +3,11 @@ pub struct Problem {
     pub code: String,
     pub title: String,
     pub statement: String,
+    pub constraints: Vec<String>,
+    pub input_format: String,
     pub samples: Vec<Sample>,
 
     pub point: usize,
-    pub constraints: Vec<String>,
     pub time_limit: usize,
     pub memory_limit: usize,
 }

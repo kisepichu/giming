@@ -10,8 +10,9 @@ pub enum DetailError {
     Reqwest(reqwest::Error),
     Scraper(scraper::error::SelectorErrorKind<'static>),
     Confy(confy::ConfyError),
-    ParsingElementNotFound,
-    ParsingError,
+    ParsingElementNotFound(&'static str),
+    Parsing(&'static str),
+    Internal(&'static str),
     Unknown(anyhow::Error),
 }
 
@@ -28,8 +29,9 @@ impl fmt::Display for DetailError {
             DetailError::Reqwest(err) => writeln!(f, "reqwest error: {}", err),
             DetailError::Scraper(err) => writeln!(f, "scraper error: {}", err),
             DetailError::Confy(err) => writeln!(f, "confy error: {}", err),
-            DetailError::ParsingElementNotFound => writeln!(f, "element not found"),
-            DetailError::ParsingError => writeln!(f, "parsing error"),
+            DetailError::ParsingElementNotFound(s) => writeln!(f, "element not found: {}", s),
+            DetailError::Parsing(s) => writeln!(f, "parsing error: {}", s),
+            DetailError::Internal(s) => writeln!(f, "internal error: {}", s),
             DetailError::Unknown(err) => writeln!(f, "unknown error: {}", err),
         }
     }
