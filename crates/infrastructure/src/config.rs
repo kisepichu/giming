@@ -1,8 +1,8 @@
 use confy;
 use serde::{Deserialize, Serialize};
-use usecases::error::ServiceError;
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]

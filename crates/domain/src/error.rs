@@ -2,6 +2,13 @@ pub trait Error: std::error::Error {
     fn error_chain(&self) -> String;
 }
 
+#[derive(Debug)]
+pub struct DummyDetailError;
+
+pub trait ResultChain<T, E: Error> {
+    fn unwrap_chain(self) -> T;
+}
+
 impl<E: std::error::Error> Error for E {
     fn error_chain(&self) -> String {
         let mut res = String::new();
@@ -14,9 +21,6 @@ impl<E: std::error::Error> Error for E {
         res
     }
 }
-
-#[derive(Debug)]
-pub struct DummyDetailError;
 
 impl Default for DummyDetailError {
     fn default() -> Self {
@@ -37,11 +41,6 @@ impl std::fmt::Display for DummyDetailError {
 }
 
 impl std::error::Error for DummyDetailError {}
-
-// custom Result implements unwrap_chain() to print error chain
-pub trait ResultChain<T, E: Error> {
-    fn unwrap_chain(self) -> T;
-}
 
 impl<T, E: Error> ResultChain<T, E> for Result<T, E> {
     fn unwrap_chain(self) -> T {
