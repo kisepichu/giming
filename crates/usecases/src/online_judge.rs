@@ -7,6 +7,7 @@ use crate::service_error::ServiceError;
 
 #[mockall::automock]
 pub trait OnlineJudge<E: Error + 'static> {
+    fn whoami(&self) -> Result<String, ServiceError<E>>;
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<E>>;
     fn get_problems_summary(
         &self,

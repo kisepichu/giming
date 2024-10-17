@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 
-use interfaces::controller::input::{ExitInput, InitInput, LoginInput};
+use interfaces::controller::input::{ExitInput, InitInput, LoginInput, WhoamiInput};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
@@ -33,13 +33,16 @@ impl ExitInput for ExitCommand {
 }
 
 #[derive(Parser, Debug)]
+pub struct WhoamiCommand {}
+
+impl WhoamiInput for WhoamiCommand {}
+
+#[derive(Parser, Debug)]
 pub struct LoginCommand {
     #[clap(default_value = "")]
     pub username: String,
     #[clap(default_value = "")]
     pub password: String,
-    #[clap(default_value = "atcoder")]
-    pub online_judge: String,
 }
 
 impl LoginInput for LoginCommand {
@@ -73,6 +76,8 @@ pub enum Command {
     /// `ATCODER_USERNAME` and `ATCODER_PASSWORD` for AtCoder
     #[clap(visible_aliases = ["l"])]
     Login(LoginCommand),
+    /// Show the username of the online judge
+    Whoami(WhoamiCommand),
     /// Initialize the directory structure for the contest
     #[clap(visible_aliases = ["i"])]
     Init(InitCommand),
