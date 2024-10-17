@@ -1,0 +1,16 @@
+[package]
+name = "abc375"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies] 
+proconio = { version = "0.5.0", features = ["derive"] }
+
+[[bin]]
+name = "abc375-a"
+path = "src/bin/a.rs"
+
+[[bin]]
+name = "abc375-b"
+path = "src/bin/b.rs"
+

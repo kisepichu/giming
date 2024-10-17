@@ -28,6 +28,6 @@ path = "src/bin/download_testing_html.rs"
 
 [workspace]
 members = [
-  "crates/domain", "crates/infrastructure", "crates/interfaces", "crates/usecases",
+  "crates/domain", "crates/infrastructure", "crates/interfaces", "crates/usecases", "solutions/abc375",
 ]
 resolver = "2"

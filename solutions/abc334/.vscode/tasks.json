@@ -9,7 +9,7 @@
   },
   "tasks": [
     {
-      "label": "ac-rs shell",
+      "label": "giming shell",
       "type": "shell",
       "group": {
         "kind": "build",
