@@ -27,24 +27,27 @@ fn to_contest_id(contest_id_or_url: String) -> String {
     }
 }
 
-// current と同じだった場合や、判定できなかった場合に None を返す todo 分ける
 fn oj_from_contest_id(
     _contest_id: &str,
     current: &str,
-) -> Option<Box<dyn OnlineJudge<DetailError>>> {
+) -> Result<Box<dyn OnlineJudge<DetailError>>, String> {
     // todo
     if current == "AtCoder" {
-        return None;
+        return Err("same online judge".to_string());
     }
     let atcoder_requester = match AtcoderRequesterImpl::new() {
         Ok(r) => r,
         Err(e) => {
             eprintln!("{}", e.error_chain());
-            return None;
+            return Err("oj_from_contest_id failed: AtcoderRequesterImpl::new()".to_string());
         }
     };
     let atcoder = Atcoder::new(atcoder_requester);
-    Some(Box::new(atcoder))
+    Ok(Box::new(atcoder))
+    // Err(format!(
+    //     "cannot determine the type of online judge for {}",
+    //     contest_id,
+    // ))
 }
 
 pub struct Shell {
@@ -55,12 +58,12 @@ pub struct Shell {
 impl Shell {
     pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<DetailError>> {
         let contest_id = to_contest_id(cli.contest.clone());
-        let oj = oj_from_contest_id(&contest_id, "").ok_or(ServiceError::InstantiateFailed(
-            DetailError::Custom(format!(
-                "cannot determine the type of online judge for {}",
-                contest_id,
-            )),
-        ))?;
+        let oj = match oj_from_contest_id(&contest_id, "") {
+            Ok(o) => o,
+            Err(e) => {
+                return Err(ServiceError::InstantiateFailed(DetailError::Custom(e)));
+            }
+        };
         Ok(Self {
             controller: Controller::new(oj, contest_id),
             prompt: cfg.prompt,
