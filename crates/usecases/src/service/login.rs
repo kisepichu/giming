@@ -28,7 +28,7 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
-            let service = Service::new(Box::new(online_judge));
+            let service = Service::new(Box::new(online_judge), "abc375".to_string());
 
             let username = "user".to_string();
             let password = "pass".to_string();
@@ -52,7 +52,7 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
-            let service = Service::new(Box::new(online_judge));
+            let service = Service::new(Box::new(online_judge), "abc375".to_string());
 
             let username = "user".to_string();
             let password = "pass".to_string();

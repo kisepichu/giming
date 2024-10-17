@@ -12,6 +12,10 @@ impl Shell {
                 return;
             }
         };
-        println!("username: {}", username);
+        println!(
+            "username for {} is {}",
+            self.controller.online_judge_name(),
+            username
+        );
     }
 }

@@ -10,7 +10,7 @@ fn main() {
 
     let cli = Cli::parse();
 
-    let shell = Shell::new(&cli, cfg).unwrap_chain();
+    let mut shell = Shell::new(&cli, cfg).unwrap_chain();
 
     std::process::exit(shell.run());
 }

@@ -14,14 +14,22 @@ pub struct InitArgs {
 
 pub struct Service<E: Error + 'static> {
     online_judge: Box<dyn OnlineJudge<E>>,
+    contest_id: String,
     _phantom: PhantomData<E>,
 }
 
 impl<E: Error + 'static> Service<E> {
-    pub fn new(oj: Box<dyn OnlineJudge<E>>) -> Self {
+    pub fn new(oj: Box<dyn OnlineJudge<E>>, contest_id: String) -> Self {
         Self {
             online_judge: oj,
+            contest_id,
             _phantom: PhantomData,
         }
+    }
+    pub fn online_judge_name(&self) -> &str {
+        self.online_judge.name()
+    }
+    pub fn contest_id(&self) -> String {
+        self.contest_id.clone()
     }
 }

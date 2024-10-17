@@ -79,6 +79,6 @@ pub enum Command {
     /// Show the username of the online judge
     Whoami(WhoamiCommand),
     /// Initialize the directory structure for the contest
-    #[clap(visible_aliases = ["i"])]
+    #[clap(visible_aliases = ["i", "switch"])]
     Init(InitCommand),
 }
