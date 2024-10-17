@@ -22,7 +22,7 @@ fn main() {
         .text()
         .unwrap();
     let mut file = std::fs::File::create(
-        "crates/infrastructure/tests/external/atcoder_get_tasks_not_started.html",
+        "crates/infrastructure/tests/external/atcoder_get_tasks_print_not_started.html",
     )
     .unwrap();
     file.write_all(body.as_bytes()).unwrap();

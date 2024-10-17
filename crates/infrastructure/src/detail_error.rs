@@ -2,11 +2,12 @@ use std::fmt;
 
 #[derive(Debug)]
 pub enum DetailError {
-    EnvVarNotFound(String),
+    EnvVarNotFound(&'static str),
     InvalidInput(String),
-    InvalidCredentials,
-    UnexpectedStatusCode(reqwest::StatusCode),
-    UnexpectedResponse,
+    InvalidCredentials(&'static str),
+    PermissionDenied(&'static str),
+    UnexpectedStatusCode(&'static str, reqwest::StatusCode),
+    UnexpectedResponse(&'static str),
     Reqwest(reqwest::Error),
     Scraper(scraper::error::SelectorErrorKind<'static>),
     Confy(confy::ConfyError),
@@ -21,11 +22,14 @@ impl fmt::Display for DetailError {
         match self {
             DetailError::EnvVarNotFound(v) => writeln!(f, "environment variable {} not found", v),
             DetailError::InvalidInput(v) => writeln!(f, "invalid input: {}", v),
-            DetailError::InvalidCredentials => writeln!(f, "invalid username or password"),
-            DetailError::UnexpectedStatusCode(status_code) => {
-                writeln!(f, "unexpected status code: {}", status_code)
+            DetailError::InvalidCredentials(s) => {
+                writeln!(f, "invalid username or password: {}", s)
             }
-            DetailError::UnexpectedResponse => writeln!(f, "unexpected response"),
+            DetailError::PermissionDenied(s) => writeln!(f, "permission denied: {}", s),
+            DetailError::UnexpectedStatusCode(s, status_code) => {
+                writeln!(f, "unexpected status code {}: {}", status_code, s)
+            }
+            DetailError::UnexpectedResponse(s) => writeln!(f, "unexpected response: {}", s),
             DetailError::Reqwest(err) => writeln!(f, "reqwest error: {}", err),
             DetailError::Scraper(err) => writeln!(f, "scraper error: {}", err),
             DetailError::Confy(err) => writeln!(f, "confy error: {}", err),

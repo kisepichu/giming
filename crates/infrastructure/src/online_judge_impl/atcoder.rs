@@ -67,12 +67,11 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 println!("login success(already signed in)");
                 Ok(())
             } else if text.contains("Username or Password is incorrect.") {
-                Err(DetailError::InvalidCredentials)
+                Err(DetailError::InvalidCredentials("atcoder login"))
             } else if !status.is_success() {
-                Err(DetailError::UnexpectedStatusCode(status))
+                Err(DetailError::UnexpectedStatusCode("atcoder login", status))
             } else {
-                eprint!("login failed: ");
-                Err(DetailError::UnexpectedResponse)
+                Err(DetailError::UnexpectedResponse("atcoder login"))
             }
         })()
         .map_err(ServiceError::LoginFailed)
@@ -84,7 +83,16 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         || -> Result<Vec<ProblemSummary>, DetailError> {
             let res = self.requester.get_tasks(&contest_id)?;
 
+            let status = res.status();
             let text = res.text()?;
+
+            if !status.is_success() {
+                if text.contains("Permission denied.") {
+                    return Err(DetailError::PermissionDenied("atcoder get_tasks"));
+                }
+                return Err(DetailError::UnexpectedStatusCode("atcoder get_tasks", status)) 
+            }
+
             let html = Html::parse_document(&text);
             let selector = Selector::parse("#main-container>div.row tbody>tr>td:first-child>a")?;
             let elements = html.select(&selector);
@@ -120,8 +128,16 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         || -> Result<Vec<Problem>, DetailError> {
             let res = self.requester.get_tasks_print(&contest_id)?;
 
-            let _status = res.status();
+            let status = res.status();
             let text = res.text()?;
+
+            if !status.is_success() {
+                if text.contains("Permission denied.") {
+                    return Err(DetailError::PermissionDenied("atcoder get_tasks_print"));
+                }
+                return Err(DetailError::UnexpectedStatusCode("atcoder get_tasks_print", status)) 
+            }
+
             let html = Html::parse_document(&text);
             let selector = Selector::parse("#main-container>.row>div:nth-of-type(odd)")?;
             let elements = html.select(&selector);
@@ -318,6 +334,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
 #[cfg(test)]
 mod tests {
 
+    use http::StatusCode;
     use reqwest::blocking::Response;
 
     use crate::external::atcoder_requester::MockAtcoderRequester;
@@ -341,51 +358,77 @@ mod tests {
         assert_eq!(result, expected);
         Ok(())
     }
-    #[rstest::rstest(path, args_contest_id, expected,
+    #[rstest::rstest(path, status, args_contest_id, expected,
         case("tests/external/atcoder_get_tasks_logged_in.sanitized.html",
-        "abc375",
-        include!("../../tests/online_judge_impl/atcoder_get_problems_summary_abc375_logged_in.txt"))
+            StatusCode::OK,
+            "abc375",
+            include!("../../tests/online_judge_impl/atcoder_get_problems_summary_abc375_logged_in.txt")),
+        case("tests/external/atcoder_get_tasks_not_started.sanitized.html",
+            StatusCode::NOT_FOUND,
+            "abc375",
+            Err(ServiceError::InitFailed(DetailError::PermissionDenied("atcoder get_tasks"))),)
     )]
     fn test_get_problems_summary(
         path: &str,
+        status: StatusCode,
         args_contest_id: &str,
         expected: Result<Vec<ProblemSummary>, ServiceError<DetailError>>,
     ) -> Result<(), String> {
         let body = std::fs::read_to_string(path).unwrap();
         let mut requester = MockAtcoderRequester::new();
+        let mut response = http::response::Response::new(body.clone());
+        *response.status_mut() = status;
         requester
             .expect_get_tasks()
             .times(1)
-            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+            .returning(move |_| Ok(Response::from(response.clone())));
 
         let atcoder = Atcoder::new(requester);
         let result = atcoder.get_problems_summary(args_contest_id.to_string());
         assert_eq!(result, expected);
         Ok(())
     }
-    #[rstest::rstest(get_tasks_path, get_tasks_print_path, args_contest_id, expected,
+
+    #[rstest::rstest(get_tasks_path, get_tasks_status, get_tasks_print_path, get_tasks_print_call, get_tasks_print_status, args_contest_id, expected,
         case("tests/external/atcoder_get_tasks_logged_in.sanitized.html",
-        "tests/external/atcoder_get_tasks_print_logged_in.sanitized.html",
-        "abc375",
-        include!("../../tests/online_judge_impl/atcoder_get_problems_detail_abc375_logged_in.txt"))
+            StatusCode::OK, 
+            "tests/external/atcoder_get_tasks_print_logged_in.sanitized.html",
+            1,
+            StatusCode::OK,
+            "abc375",
+            include!("../../tests/online_judge_impl/atcoder_get_problems_detail_abc375_logged_in.txt")),
+        case("tests/external/atcoder_get_tasks_not_started.sanitized.html",
+            StatusCode::NOT_FOUND,
+            "tests/external/atcoder_get_tasks_print_not_started.sanitized.html",
+            0,
+            StatusCode::NOT_FOUND,
+            "abc376",
+            Err(ServiceError::InitFailed(DetailError::PermissionDenied("atcoder get_tasks"))))
     )]
     fn test_get_problems_detail(
         get_tasks_path: &str,
+        get_tasks_status: StatusCode,
         get_tasks_print_path: &str,
+        get_tasks_print_call: usize,
+        get_tasks_print_status: StatusCode,
         args_contest_id: &str,
         expected: Result<Vec<Problem>, ServiceError<DetailError>>,
     ) -> Result<(), String> {
         let mut requester = MockAtcoderRequester::new();
         let body = std::fs::read_to_string(get_tasks_path).unwrap();
+        let mut response = http::response::Response::new(body.clone());
+        *response.status_mut() = get_tasks_status;
         requester
             .expect_get_tasks()
             .times(1)
-            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+            .returning(move |_| Ok(Response::from(response.clone())));
         let body = std::fs::read_to_string(get_tasks_print_path).unwrap();
+        let mut response = http::response::Response::new(body.clone());
+        *response.status_mut() = get_tasks_print_status;
         requester
             .expect_get_tasks_print()
-            .times(1)
-            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+            .times(get_tasks_print_call)
+            .returning(move |_| Ok(Response::from(response.clone())));
 
         let atcoder = Atcoder::new(requester);
         let result = atcoder.get_problems_detail(args_contest_id.to_string());
