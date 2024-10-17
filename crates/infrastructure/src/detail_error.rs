@@ -1,5 +1,7 @@
 use std::fmt;
 
+use domain::error::Error;
+
 #[derive(Debug)]
 pub enum DetailError {
     EnvVarNotFound(&'static str),
@@ -13,8 +15,8 @@ pub enum DetailError {
     Confy(confy::ConfyError),
     ParsingElementNotFound(&'static str),
     Parsing(&'static str),
-    Internal(&'static str),
-    Unknown(anyhow::Error),
+    Custom(&'static str),
+    Internal(&'static str, Box<dyn Error>),
 }
 
 impl fmt::Display for DetailError {
@@ -35,8 +37,8 @@ impl fmt::Display for DetailError {
             DetailError::Confy(err) => writeln!(f, "confy error: {}", err),
             DetailError::ParsingElementNotFound(s) => writeln!(f, "element not found: {}", s),
             DetailError::Parsing(s) => writeln!(f, "parsing error: {}", s),
-            DetailError::Internal(s) => writeln!(f, "internal error: {}", s),
-            DetailError::Unknown(err) => writeln!(f, "unknown error: {}", err),
+            DetailError::Custom(s) => writeln!(f, "{}", s),
+            DetailError::Internal(s, err) => writeln!(f, "in {}: \n  {}", s, err),
         }
     }
 }
@@ -54,12 +56,6 @@ impl From<scraper::error::SelectorErrorKind<'static>> for DetailError {
 impl From<confy::ConfyError> for DetailError {
     fn from(err: confy::ConfyError) -> Self {
         DetailError::Confy(err)
-    }
-}
-
-impl From<anyhow::Error> for DetailError {
-    fn from(err: anyhow::Error) -> Self {
-        DetailError::Unknown(err)
     }
 }
 

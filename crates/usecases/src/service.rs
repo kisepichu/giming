@@ -1,5 +1,6 @@
 mod init;
 mod login;
+mod whoami;
 
 use domain::error::Error;
 

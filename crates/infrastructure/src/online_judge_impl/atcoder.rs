@@ -15,26 +15,6 @@ impl<R: AtcoderRequester> Atcoder<R> {
         Self { requester }
     }
 
-    pub fn whoami(&self) -> Result<String, DetailError> {
-        let res = self.requester.get_home()?;
-        let text = res.text()?;
-        let html = Html::parse_document(&text);
-        let selector = Selector::parse("ul.navbar-right .dropdown:last-child ul li a")?;
-        let href = html
-            .select(&selector)
-            .next()
-            .ok_or(DetailError::ParsingElementNotFound("whoami href"))?
-            .value()
-            .attr("href")
-            .ok_or(DetailError::ParsingElementNotFound("whoami href attr"))?
-            .to_string();
-        let username = href
-            .split('/')
-            .last()
-            .ok_or(DetailError::Parsing("username"))?
-            .to_string();
-        Ok(username)
-    }
 }
 
 use regex::Regex;
@@ -52,19 +32,40 @@ fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef
 }
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
+    fn whoami(&self) -> Result<String, ServiceError<DetailError>> {
+        || -> Result<String, DetailError>{
+            let res = self.requester.get_home()?;
+            let text = res.text()?;
+            let html = Html::parse_document(&text);
+            let selector = Selector::parse("ul.navbar-right .dropdown:last-child ul li a")?;
+            let href = html
+                .select(&selector)
+                .next()
+                .ok_or(DetailError::ParsingElementNotFound("whoami href"))?
+                .value()
+                .attr("href")
+                .ok_or(DetailError::ParsingElementNotFound("whoami href attr"))?
+                .to_string();
+            let username = href
+                .split('/')
+                .last()
+                .ok_or(DetailError::Parsing("username"))?
+                .to_string();
+            Ok(username)
+        }().map_err(ServiceError::InitFailed)
+    }
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<DetailError>> {
-        (|| -> Result<(), DetailError> {
+        || -> Result<(), DetailError> {
             let res = self.requester.login(&username, &password)?;
 
             let status = res.status();
             let url = res.url().to_string();
             let text = res.text().unwrap();
             if url.contains(HOME_URL) {
-                println!("login success");
-                println!("username: {}", self.whoami()?);
+                println!("username: {}", self.whoami().map_err(|e| DetailError::Internal("atcoder login", Box::new(e)))?);
                 Ok(())
             } else if text.contains("You have already signed in.") {
-                println!("login success(already signed in)");
+                println!("already signed in");
                 Ok(())
             } else if text.contains("Username or Password is incorrect.") {
                 Err(DetailError::InvalidCredentials("atcoder login"))
@@ -73,7 +74,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             } else {
                 Err(DetailError::UnexpectedResponse("atcoder login"))
             }
-        })()
+        }()
         .map_err(ServiceError::LoginFailed)
     }
     fn get_problems_summary(
@@ -174,7 +175,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                             .ok_or(DetailError::Parsing("get_problems_detail limits_str"))?;
 
                         let re = Regex::new(r"Time Limit: ([\d\.]+)(?:\s*(ms|sec)) / Memory Limit: (\d+)\s*MB")
-                            .map_err(|_| DetailError::Internal("get_problems_detail regex error"))?;
+                            .map_err(|_| DetailError::Custom("get_problems_detail regex error"))?;
 
                         if let Some(captures) = re.captures(limits_str) {
                             let time_value: f64 = captures[1]
@@ -343,9 +344,9 @@ mod tests {
 
     #[rstest::rstest(path, expected,
         case("tests/external/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
-        case("tests/external/atcoder_get_home.sanitized.html", Err(DetailError::ParsingElementNotFound("whoami href"))),
+        case("tests/external/atcoder_get_home.sanitized.html", Err(ServiceError::InitFailed(DetailError::ParsingElementNotFound("whoami href")))),
     )]
-    fn test_whoami(path: &str, expected: Result<String, DetailError>) -> Result<(), String> {
+    fn test_whoami(path: &str, expected: Result<String, ServiceError<DetailError>>) -> Result<(), String> {
         let body = std::fs::read_to_string(path).unwrap();
         let mut requester = MockAtcoderRequester::new();
         requester

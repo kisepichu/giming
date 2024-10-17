@@ -1,7 +1,6 @@
 use std::io::{BufRead, Write};
 use std::iter::once;
 
-use domain::error::Error;
 use interfaces::controller::Controller;
 
 use clap::Parser;
@@ -17,6 +16,7 @@ pub mod commands;
 use commands::{Cli, Command, ShellCommand};
 mod init;
 mod login;
+mod whoami;
 
 fn to_contest_id(contest_id_or_url: String) -> String {
     if contest_id_or_url.starts_with("http") {
@@ -27,7 +27,7 @@ fn to_contest_id(contest_id_or_url: String) -> String {
 }
 
 fn oj_from_cli(_cli: &Cli) -> Result<Box<dyn OnlineJudge<DetailError>>, ServiceError<DetailError>> {
-    // cli.contest...
+    // todo cli.contest...
     let atcoder_requester = AtcoderRequesterImpl::new()?;
     let atcoder = Atcoder::new(atcoder_requester);
     Ok(Box::new(atcoder))
@@ -71,15 +71,14 @@ impl Shell {
                         }
                         return args.code;
                     }
+                    Command::Whoami(args) => {
+                        self.whoami(args);
+                    }
                     Command::Init(args) => {
-                        self.init(args).unwrap_or_else(|e| {
-                            eprintln!("{}", e.error_chain());
-                        });
+                        self.init(args);
                     }
                     Command::Login(args) => {
-                        self.login(&mut stdin_iter, args).unwrap_or_else(|e| {
-                            eprintln!("{}", e.error_chain());
-                        });
+                        self.login(&mut stdin_iter, args);
                     }
                 },
                 Err(e) => {

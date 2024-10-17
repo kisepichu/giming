@@ -3,6 +3,7 @@ use std::{
     io::{self, Write},
 };
 
+use domain::error::Error;
 use rpassword::read_password;
 use usecases::service_error::ServiceError;
 
@@ -15,14 +16,28 @@ impl Shell {
         &self,
         stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
         args: LoginCommand,
-    ) -> Result<(), ServiceError<DetailError>> {
-        let username = get_username(stdin_iter, args.username)?;
-        let password = get_password(&username, args.password)?;
-        self.controller.login(LoginCommand {
-            username,
-            password,
-            online_judge: args.online_judge,
-        })
+    ) {
+        let username = match get_username(stdin_iter, args.username) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                return;
+            }
+        };
+        let password = match get_password(&username, args.password) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                return;
+            }
+        };
+        match self.controller.login(LoginCommand { username, password }) {
+            Ok(_) => println!("login success"),
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                println!("login failed");
+            }
+        }
     }
 }
 
