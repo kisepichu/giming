@@ -13,9 +13,11 @@
     "terminal.integrated.profiles.linux": {
       "giming": {
         "path": "bash",
-        "args": ["-c", "cd ../.. && cargo run -- {{ contest.id }}"]
+        "args": [
+          "-c",
+          "cd ../.. && source env.sh || (echo 'env.sh not found:'; ls); cargo run -- abc375"
+        ]
       }
     }
-    // "terminal.integrated.defaultProfile.linux": "ac-rs"
   }
 }

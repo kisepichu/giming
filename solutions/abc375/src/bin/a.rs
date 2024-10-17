@@ -5,6 +5,45 @@ use std::{
 
 use proconio::*;
 
+macro_rules! out {
+    ($w:expr;) => {
+        {
+            writeln!($w).unwrap();
+            Ok(()) as anyhow::Result<()>
+        }
+    };
+    ($w:expr; v $head:expr) => {
+        {
+            writeln!($w, "{}", SliceDisplay(&($head))).unwrap();
+            Ok(()) as anyhow::Result<()>
+        }
+    };
+    ($w:expr; $head:expr) => {
+        {
+            writeln!($w, "{}", &($head)).unwrap();
+            Ok(()) as anyhow::Result<()>
+        }
+    };
+    ($w:expr; v $head:expr, $($tail:expr),*) => {
+        {
+            write!($w, "{} ", SliceDisplay(&($head))).unwrap();
+            out!($w; $($tail ),*);
+            Ok(()) as anyhow::Result<()>
+        }
+    };
+    ($w:expr; $head:expr, $($tail:expr),*) => {
+        {
+            write!($w, "{} ", &($head)).unwrap();
+            out!($w; $($tail),*);
+            Ok(()) as anyhow::Result<()>
+        }
+    };
+}
+
+fn solve<W: Write>(io: &mut W, _n: usize, s: Vec<char>) -> anyhow::Result<()> {
+    out!(io; s.windows(3).filter(|v| v == &['#', '.', '#']).count())
+}
+
 #[allow(unused)]
 struct SliceDisplay<'a, T: 'a>(&'a [T]);
 
@@ -23,37 +62,13 @@ impl<'a, T: fmt::Display + 'a> fmt::Display for SliceDisplay<'a, T> {
     }
 }
 
-macro_rules! out {
-    ($w:expr;) => {
-        writeln!($w).unwrap();
-    };
-    ($w:expr; v $head:expr) => {
-        writeln!($w, "{}", SliceDisplay(&($head))).unwrap();
-    };
-    ($w:expr; $head:expr) => {
-        writeln!($w, "{}", &($head)).unwrap();
-    };
-    ($w:expr; v $head:expr, $($tail:expr),*) => {
-        write!($w, "{} ", SliceDisplay(&($head))).unwrap();
-        out!($w; $($tail ),*);
-    };
-    ($w:expr; $head:expr, $($tail:expr),*) => {
-        write!($w, "{} ", &($head)).unwrap();
-        out!($w; $($tail),*);
-    };
-}
-
-fn solve<W: Write>(w: &mut W, _n: usize, s: Vec<char>) {
-    out!(w; s.windows(3).filter(|v| v == &['#', '.', '#']).count());
-}
-
 fn main() {
     input! {
         n: usize,
         s: marker::Chars
     };
     let mut stdout = stdout().lock();
-    solve(&mut stdout, n, s);
+    solve(&mut stdout, n, s).unwrap();
 }
 
 #[cfg(test)]
@@ -73,7 +88,7 @@ mod test {
             s: marker::Chars
         }
         let mut buf = Vec::new();
-        super::solve(&mut buf, n, s);
+        super::solve(&mut buf, n, s).unwrap();
         let output = String::from_utf8(buf).unwrap();
         assert_eq!(expected.to_string(), output);
     }
