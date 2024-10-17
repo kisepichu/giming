@@ -1,21 +1,19 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {% for problem in problems %}
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug {{ proble.code }}",
+      "name": "Debug A",
       "cargo": {
-        "args": ["build", "--bin={{ problem.id }}"],
+        "args": ["build", "--bin=abc375_a"],
         "filter": {
-          "name": "{{ problem.id }}",
+          "name": "abc375_a",
           "kind": "bin"
         }
       },
       "args": [],
       "cwd": "${workspaceFolder}"
     },
-    {% endfor %}
   ]
 }
