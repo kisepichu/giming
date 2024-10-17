@@ -1,5 +1,8 @@
 use domain::error::Error;
-use usecases::{online_judge::OnlineJudge, service::Service, service_error::ServiceError};
+use usecases::{
+    directory_generator::DirectoryGenerator, online_judge::OnlineJudge, service::Service,
+    service_error::ServiceError,
+};
 
 pub mod input;
 use input::LoginInput;
@@ -11,9 +14,13 @@ pub struct Controller<E: Error + 'static> {
 }
 
 impl<E: Error + 'static> Controller<E> {
-    pub fn new(oj: Box<dyn OnlineJudge<E>>, contest_id: String) -> Self {
+    pub fn new(
+        oj: Box<dyn OnlineJudge<E>>,
+        directory_generator: Box<dyn DirectoryGenerator<E>>,
+        contest_id: String,
+    ) -> Self {
         Self {
-            service: Service::new(oj, contest_id),
+            service: Service::new(oj, directory_generator, contest_id),
         }
     }
     pub fn online_judge_name(&self) -> &str {

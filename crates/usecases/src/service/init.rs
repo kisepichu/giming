@@ -13,9 +13,8 @@ impl<E: Error + 'static> Service<E> {
         if let Some(oj) = oj_switch {
             self.online_judge = oj;
         }
-        // self.online_judge.get_contest 等使いコンテストディレクトリを作るロジックを書く
-        let problems = self.online_judge.get_problems_summary(contest_id)?;
-        println!("problems: \n{:?}", problems);
+        let problems = self.online_judge.get_problems_detail(&contest_id)?;
+        self.directory_generator.generate(&contest_id, problems)?;
         todo!()
     }
 }

@@ -82,10 +82,10 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
     }
     fn get_problems_summary(
         &self,
-        contest_id: String,
+        contest_id: &str,
     ) -> Result<Vec<ProblemSummary>, ServiceError<DetailError>> {
         || -> Result<Vec<ProblemSummary>, DetailError> {
-            let res = self.requester.get_tasks(&contest_id)?;
+            let res = self.requester.get_tasks(contest_id)?;
 
             let status = res.status();
             let text = res.text()?;
@@ -126,11 +126,11 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
     }
     fn get_problems_detail(
         &self,
-        contest_id: String,
+        contest_id: &str,
     ) -> Result<Vec<Problem>, ServiceError<DetailError>> {
-        let summary = self.get_problems_summary(contest_id.clone())?;
+        let summary = self.get_problems_summary(contest_id)?;
         || -> Result<Vec<Problem>, DetailError> {
-            let res = self.requester.get_tasks_print(&contest_id)?;
+            let res = self.requester.get_tasks_print(contest_id)?;
 
             let status = res.status();
             let text = res.text()?;
@@ -388,7 +388,7 @@ mod tests {
             .returning(move |_| Ok(Response::from(response.clone())));
 
         let atcoder = Atcoder::new(requester);
-        let result = atcoder.get_problems_summary(args_contest_id.to_string());
+        let result = atcoder.get_problems_summary(args_contest_id);
         assert_eq!(result, expected);
         Ok(())
     }
@@ -435,7 +435,7 @@ mod tests {
             .returning(move |_| Ok(Response::from(response.clone())));
 
         let atcoder = Atcoder::new(requester);
-        let result = atcoder.get_problems_detail(args_contest_id.to_string());
+        let result = atcoder.get_problems_detail(args_contest_id);
 
         if expected.is_err() {
             assert_eq!(result, expected);
