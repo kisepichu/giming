@@ -363,4 +363,52 @@ mod tests {
         assert_eq!(result, expected);
         Ok(())
     }
+    #[rstest::rstest(get_tasks_path, get_tasks_print_path, args_contest_id, expected,
+        case("tests/external/atcoder_get_tasks_logged_in.sanitized.html",
+        "tests/external/atcoder_get_tasks_print_logged_in.sanitized.html",
+        "abc375",
+        include!("../../tests/online_judge_impl/atcoder_get_problems_detail_abc375_logged_in.txt"))
+    )]
+    fn test_get_problems_detail(
+        get_tasks_path: &str,
+        get_tasks_print_path: &str,
+        args_contest_id: &str,
+        expected: Result<Vec<Problem>, ServiceError<DetailError>>,
+    ) -> Result<(), String> {
+        let mut requester = MockAtcoderRequester::new();
+        let body = std::fs::read_to_string(get_tasks_path).unwrap();
+        requester
+            .expect_get_tasks()
+            .times(1)
+            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+        let body = std::fs::read_to_string(get_tasks_print_path).unwrap();
+        requester
+            .expect_get_tasks_print()
+            .times(1)
+            .returning(move |_| Ok(Response::from(http::response::Response::new(body.clone()))));
+
+        let atcoder = Atcoder::new(requester);
+        let result = atcoder.get_problems_detail(args_contest_id.to_string());
+
+        if expected.is_err() {
+            assert_eq!(result, expected);
+            return Ok(());
+        }
+        let expected_problems = expected.unwrap();
+        expected_problems.iter().enumerate().for_each(|(i, e)| {
+            let problem = &result.as_ref().unwrap()[i];
+            assert_eq!(problem.title, e.title);
+            assert_eq!(problem.id, e.id);
+            assert_eq!(problem.code, e.code);
+            assert_eq!(problem.statement, e.statement);
+            assert_eq!(problem.constraints, e.constraints);
+            assert_eq!(problem.input_format, e.input_format);
+            assert_eq!(problem.samples, e.samples);
+            assert_eq!(problem.point, e.point);
+            assert_eq!(problem.time_limit, e.time_limit);
+            assert_eq!(problem.memory_limit, e.memory_limit);
+        });
+        assert_eq!(result.unwrap(), expected_problems);
+        Ok(())
+    }
 }
