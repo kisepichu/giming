@@ -17,6 +17,7 @@ pub enum DetailError {
     Parsing(&'static str),
     Custom(String),
     Internal(&'static str, Box<dyn Error>),
+    Unknown,
 }
 
 impl fmt::Display for DetailError {
@@ -39,6 +40,7 @@ impl fmt::Display for DetailError {
             DetailError::Parsing(s) => writeln!(f, "parsing error: {}", s),
             DetailError::Custom(s) => writeln!(f, "{}", s),
             DetailError::Internal(s, err) => writeln!(f, "in {}: \n  {}", s, err),
+            DetailError::Unknown => writeln!(f, "unknown error"),
         }
     }
 }

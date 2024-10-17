@@ -1,11 +1,26 @@
 use domain::error::Error;
+use usecases::service_error::ServiceError;
+
+use crate::detail_error::DetailError;
 
 use super::{commands::InitCommand, oj_from_contest_id, to_contest_id, Shell};
 
 impl Shell {
     pub fn init(&mut self, args: InitCommand) {
         let contest_id = to_contest_id(args.contest_id);
-        let oj_switch = oj_from_contest_id(&contest_id, self.controller.online_judge_name());
+        let oj_switch = match oj_from_contest_id(&contest_id, self.controller.online_judge_name()) {
+            Ok(o) => Some(o),
+            Err(e) => {
+                if e != "same online judge" {
+                    eprintln!(
+                        "{}",
+                        ServiceError::InstantiateFailed(DetailError::Custom(e)).error_chain()
+                    );
+                    return;
+                }
+                None
+            }
+        };
 
         match self.controller.init(InitCommand { contest_id }, oj_switch) {
             Ok(_) => println!("initj ok"),
