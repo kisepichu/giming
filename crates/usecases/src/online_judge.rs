@@ -12,8 +12,8 @@ pub trait OnlineJudge<E: Error + 'static> {
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<E>>;
     fn get_problems_summary(
         &self,
-        contest_id: String,
+        contest_id: &str,
     ) -> Result<Vec<ProblemSummary>, ServiceError<E>>;
-    fn get_problems_detail(&self, contest_id: String) -> Result<Vec<Problem>, ServiceError<E>>;
+    fn get_problems_detail(&self, contest_id: &str) -> Result<Vec<Problem>, ServiceError<E>>;
     fn submit(&self, solution_id: String) -> Result<(), ServiceError<E>>;
 }

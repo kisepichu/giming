@@ -14,7 +14,10 @@ impl<E: Error + 'static> Service<E> {
 mod tests {
     use domain::error::DummyDetailError;
 
-    use crate::{online_judge::MockOnlineJudge, service::Service, service_error::ServiceError};
+    use crate::{
+        directory_generator::MockDirectoryGenerator, online_judge::MockOnlineJudge,
+        service::Service, service_error::ServiceError,
+    };
 
     #[test]
     fn test_login() -> Result<(), String> {
@@ -28,7 +31,12 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
-            let service = Service::new(Box::new(online_judge), "abc375".to_string());
+            let directory_generator = MockDirectoryGenerator::<DummyDetailError>::new();
+            let service = Service::new(
+                Box::new(online_judge),
+                Box::new(directory_generator),
+                "abc375".to_string(),
+            );
 
             let username = "user".to_string();
             let password = "pass".to_string();
@@ -52,7 +60,12 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
-            let service = Service::new(Box::new(online_judge), "abc375".to_string());
+            let directory_generator = MockDirectoryGenerator::<DummyDetailError>::new();
+            let service = Service::new(
+                Box::new(online_judge),
+                Box::new(directory_generator),
+                "abc375".to_string(),
+            );
 
             let username = "user".to_string();
             let password = "pass".to_string();

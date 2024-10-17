@@ -10,6 +10,7 @@ use usecases::service_error::ServiceError;
 
 use crate::config::Config;
 use crate::detail_error::DetailError;
+use crate::directory_generator_impl::DirectoryGeneratorImpl;
 use crate::external::atcoder_requester::atcoder_requester_impl::AtcoderRequesterImpl;
 use crate::online_judge_impl::atcoder::Atcoder;
 
@@ -64,8 +65,9 @@ impl Shell {
                 return Err(ServiceError::InstantiateFailed(DetailError::Custom(e)));
             }
         };
+        let directory_generator = DirectoryGeneratorImpl::new();
         Ok(Self {
-            controller: Controller::new(oj, contest_id),
+            controller: Controller::new(oj, Box::new(directory_generator), contest_id),
             prompt: cfg.prompt,
         })
     }
