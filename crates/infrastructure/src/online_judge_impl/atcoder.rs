@@ -32,6 +32,9 @@ fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef
 }
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
+    fn name(&self) -> &str {
+        "AtCoder"
+    }
     fn whoami(&self) -> Result<String, ServiceError<DetailError>> {
         || -> Result<String, DetailError>{
             let res = self.requester.get_home()?;
@@ -175,7 +178,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                             .ok_or(DetailError::Parsing("get_problems_detail limits_str"))?;
 
                         let re = Regex::new(r"Time Limit: ([\d\.]+)(?:\s*(ms|sec)) / Memory Limit: (\d+)\s*MB")
-                            .map_err(|_| DetailError::Custom("get_problems_detail regex error"))?;
+                            .map_err(|_| DetailError::Custom("get_problems_detail regex error".to_string()))?;
 
                         if let Some(captures) = re.captures(limits_str) {
                             let time_value: f64 = captures[1]

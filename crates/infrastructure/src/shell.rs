@@ -1,6 +1,7 @@
 use std::io::{BufRead, Write};
 use std::iter::once;
 
+use domain::error::Error;
 use interfaces::controller::Controller;
 
 use clap::Parser;
@@ -26,31 +27,48 @@ fn to_contest_id(contest_id_or_url: String) -> String {
     }
 }
 
-fn oj_from_cli(_cli: &Cli) -> Result<Box<dyn OnlineJudge<DetailError>>, ServiceError<DetailError>> {
-    // todo cli.contest...
-    let atcoder_requester = AtcoderRequesterImpl::new()?;
+// current と同じだった場合や、判定できなかった場合に None を返す todo 分ける
+fn oj_from_contest_id(
+    _contest_id: &str,
+    current: &str,
+) -> Option<Box<dyn OnlineJudge<DetailError>>> {
+    // todo
+    if current == "AtCoder" {
+        return None;
+    }
+    let atcoder_requester = match AtcoderRequesterImpl::new() {
+        Ok(r) => r,
+        Err(e) => {
+            eprintln!("{}", e.error_chain());
+            return None;
+        }
+    };
     let atcoder = Atcoder::new(atcoder_requester);
-    Ok(Box::new(atcoder))
+    Some(Box::new(atcoder))
 }
 
 pub struct Shell {
     controller: Controller<DetailError>,
     prompt: String,
-    contest_id: String,
 }
 
 impl Shell {
     pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<DetailError>> {
-        let oj = oj_from_cli(cli)?;
+        let contest_id = to_contest_id(cli.contest.clone());
+        let oj = oj_from_contest_id(&contest_id, "").ok_or(ServiceError::InstantiateFailed(
+            DetailError::Custom(format!(
+                "cannot determine the type of online judge for {}",
+                contest_id,
+            )),
+        ))?;
         Ok(Self {
-            controller: Controller::new(oj),
+            controller: Controller::new(oj, contest_id),
             prompt: cfg.prompt,
-            contest_id: to_contest_id(cli.contest.clone()),
         })
     }
     fn print_prompt(&self) {
         let mut prompt_context = tera::Context::new();
-        prompt_context.insert("contest_id", &self.contest_id);
+        prompt_context.insert("contest_id", &self.controller.contest_id());
         let mut tera = tera::Tera::default();
         print!(
             "{}",
@@ -58,7 +76,7 @@ impl Shell {
         );
         std::io::stdout().flush().unwrap();
     }
-    pub fn run(&self) -> i32 {
+    pub fn run(&mut self) -> i32 {
         let mut stdin_iter = std::io::stdin().lock().lines();
 
         self.print_prompt();

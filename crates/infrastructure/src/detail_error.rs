@@ -15,7 +15,7 @@ pub enum DetailError {
     Confy(confy::ConfyError),
     ParsingElementNotFound(&'static str),
     Parsing(&'static str),
-    Custom(&'static str),
+    Custom(String),
     Internal(&'static str, Box<dyn Error>),
 }
 
