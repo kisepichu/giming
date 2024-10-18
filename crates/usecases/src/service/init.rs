@@ -14,7 +14,10 @@ impl<E: Error + 'static> Service<E> {
             self.online_judge = oj;
         }
         let problems = self.online_judge.get_problems_detail(&contest_id)?;
-        self.directory_generator.generate(&contest_id, problems)?;
+        // self.directory_generator.generate(&contest_id, problems)?;
+        self.repository
+            .contest_repo()
+            .create_if_not_exists(&contest_id, problems)?;
         todo!()
     }
 }

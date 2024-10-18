@@ -15,8 +15,13 @@ mod tests {
     use domain::error::DummyDetailError;
 
     use crate::{
-        directory_generator::MockDirectoryGenerator, online_judge::MockOnlineJudge,
-        service::Service, service_error::ServiceError,
+        online_judge::MockOnlineJudge,
+        repository::{
+            contest_repository::{self, MockContestRepository},
+            MockRepository, Repository,
+        },
+        service::Service,
+        service_error::ServiceError,
     };
 
     #[test]
@@ -31,10 +36,11 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
-            let directory_generator = MockDirectoryGenerator::<DummyDetailError>::new();
+            let mut contest_repository = MockContestRepository::<DummyDetailError>::new();
+            let repository = MockRepository::new(Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
-                Box::new(directory_generator),
+                Box::new(repository),
                 "abc375".to_string(),
             );
 
@@ -60,10 +66,11 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
-            let directory_generator = MockDirectoryGenerator::<DummyDetailError>::new();
+            let mut contest_repository = MockContestRepository::<DummyDetailError>::new();
+            let repository = MockRepository::new(Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
-                Box::new(directory_generator),
+                Box::new(repository),
                 "abc375".to_string(),
             );
 

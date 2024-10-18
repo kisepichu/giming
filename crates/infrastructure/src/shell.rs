@@ -10,9 +10,9 @@ use usecases::service_error::ServiceError;
 
 use crate::config::Config;
 use crate::detail_error::DetailError;
-use crate::directory_generator_impl::DirectoryGeneratorImpl;
 use crate::external::atcoder_requester::atcoder_requester_impl::AtcoderRequesterImpl;
 use crate::online_judge_impl::atcoder::Atcoder;
+use crate::repository_impl::RepositoryImpl;
 
 pub mod commands;
 use commands::{Cli, Command, ShellCommand};
@@ -65,9 +65,10 @@ impl Shell {
                 return Err(ServiceError::InstantiateFailed(DetailError::Custom(e)));
             }
         };
-        let directory_generator = DirectoryGeneratorImpl::new();
+        let repository = RepositoryImpl::default();
+
         Ok(Self {
-            controller: Controller::new(oj, Box::new(directory_generator), contest_id),
+            controller: Controller::new(oj, Box::new(repository), contest_id),
             prompt: cfg.prompt,
         })
     }
