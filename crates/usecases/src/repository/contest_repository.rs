@@ -1,10 +1,12 @@
-use domain::{entity::Problem, error::Error};
+use domain::{entity::Workspace, error::Error};
 use mockall::automock;
 
 use crate::service_error::ServiceError;
 
 #[automock]
-pub trait ContestRepository<E: Error + 'static> {
+pub trait WorkspaceRepository<E: Error + 'static> {
     fn exists(&self, contest_id: &str) -> Result<bool, ServiceError<E>>;
-    fn create(&self, contest_id: &str, problems: Vec<Problem>) -> Result<(), ServiceError<E>>;
+    #[allow(clippy::needless_lifetimes)] // need for automock
+    fn create<'p>(&self, contest_id: &str, workspace: Workspace<'p>)
+        -> Result<(), ServiceError<E>>;
 }

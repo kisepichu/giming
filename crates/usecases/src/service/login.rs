@@ -17,7 +17,7 @@ mod tests {
     use crate::{
         config::{Config, MockConfig},
         online_judge::MockOnlineJudge,
-        repository::{contest_repository::MockContestRepository, MockRepository},
+        repository::{contest_repository::MockWorkspaceRepository, MockRepository},
         service::Service,
         service_error::ServiceError,
     };
@@ -35,7 +35,7 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
-            let contest_repository = MockContestRepository::<DummyDetailError>::new();
+            let contest_repository = MockWorkspaceRepository::<DummyDetailError>::new();
             let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
@@ -66,7 +66,7 @@ mod tests {
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
-            let contest_repository = MockContestRepository::<DummyDetailError>::new();
+            let contest_repository = MockWorkspaceRepository::<DummyDetailError>::new();
             let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
