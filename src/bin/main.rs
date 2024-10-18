@@ -6,7 +6,7 @@ use infrastructure::{
 };
 
 fn main() {
-    let config: &'static ConfigImpl = Box::leak(Box::new(ConfigImpl::load().unwrap_chain()));
+    let config = Box::leak(Box::new(ConfigImpl::load().unwrap_chain()));
 
     let cli = Cli::parse();
 

@@ -15,7 +15,7 @@ mod tests {
     use domain::error::DummyDetailError;
 
     use crate::{
-        config::{Config, MockConfig},
+        config::MockConfig,
         online_judge::MockOnlineJudge,
         repository::{contest_repository::MockWorkspaceRepository, MockRepository},
         service::Service,

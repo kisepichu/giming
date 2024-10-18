@@ -9,6 +9,7 @@ use crate::detail_error::DetailError;
 pub struct ConfigImpl {
     pub prompt: String,
     pub contest_dir: String,
+    pub template_dir_name: String,
 }
 
 impl Default for ConfigImpl {
@@ -16,6 +17,7 @@ impl Default for ConfigImpl {
         Self {
             prompt: "{{contest_id}}> ".to_string(),
             contest_dir: "~/repos/giming/solutions".to_string(),
+            template_dir_name: "!CONTEST".to_string(),
         }
     }
 }
