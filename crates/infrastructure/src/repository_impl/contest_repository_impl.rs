@@ -1,14 +1,15 @@
 use domain::entity::Problem;
 use usecases::{repository::contest_repository::ContestRepository, service_error::ServiceError};
 
-use crate::detail_error::DetailError;
+use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
-#[derive(Default)]
-pub struct ContestRepositoryImpl {}
+pub struct ContestRepositoryImpl {
+    config: &'static ConfigImpl,
+}
 
 impl ContestRepositoryImpl {
-    pub fn new() -> Self {
-        Self {}
+    pub fn new(config: &'static ConfigImpl) -> Self {
+        Self { config }
     }
 }
 
@@ -39,6 +40,7 @@ impl ContestRepository<DetailError> for ContestRepositoryImpl {
         let mut tera_context = tera::Context::new();
         tera_context.insert("contest_id", contest_id);
         tera_context.insert("problems", &problems);
+        let _path = self.config.contest_dir.clone() + contest_id;
         todo!();
     }
 }

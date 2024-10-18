@@ -15,6 +15,7 @@ mod tests {
     use domain::error::DummyDetailError;
 
     use crate::{
+        config::{Config, MockConfig},
         online_judge::MockOnlineJudge,
         repository::{contest_repository::MockContestRepository, MockRepository},
         service::Service,
@@ -28,13 +29,14 @@ mod tests {
 
         // invalid username or password
         {
+            let config = MockConfig::new();
             let mut online_judge = MockOnlineJudge::<DummyDetailError>::new();
             online_judge
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
             let contest_repository = MockContestRepository::<DummyDetailError>::new();
-            let repository = MockRepository::new(Box::new(contest_repository));
+            let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
                 Box::new(repository),
@@ -58,13 +60,14 @@ mod tests {
         }
         // success
         {
+            let config = MockConfig::new();
             let mut online_judge = MockOnlineJudge::<DummyDetailError>::new();
             online_judge
                 .expect_login()
                 .times(1)
                 .returning(|_, _| Ok(()));
             let contest_repository = MockContestRepository::<DummyDetailError>::new();
-            let repository = MockRepository::new(Box::new(contest_repository));
+            let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
             let service = Service::new(
                 Box::new(online_judge),
                 Box::new(repository),

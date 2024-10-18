@@ -1,16 +1,16 @@
 use clap::Parser;
 use domain::error::ResultChain;
 use infrastructure::{
-    config::Config,
+    config_impl::ConfigImpl,
     shell::{commands::Cli, Shell},
 };
 
 fn main() {
-    let cfg = Config::load().unwrap_chain();
+    let config: &'static ConfigImpl = Box::leak(Box::new(ConfigImpl::load().unwrap_chain()));
 
     let cli = Cli::parse();
 
-    let mut shell = Shell::new(&cli, cfg).unwrap_chain();
+    let mut shell = Shell::new(&cli, config).unwrap_chain();
 
     std::process::exit(shell.run());
 }

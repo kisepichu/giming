@@ -1,17 +1,17 @@
 use confy;
 use serde::{Deserialize, Serialize};
-use usecases::service_error::ServiceError;
+use usecases::{config::Config, service_error::ServiceError};
 
 use crate::detail_error::DetailError;
 
 #[derive(Debug, Serialize, Deserialize)]
 #[serde(default)]
-pub struct Config {
+pub struct ConfigImpl {
     pub prompt: String,
     pub contest_dir: String,
 }
 
-impl Default for Config {
+impl Default for ConfigImpl {
     fn default() -> Self {
         Self {
             prompt: "{{contest_id}}> ".to_string(),
@@ -20,9 +20,11 @@ impl Default for Config {
     }
 }
 
-impl Config {
+impl ConfigImpl {
     pub fn load() -> Result<Self, ServiceError<DetailError>> {
-        confy::load::<Config>("giming", "config")
+        confy::load::<ConfigImpl>("giming", "config")
             .map_err(|e| ServiceError::InstantiateFailed(DetailError::from(e)))
     }
 }
+
+impl Config for ConfigImpl {}
