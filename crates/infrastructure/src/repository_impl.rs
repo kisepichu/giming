@@ -1,6 +1,6 @@
 use usecases::repository::{contest_repository::ContestRepository, Repository};
 
-use crate::detail_error::DetailError;
+use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
 use self::contest_repository_impl::ContestRepositoryImpl;
 
@@ -10,10 +10,10 @@ pub struct RepositoryImpl {
     contest_repo: ContestRepositoryImpl,
 }
 
-impl Default for RepositoryImpl {
-    fn default() -> Self {
+impl RepositoryImpl {
+    pub fn new(config: &'static ConfigImpl) -> Self {
         Self {
-            contest_repo: ContestRepositoryImpl::new(),
+            contest_repo: ContestRepositoryImpl::new(config),
         }
     }
 }

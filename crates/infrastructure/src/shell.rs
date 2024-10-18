@@ -8,7 +8,7 @@ use clap::Parser;
 use usecases::online_judge::OnlineJudge;
 use usecases::service_error::ServiceError;
 
-use crate::config::Config;
+use crate::config_impl::ConfigImpl;
 use crate::detail_error::DetailError;
 use crate::external::atcoder_requester::atcoder_requester_impl::AtcoderRequesterImpl;
 use crate::online_judge_impl::atcoder::Atcoder;
@@ -53,11 +53,11 @@ fn oj_from_contest_id(
 
 pub struct Shell {
     controller: Controller<DetailError>,
-    prompt: String,
+    config: &'static ConfigImpl,
 }
 
 impl Shell {
-    pub fn new(cli: &Cli, cfg: Config) -> Result<Self, ServiceError<DetailError>> {
+    pub fn new(cli: &Cli, config: &'static ConfigImpl) -> Result<Self, ServiceError<DetailError>> {
         let contest_id = to_contest_id(cli.contest.clone());
         let oj = match oj_from_contest_id(&contest_id, "") {
             Ok(o) => o,
@@ -65,11 +65,11 @@ impl Shell {
                 return Err(ServiceError::InstantiateFailed(DetailError::Custom(e)));
             }
         };
-        let repository = RepositoryImpl::default();
+        let repository = RepositoryImpl::new(config);
 
         Ok(Self {
             controller: Controller::new(oj, Box::new(repository), contest_id),
-            prompt: cfg.prompt,
+            config,
         })
     }
     fn print_prompt(&self) {
@@ -78,7 +78,8 @@ impl Shell {
         let mut tera = tera::Tera::default();
         print!(
             "{}",
-            tera.render_str(&self.prompt, &prompt_context).unwrap()
+            tera.render_str(&self.config.prompt, &prompt_context)
+                .unwrap()
         );
         std::io::stdout().flush().unwrap();
     }
