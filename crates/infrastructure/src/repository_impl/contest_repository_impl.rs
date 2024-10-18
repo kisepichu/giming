@@ -1,31 +1,26 @@
-use domain::entity::Problem;
-use usecases::{repository::contest_repository::ContestRepository, service_error::ServiceError};
+use domain::entity::Workspace;
+use usecases::{repository::contest_repository::WorkspaceRepository, service_error::ServiceError};
 
 use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
-pub struct ContestRepositoryImpl {
+pub struct WorkspaceRepositoryImpl {
     config: &'static ConfigImpl,
 }
 
-impl ContestRepositoryImpl {
+impl WorkspaceRepositoryImpl {
     pub fn new(config: &'static ConfigImpl) -> Self {
         Self { config }
     }
 }
 
-// struct SamplePath {
-//     input: String,
-//     output: String,
-// }
-
-impl ContestRepository<DetailError> for ContestRepositoryImpl {
+impl WorkspaceRepository<DetailError> for WorkspaceRepositoryImpl {
     fn exists(&self, _contest_id: &str) -> Result<bool, ServiceError<DetailError>> {
-        todo!();
+        Ok(false) // todo
     }
     fn create(
         &self,
         contest_id: &str,
-        problems: Vec<Problem>,
+        workspace: Workspace,
     ) -> Result<(), ServiceError<DetailError>> {
         // let mut prompt_context = tera::Context::new();
         // prompt_context.insert("contest_id", &self.controller.contest_id());
@@ -35,11 +30,11 @@ impl ContestRepository<DetailError> for ContestRepositoryImpl {
         //     tera.render_str(&self.prompt, &prompt_context).unwrap()
         // );
 
-        // problem.{prediction_success, formal_arguments, input_part, sample_paths, test_input_part}
+        // problem.{formal_arguments, input_part, sample_paths, test_input_part}
 
         let mut tera_context = tera::Context::new();
         tera_context.insert("contest_id", contest_id);
-        tera_context.insert("problems", &problems);
+        tera_context.insert("problems", &workspace);
         let _path = self.config.contest_dir.clone() + contest_id;
         todo!();
     }
