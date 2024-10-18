@@ -1,6 +1,6 @@
 use domain::error::Error;
 use usecases::{
-    directory_generator::DirectoryGenerator, online_judge::OnlineJudge, service::Service,
+    online_judge::OnlineJudge, repository::Repository, service::Service,
     service_error::ServiceError,
 };
 
@@ -16,11 +16,11 @@ pub struct Controller<E: Error + 'static> {
 impl<E: Error + 'static> Controller<E> {
     pub fn new(
         oj: Box<dyn OnlineJudge<E>>,
-        directory_generator: Box<dyn DirectoryGenerator<E>>,
+        repository: Box<dyn Repository<E>>,
         contest_id: String,
     ) -> Self {
         Self {
-            service: Service::new(oj, directory_generator, contest_id),
+            service: Service::new(oj, repository, contest_id),
         }
     }
     pub fn online_judge_name(&self) -> &str {

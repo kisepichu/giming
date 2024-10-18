@@ -6,7 +6,7 @@ use domain::error::Error;
 
 use std::marker::PhantomData;
 
-use crate::{directory_generator::DirectoryGenerator, online_judge::OnlineJudge};
+use crate::{online_judge::OnlineJudge, repository::Repository};
 
 pub struct InitArgs {
     pub contest_id: String,
@@ -14,20 +14,20 @@ pub struct InitArgs {
 
 pub struct Service<E: Error + 'static> {
     online_judge: Box<dyn OnlineJudge<E>>,
-    directory_generator: Box<dyn DirectoryGenerator<E>>,
-    contest_id: String,
+    repository: Box<dyn Repository<E>>,
+    contest_id: String, // todo: もっと外側にする
     _phantom: PhantomData<E>,
 }
 
 impl<E: Error + 'static> Service<E> {
     pub fn new(
         oj: Box<dyn OnlineJudge<E>>,
-        directory_generator: Box<dyn DirectoryGenerator<E>>,
+        repository: Box<dyn Repository<E>>,
         contest_id: String,
     ) -> Self {
         Self {
             online_judge: oj,
-            directory_generator,
+            repository,
             contest_id,
             _phantom: PhantomData,
         }

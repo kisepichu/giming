@@ -79,7 +79,7 @@ mod test {
 
     #[rstest::rstest(input, expected,
         {% for s in sample_paths %}
-        case(include_str!("../../{{ s.in }}"), include_str!("../../{{ s.out }}")),
+        case(include_str!("../../{{ s.input }}"), include_str!("../../{{ s.output }}")),
         {% endfor %}
     )]
     fn test_solve(input: &str, expected: &str) {

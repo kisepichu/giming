@@ -23,7 +23,7 @@ impl Shell {
         };
 
         match self.controller.init(InitCommand { contest_id }, oj_switch) {
-            Ok(_) => println!("initj ok"),
+            Ok(_) => println!("init ok"),
             Err(e) => {
                 eprintln!("{}", e.error_chain());
             }
