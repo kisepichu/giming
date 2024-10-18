@@ -13,11 +13,16 @@ impl<E: Error + 'static> Service<E> {
         if let Some(oj) = oj_switch {
             self.online_judge = oj;
         }
+
+        if self.repository.contest_repo().exists(&contest_id)? {
+            return Ok(());
+        }
+
         let problems = self.online_judge.get_problems_detail(&contest_id)?;
         // self.directory_generator.generate(&contest_id, problems)?;
         self.repository
             .contest_repo()
-            .create_if_not_exists(&contest_id, problems)?;
+            .create(&contest_id, problems)?;
         todo!()
     }
 }
