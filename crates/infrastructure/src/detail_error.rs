@@ -1,6 +1,7 @@
 use std::fmt;
 
 use domain::error::Error;
+use rustyline::error::ReadlineError;
 
 #[derive(Debug)]
 pub enum DetailError {
@@ -15,8 +16,9 @@ pub enum DetailError {
     Confy(confy::ConfyError),
     ParsingElementNotFound(&'static str),
     Parsing(&'static str),
-    FileSystem(String, std::io::Error),
+    IO(String, std::io::Error),
     Tera(tera::Error),
+    Readline(String, ReadlineError),
     Custom(String),
     Internal(String, Box<dyn Error>),
     Unknown,
@@ -40,8 +42,9 @@ impl fmt::Display for DetailError {
             DetailError::Confy(err) => writeln!(f, "confy error: {}", err),
             DetailError::ParsingElementNotFound(s) => writeln!(f, "element not found: {}", s),
             DetailError::Parsing(s) => writeln!(f, "parsing error: {}", s),
-            DetailError::FileSystem(s, err) => writeln!(f, "file system error:\n{}: {}", err, s),
+            DetailError::IO(s, err) => writeln!(f, "file system error:\n{}: {}", err, s),
             DetailError::Tera(err) => writeln!(f, "tera error: {:?}", err),
+            DetailError::Readline(s, err) => writeln!(f, "readline error: {}: {:?}", s, err),
             DetailError::Custom(s) => writeln!(f, "{}", s),
             DetailError::Internal(s, err) => writeln!(f, "{}\n{}", s, err),
             DetailError::Unknown => writeln!(f, "unknown error"),

@@ -51,9 +51,15 @@ const DOWNLOAD: bool = false;
 impl AtcoderRequesterImpl {
     fn download_testing_html(&self, url: String, path: &str) -> Result<(), DetailError> {
         if DOWNLOAD {
-            let body = self.client.get(url).send()?.text()?;
-            let mut file = std::fs::File::create(path).unwrap();
-            file.write_all(body.as_bytes()).unwrap();
+            let sent = self.client.get(url).send();
+            if sent.is_err() {
+                println!("sent: {:?}", sent);
+            }
+            let body = sent?.text()?;
+            let mut file =
+                std::fs::File::create(path).map_err(|e| DetailError::IO(path.to_string(), e))?;
+            file.write_all(body.as_bytes())
+                .map_err(|e| DetailError::IO(path.to_string(), e))?;
         }
         Ok(())
     }
@@ -63,7 +69,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_home(&self) -> Result<Response, DetailError> {
         self.download_testing_html(
             "https://atcoder.jp/home".to_string(),
-            "crates/infrastructure/tests/external/atcoder_get_home_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_home_in_contest_logged_in.html",
         )?;
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
@@ -85,7 +91,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks", contest_id),
-            "crates/infrastructure/tests/external/atcoder_get_tasks_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_tasks_in_contest.html",
         )?;
         Ok(self
             .client
@@ -95,7 +101,7 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks_print", contest_id),
-            "crates/infrastructure/tests/external/atcoder_get_tasks_print_logged_in.html",
+            "crates/infrastructure/tests/external/atcoder_get_tasks_print_in_contest.html",
         )?;
         Ok(self
             .client

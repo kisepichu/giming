@@ -16,20 +16,13 @@ pub struct Controller<E: Error + 'static> {
 }
 
 impl<E: Error + 'static> Controller<E> {
-    pub fn new(
-        oj: Box<dyn OnlineJudge<E>>,
-        repository: Box<dyn Repository<E>>,
-        contest_id: String,
-    ) -> Self {
+    pub fn new(oj: Box<dyn OnlineJudge<E>>, repository: Box<dyn Repository<E>>) -> Self {
         Self {
-            service: Service::new(oj, repository, contest_id),
+            service: Service::new(oj, repository),
         }
     }
     pub fn online_judge_name(&self) -> &str {
         self.service.online_judge_name()
-    }
-    pub fn contest_id(&self) -> String {
-        self.service.contest_id()
     }
     pub fn whoami<T: WhoamiInput>(&self, _args: T) -> Result<String, ServiceError<E>> {
         self.service.whoami()

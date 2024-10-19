@@ -37,11 +37,7 @@ mod tests {
                 .returning(|_, _| Err(ServiceError::LoginFailed(DummyDetailError::new())));
             let contest_repository = MockWorkspaceRepository::<DummyDetailError>::new();
             let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
-            let service = Service::new(
-                Box::new(online_judge),
-                Box::new(repository),
-                "abc375".to_string(),
-            );
+            let service = Service::new(Box::new(online_judge), Box::new(repository));
 
             let username = "user".to_string();
             let password = "pass".to_string();
@@ -68,11 +64,7 @@ mod tests {
                 .returning(|_, _| Ok(()));
             let contest_repository = MockWorkspaceRepository::<DummyDetailError>::new();
             let repository = MockRepository::new(Box::new(config), Box::new(contest_repository));
-            let service = Service::new(
-                Box::new(online_judge),
-                Box::new(repository),
-                "abc375".to_string(),
-            );
+            let service = Service::new(Box::new(online_judge), Box::new(repository));
 
             let username = "user".to_string();
             let password = "pass".to_string();

@@ -12,5 +12,5 @@ fn main() {
 
     let mut shell = Shell::new(&cli, config).unwrap_chain();
 
-    std::process::exit(shell.run());
+    std::process::exit(shell.run().unwrap());
 }
