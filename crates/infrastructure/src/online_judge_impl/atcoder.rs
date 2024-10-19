@@ -35,7 +35,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         "AtCoder"
     }
     fn whoami(&self) -> Result<String, ServiceError<DetailError>> {
-        || -> Result<String, DetailError>{
+        || -> Result<String, DetailError> {
             let res = self.requester.get_home()?;
             let text = res.text()?;
             let html = Html::parse_document(&text);
@@ -54,7 +54,8 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 .ok_or(DetailError::Parsing("username"))?
                 .to_string();
             Ok(username)
-        }().map_err(ServiceError::WhoamiFailed)
+        }()
+        .map_err(ServiceError::WhoamiFailed)
     }
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<DetailError>> {
         || -> Result<(), DetailError> {
@@ -64,7 +65,13 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             let url = res.url().to_string();
             let text = res.text().map_err(DetailError::Reqwest)?;
             if url.contains(HOME_URL) {
-                println!("username: {}", self.whoami().map_err(|e| DetailError::Internal("atcoder login".to_string(), Box::new(e)))?);
+                println!(
+                    "username: {}",
+                    self.whoami().map_err(|e| DetailError::Internal(
+                        "atcoder login".to_string(),
+                        Box::new(e)
+                    ))?
+                );
                 Ok(())
             } else if text.contains("You have already signed in.") {
                 println!("already signed in");
@@ -93,7 +100,10 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 if text.contains("Permission denied.") {
                     return Err(DetailError::PermissionDenied("atcoder get_tasks"));
                 }
-                return Err(DetailError::UnexpectedStatusCode("atcoder get_tasks", status)) 
+                return Err(DetailError::UnexpectedStatusCode(
+                    "atcoder get_tasks",
+                    status,
+                ));
             }
 
             let html = Html::parse_document(&text);
@@ -337,7 +347,10 @@ mod tests {
         case("tests/external/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
         case("tests/external/atcoder_get_home.sanitized.html", Err(ServiceError::InitFailed(DetailError::ParsingElementNotFound("whoami href")))),
     )]
-    fn test_whoami(path: &str, expected: Result<String, ServiceError<DetailError>>) -> Result<(), String> {
+    fn test_whoami(
+        path: &str,
+        expected: Result<String, ServiceError<DetailError>>,
+    ) -> Result<(), String> {
         let body = std::fs::read_to_string(path).unwrap();
         let mut requester = MockAtcoderRequester::new();
         requester
@@ -383,7 +396,7 @@ mod tests {
 
     #[rstest::rstest(get_tasks_path, get_tasks_status, get_tasks_print_path, get_tasks_print_call, get_tasks_print_status, args_contest_id, expected,
         case("tests/external/atcoder_get_tasks_logged_in.sanitized.html",
-            StatusCode::OK, 
+            StatusCode::OK,
             "tests/external/atcoder_get_tasks_print_logged_in.sanitized.html",
             1,
             StatusCode::OK,
