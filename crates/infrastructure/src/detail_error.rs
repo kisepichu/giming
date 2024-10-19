@@ -15,7 +15,7 @@ pub enum DetailError {
     Confy(confy::ConfyError),
     ParsingElementNotFound(&'static str),
     Parsing(&'static str),
-    FileSystem(std::io::Error),
+    FileSystem(String, std::io::Error),
     Tera(tera::Error),
     Custom(String),
     Internal(&'static str, Box<dyn Error>),
@@ -40,7 +40,7 @@ impl fmt::Display for DetailError {
             DetailError::Confy(err) => writeln!(f, "confy error: {}", err),
             DetailError::ParsingElementNotFound(s) => writeln!(f, "element not found: {}", s),
             DetailError::Parsing(s) => writeln!(f, "parsing error: {}", s),
-            DetailError::FileSystem(err) => writeln!(f, "file system error: {}", err),
+            DetailError::FileSystem(s, err) => writeln!(f, "file system error:\n{}: {}", err, s),
             DetailError::Tera(err) => writeln!(f, "tera error: {}", err),
             DetailError::Custom(s) => writeln!(f, "{}", s),
             DetailError::Internal(s, err) => writeln!(f, "in {}: \n  {}", s, err),
@@ -62,11 +62,6 @@ impl From<scraper::error::SelectorErrorKind<'static>> for DetailError {
 impl From<confy::ConfyError> for DetailError {
     fn from(err: confy::ConfyError) -> Self {
         DetailError::Confy(err)
-    }
-}
-impl From<std::io::Error> for DetailError {
-    fn from(err: std::io::Error) -> Self {
-        DetailError::FileSystem(err)
     }
 }
 impl From<tera::Error> for DetailError {
