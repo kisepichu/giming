@@ -1,12 +1,12 @@
 [package]
-name = "{{contest_id}}"
+name = "{{ contest_id }}"
 version = "0.1.0"
 edition = "2021"
 
-{% for problem in problems %}
+{% for wp in work_problems %}
 [[bin]]
-name = "{{problem.id}}"
-path = "src/bin/{{problem.char}}.rs"
+name = "{{ wp.problem.id }}"
+path = "src/bin/{{ wp.problem.code | lower }}.rs"
 {% endfor %}
 
 [dependencies]

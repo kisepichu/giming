@@ -2,9 +2,9 @@ use usecases::repository::{contest_repository::WorkspaceRepository, Repository};
 
 use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
-use self::contest_repository_impl::WorkspaceRepositoryImpl;
+use self::workspace_repository_impl::WorkspaceRepositoryImpl;
 
-pub mod contest_repository_impl;
+pub mod workspace_repository_impl;
 
 pub struct RepositoryImpl {
     contest_repo: WorkspaceRepositoryImpl,
