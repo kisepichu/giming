@@ -1,6 +1,9 @@
-use domain::{entity::Workspace, error::Error};
+use domain::{
+    entity::{WorkProblem, Workspace},
+    error::Error,
+};
 
-use crate::{online_judge::OnlineJudge, predictor::Predictor, service_error::ServiceError};
+use crate::{io_inferrer::IOInferrer, online_judge::OnlineJudge, service_error::ServiceError};
 
 use super::Service;
 
@@ -23,8 +26,17 @@ impl<E: Error + 'static> Service<E> {
         }
 
         let problems = self.online_judge.get_problems_detail(&contest_id)?;
-        let work_problems = problems.iter().map(|p| Predictor::predict(p)).collect();
-        let workspace = Workspace { work_problems };
+        let work_problems = problems
+            .iter()
+            .map(|p| WorkProblem {
+                problem: p,
+                io_spec: IOInferrer::infer(p),
+            })
+            .collect();
+        let workspace = Workspace {
+            contest_id: contest_id.clone(),
+            work_problems,
+        };
         self.repository
             .contest_repo()
             .create(&contest_id, workspace)?;

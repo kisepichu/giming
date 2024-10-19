@@ -1,15 +1,15 @@
 {
   "version": "0.2.0",
   "configurations": [
-    {% for problem in problems %}
+    {% for wp in work_problems %}
     {
       "type": "lldb",
       "request": "launch",
-      "name": "Debug {{ proble.code }}",
+      "name": "Debug {{ wp.problem.code }}",
       "cargo": {
-        "args": ["build", "--bin={{ problem.id }}"],
+        "args": ["build", "--bin={{ wp.problem.id }}"],
         "filter": {
-          "name": "{{ problem.id }}",
+          "name": "{{ wp.problem.id }}",
           "kind": "bin"
         }
       },

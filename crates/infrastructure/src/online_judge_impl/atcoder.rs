@@ -65,7 +65,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             let url = res.url().to_string();
             let text = res.text().unwrap();
             if url.contains(HOME_URL) {
-                println!("username: {}", self.whoami().map_err(|e| DetailError::Internal("atcoder login", Box::new(e)))?);
+                println!("username: {}", self.whoami().map_err(|e| DetailError::Internal("atcoder login".to_string(), Box::new(e)))?);
                 Ok(())
             } else if text.contains("You have already signed in.") {
                 println!("already signed in");

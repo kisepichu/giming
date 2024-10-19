@@ -22,11 +22,6 @@ pub struct ProblemSummary {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Solution {
-    pub source_code: String,
-}
-
-#[derive(Serialize, Deserialize)]
 pub struct SamplePath {
     pub input: String,
     pub output: String,
@@ -39,22 +34,22 @@ pub struct Argument {
 }
 
 #[derive(Serialize, Deserialize)]
-pub struct Prediction {
-    pub arguments: Option<Vec<Argument>>,
-    pub input_part: Option<String>,
-    pub test_input_part: Option<String>,
+pub struct IOSpec {
+    pub arguments: Vec<Argument>,
+    pub input_part: String,
+    pub test_input_part: String,
     pub sample_paths: Vec<SamplePath>,
 }
 
 #[derive(Serialize)]
 pub struct WorkProblem<'p> {
     pub problem: &'p Problem,
-    pub solutions: Vec<Solution>,
-    pub prediction: Prediction,
+    pub io_spec: IOSpec,
 }
 
 #[derive(Serialize)]
 pub struct Workspace<'p> {
+    pub contest_id: String,
     pub work_problems: Vec<WorkProblem<'p>>,
 }
 

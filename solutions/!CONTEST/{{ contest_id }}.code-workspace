@@ -13,7 +13,7 @@
     "terminal.integrated.profiles.linux": {
       "giming": {
         "path": "bash",
-        "args": ["-c", "cd ../.. && cargo run -- {{ contest.id }}"]
+        "args": ["-c", "cd ../.. && cargo run -- {{ contest_id }}"]
       }
     }
     // "terminal.integrated.defaultProfile.linux": "ac-rs"

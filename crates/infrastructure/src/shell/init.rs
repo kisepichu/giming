@@ -32,7 +32,7 @@ impl Shell {
                 if r.created {
                     println!("workspace {} is initialized.", contest_id);
                 } else {
-                    println!("Opened workspace {}. Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.", contest_id);
+                    println!("Opened workspace {}.\n  - tip: Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.", contest_id);
                 }
             }
             Err(e) => {
