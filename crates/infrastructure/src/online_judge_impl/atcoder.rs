@@ -14,7 +14,6 @@ impl<R: AtcoderRequester> Atcoder<R> {
     pub fn new(requester: R) -> Self {
         Self { requester }
     }
-
 }
 
 use regex::Regex;
@@ -55,7 +54,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 .ok_or(DetailError::Parsing("username"))?
                 .to_string();
             Ok(username)
-        }().map_err(ServiceError::InitFailed)
+        }().map_err(ServiceError::WhoamiFailed)
     }
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<DetailError>> {
         || -> Result<(), DetailError> {
@@ -63,7 +62,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
 
             let status = res.status();
             let url = res.url().to_string();
-            let text = res.text().unwrap();
+            let text = res.text().map_err(DetailError::Reqwest)?;
             if url.contains(HOME_URL) {
                 println!("username: {}", self.whoami().map_err(|e| DetailError::Internal("atcoder login".to_string(), Box::new(e)))?);
                 Ok(())
@@ -143,7 +142,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             }
 
             let html = Html::parse_document(&text);
-            let selector = Selector::parse("#main-container>.row>div:nth-of-type(odd)")?;
+            let selector = Selector::parse("#main-container>.row>div:not(.alert):not(.next-page)")?;
             let elements = html.select(&selector);
             let res = elements
                 .enumerate()
@@ -208,17 +207,6 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                     let input_format: String;
                     let mut samples: Vec<Sample> = Vec::new();
                     {
-                        // {
-                        //     let test = |s: &str| -> Option<ElementRef> {
-                        //         let selector = Selector::parse(s).unwrap();
-                        //         e.select(&selector).next()
-                        //     };
-                        //     test(":scope>div").unwrap();
-                        //     test(":scope>div#task-statement").unwrap();
-                        //     test(":scope>div#task-statement>span").unwrap();
-                        //     test(":scope>div#task-statement>span>span.lang-en").unwrap();
-                        //     test(":scope>div#task-statement>span>span.lang-en>p").unwrap();
-                        // }
                         let selector =
                             Selector::parse(":scope>div#task-statement>span>span.lang-en>p")?;
                         let mut task_e = e

@@ -45,14 +45,13 @@ impl WorkspaceRepositoryImpl {
         println!("template_path: {}", template_path);
         println!("dest_path: {}", dest_path);
         println!("---");
-        fs::create_dir_all(dest_path).map_err(|e| {
-            ServiceError::InitFailed(DetailError::FileSystem(dest_path.to_string(), e))
-        })?;
-        for template_entry in fs::read_dir(template_path).map_err(|e| {
-            ServiceError::InitFailed(DetailError::FileSystem(template_path.to_string(), e))
-        })? {
+        fs::create_dir_all(dest_path)
+            .map_err(|e| ServiceError::InitFailed(DetailError::IO(dest_path.to_string(), e)))?;
+        for template_entry in fs::read_dir(template_path)
+            .map_err(|e| ServiceError::InitFailed(DetailError::IO(template_path.to_string(), e)))?
+        {
             let template_entry = template_entry.map_err(|e| {
-                ServiceError::InitFailed(DetailError::FileSystem(template_path.to_string(), e))
+                ServiceError::InitFailed(DetailError::IO(template_path.to_string(), e))
             })?;
             let child_template_pathbuf = template_entry.path();
             let child_template_path = child_template_pathbuf
@@ -93,7 +92,7 @@ impl WorkspaceRepositoryImpl {
                             .map_err(|e| {
                                 ServiceError::InitFailed(DetailError::Internal(
                                     format!(
-                                        "error in rendering file name: {}",
+                                        "error in rendering file name {}:",
                                         child_template_name
                                     ),
                                     Box::new(DetailError::Tera(e)),
@@ -119,7 +118,7 @@ impl WorkspaceRepositoryImpl {
                     tera.render_str(&child_template_name, &tera_context)
                         .map_err(|e| {
                             ServiceError::InitFailed(DetailError::Internal(
-                                "error in rendering file name:".to_string(),
+                                format!("error in rendering file name {}:", child_template_name),
                                 Box::new(DetailError::Tera(e)),
                             ))
                         })?
@@ -148,9 +147,8 @@ impl WorkspaceRepositoryImpl {
         dest_path: &str,
         tera_context: &tera::Context,
     ) -> Result<(), ServiceError<DetailError>> {
-        let template_content = fs::read_to_string(template_path).map_err(|e| {
-            ServiceError::InitFailed(DetailError::FileSystem(template_path.to_string(), e))
-        })?;
+        let template_content = fs::read_to_string(template_path)
+            .map_err(|e| ServiceError::InitFailed(DetailError::IO(template_path.to_string(), e)))?;
         let mut tera = tera::Tera::default();
         tera.add_raw_template(template_path, &template_content)
             .map_err(|e| ServiceError::InitFailed(DetailError::Tera(e)))?;
@@ -160,7 +158,9 @@ impl WorkspaceRepositoryImpl {
                     if let Err(e) = ["problem", "io_spec"]
                         .iter()
                         .map(|v| -> Result<(), ServiceError<DetailError>> {
-                            if s.to_string().contains(&format!("Variable `{}", v)) {
+                            if tera_context.get(v).is_none()
+                                && s.to_string().contains(&format!("Variable `{}", v))
+                            {
                                 Err(ServiceError::InitFailed(DetailError::Custom(format!(
                                     r#"tera error: {:?}
 
@@ -180,13 +180,12 @@ impl WorkspaceRepositoryImpl {
             }
 
             ServiceError::InitFailed(DetailError::Internal(
-                "error in rendering file:".to_string(),
+                format!("error in rendering file {}:", template_path),
                 Box::new(DetailError::Tera(e)),
             ))
         })?;
-        fs::write(dest_path, rendered).map_err(|e| {
-            ServiceError::InitFailed(DetailError::FileSystem(dest_path.to_string(), e))
-        })?;
+        fs::write(dest_path, rendered)
+            .map_err(|e| ServiceError::InitFailed(DetailError::IO(dest_path.to_string(), e)))?;
         Ok(())
     }
 }
@@ -196,23 +195,13 @@ impl WorkspaceRepository<DetailError> for WorkspaceRepositoryImpl {
         let path = expand(&self.config.contest_dir)? + contest_id;
         Path::new(&path)
             .try_exists()
-            .map_err(|e| ServiceError::InitFailed(DetailError::FileSystem(path.to_string(), e)))
+            .map_err(|e| ServiceError::InitFailed(DetailError::IO(path.to_string(), e)))
     }
     fn create(
         &self,
         contest_id: &str,
         workspace: Workspace,
     ) -> Result<(), ServiceError<DetailError>> {
-        // let mut prompt_context = tera::Context::new();
-        // prompt_context.insert("contest_id", &self.controller.contest_id());
-        // let mut tera = tera::Tera::default();
-        // print!(
-        //     "{}",
-        //     tera.render_str(&self.prompt, &prompt_context).unwrap()
-        // );
-
-        // problem.{formal_arguments, input_part, sample_paths, test_input_part}
-
         let dest_path = expand(&self.config.contest_dir)? + contest_id;
         let template_path = expand(&self.config.contest_dir)? + &self.config.template_dir_name;
         self.generate_dir(&template_path, &dest_path, &workspace)?;

@@ -1,10 +1,11 @@
-use std::io::{BufRead, Write};
 use std::iter::once;
 
 use domain::error::Error;
 use interfaces::controller::Controller;
 
 use clap::Parser;
+use rustyline::error::ReadlineError;
+use rustyline::DefaultEditor;
 use usecases::online_judge::OnlineJudge;
 use usecases::service_error::ServiceError;
 
@@ -22,7 +23,14 @@ mod whoami;
 
 fn to_contest_id(contest_id_or_url: String) -> String {
     if contest_id_or_url.starts_with("http") {
-        contest_id_or_url.split('/').last().unwrap().to_string()
+        contest_id_or_url
+            .split('/')
+            .last()
+            .expect(
+                "No panic because contest_id_or_url starts with http,
+so the split must have at least one element",
+            )
+            .to_string()
     } else {
         contest_id_or_url
     }
@@ -54,6 +62,7 @@ fn oj_from_contest_id(
 pub struct Shell {
     controller: Controller<DetailError>,
     config: &'static ConfigImpl,
+    contest_id: String,
 }
 
 impl Shell {
@@ -68,50 +77,79 @@ impl Shell {
         let repository = RepositoryImpl::new(config);
 
         Ok(Self {
-            controller: Controller::new(oj, Box::new(repository), contest_id),
+            controller: Controller::new(oj, Box::new(repository)),
             config,
+            contest_id,
         })
     }
-    fn print_prompt(&self) {
+    fn prompt(&self) -> Result<String, String> {
         let mut prompt_context = tera::Context::new();
-        prompt_context.insert("contest_id", &self.controller.contest_id());
+        prompt_context.insert("contest_id", &self.contest_id);
         let mut tera = tera::Tera::default();
-        print!(
-            "{}",
-            tera.render_str(&self.config.prompt, &prompt_context)
-                .unwrap()
-        );
-        std::io::stdout().flush().unwrap();
+        let p = tera.render_str(&self.config.prompt, &prompt_context);
+        if let Ok(p) = p {
+            Ok(p)
+        } else {
+            Ok("> ".to_string())
+        }
     }
-    pub fn run(&mut self) -> i32 {
-        let mut stdin_iter = std::io::stdin().lock().lines();
+    pub fn run(&mut self) -> Result<i32, String> {
+        // let mut stdin_iter = std::io::stdin().lock().lines();
+        let mut rl = DefaultEditor::new().map_err(|e| e.to_string())?;
+        #[cfg(feature = "with-file-history")]
+        if rl.load_history("history.txt").is_err() {
+            println!("No previous history.");
+        }
 
-        self.print_prompt();
-        while let Some(r) = stdin_iter.next() {
-            match ShellCommand::try_parse_from(once("").chain(r.unwrap().split_whitespace())) {
-                Ok(shell) => match shell.command {
-                    Command::Exit(args) => {
-                        if args.code == 0 {
-                            println!("bye");
+        loop {
+            let r = rl.readline(&self.prompt()?);
+            match r {
+                Ok(line) => {
+                    rl.add_history_entry(line.as_str())
+                        .map_err(|e| e.to_string())?;
+                    match ShellCommand::try_parse_from(once("").chain(line.split_whitespace())) {
+                        Ok(shell) => match shell.command {
+                            Command::Exit(args) => {
+                                if args.code == 0 {
+                                    println!("bye");
+                                }
+                                #[cfg(feature = "with-file-history")]
+                                rl.save_history("history.txt");
+                                return Ok(args.code);
+                            }
+                            Command::Whoami(args) => {
+                                self.whoami(args);
+                            }
+                            Command::Init(args) => {
+                                self.init(args);
+                            }
+                            Command::Login(args) => {
+                                self.login(&mut rl, args);
+                            }
+                        },
+                        Err(e) => {
+                            eprintln!("{}", e);
                         }
-                        return args.code;
                     }
-                    Command::Whoami(args) => {
-                        self.whoami(args);
-                    }
-                    Command::Init(args) => {
-                        self.init(args);
-                    }
-                    Command::Login(args) => {
-                        self.login(&mut stdin_iter, args);
-                    }
-                },
-                Err(e) => {
-                    eprintln!("{}", e);
+                    self.prompt()?;
+                }
+                Err(ReadlineError::Interrupted) => {
+                    println!("CTRL-C");
+                    break;
+                }
+                Err(ReadlineError::Eof) => {
+                    println!("CTRL-D");
+                    break;
+                }
+                Err(err) => {
+                    println!("readline error: {:?}", err);
+                    break;
                 }
             }
-            self.print_prompt();
         }
-        0
+
+        #[cfg(feature = "with-file-history")]
+        rl.save_history("history.txt");
+        Ok(0)
     }
 }

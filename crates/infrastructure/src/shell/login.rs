@@ -5,6 +5,7 @@ use std::{
 
 use domain::error::Error;
 use rpassword::read_password;
+use rustyline::{history::FileHistory, Editor};
 use usecases::service_error::ServiceError;
 
 use crate::detail_error::DetailError;
@@ -12,12 +13,8 @@ use crate::detail_error::DetailError;
 use super::{commands::LoginCommand, Shell};
 
 impl Shell {
-    pub fn login(
-        &self,
-        stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
-        args: LoginCommand,
-    ) {
-        let username = match get_username(stdin_iter, args.username) {
+    pub fn login(&self, rl: &mut Editor<(), FileHistory>, args: LoginCommand) {
+        let username = match get_username(rl, args.username) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("{}", e.error_chain());
@@ -42,7 +39,7 @@ impl Shell {
 }
 
 fn get_username(
-    stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
+    rl: &mut Editor<(), FileHistory>,
     username: String,
 ) -> Result<String, ServiceError<DetailError>> {
     let username = if username.is_empty() {
@@ -52,10 +49,11 @@ fn get_username(
                 eprintln!(
                     "  tip: Set envvars for auto login. For more information, run 'help login'"
                 );
-                print!("username: ");
-                io::stdout().flush().unwrap();
-                stdin_iter.next().unwrap().map_err(|e| {
-                    ServiceError::LoginFailed(DetailError::InvalidInput(e.to_string()))
+                rl.readline("username: ").map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::Readline(
+                        "failed to read username".to_string(),
+                        e,
+                    ))
                 })?
             }
         }
@@ -78,8 +76,15 @@ fn get_password(username: &String, password: String) -> Result<String, ServiceEr
             Err(_) => {
                 // input from stdin
                 print!("password for {}: ", username);
-                io::stdout().flush().unwrap();
-                read_password().unwrap()
+                io::stdout().flush().map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::IO("flush stdout".to_string(), e))
+                })?;
+                read_password().map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::Custom(format!(
+                        "failed to read password: {}",
+                        e
+                    )))
+                })?
             }
         }
     } else {

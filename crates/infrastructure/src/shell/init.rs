@@ -7,7 +7,7 @@ use super::{commands::InitCommand, oj_from_contest_id, to_contest_id, Shell};
 
 impl Shell {
     pub fn init(&mut self, args: InitCommand) {
-        let contest_id = to_contest_id(args.contest_id);
+        let contest_id = to_contest_id(args.contest_id.clone());
         let oj_switch = match oj_from_contest_id(&contest_id, self.controller.online_judge_name()) {
             Ok(o) => Some(o),
             Err(e) => {
@@ -34,6 +34,7 @@ impl Shell {
                 } else {
                     println!("Opened workspace {}.\n  - tip: Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.", contest_id);
                 }
+                self.contest_id = args.contest_id;
             }
             Err(e) => {
                 eprintln!("{}", e.error_chain());
