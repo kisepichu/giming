@@ -1,6 +1,8 @@
 use domain::error::Error;
 use usecases::{
-    online_judge::OnlineJudge, repository::Repository, service::Service,
+    online_judge::OnlineJudge,
+    repository::Repository,
+    service::{init::InitResult, Service},
     service_error::ServiceError,
 };
 
@@ -39,7 +41,7 @@ impl<E: Error + 'static> Controller<E> {
         &mut self,
         args: T,
         oj_switch: Option<Box<dyn OnlineJudge<E>>>,
-    ) -> Result<(), ServiceError<E>> {
+    ) -> Result<InitResult, ServiceError<E>> {
         self.service.init(args.contest_id(), oj_switch)
     }
 }

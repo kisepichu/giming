@@ -15,7 +15,7 @@ impl<E: std::error::Error> Error for E {
         res += &format!("{}", self);
         let mut current_error: &dyn std::error::Error = self;
         while let Some(cause) = current_error.source() {
-            res += &format!("\n caused by: {}", cause);
+            res += &format!("\ncaused by: {}", cause);
             current_error = cause;
         }
         res

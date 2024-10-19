@@ -1,6 +1,6 @@
-mod init;
-mod login;
-mod whoami;
+pub mod init;
+pub mod login;
+pub mod whoami;
 
 use domain::error::Error;
 
