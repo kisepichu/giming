@@ -1,0 +1,21 @@
+{
+  "folders": [
+    {
+      "name": "src",
+      "path": "src/bin"
+    },
+    {
+      "name": "root",
+      "path": "."
+    }
+  ],
+  "settings": {
+    "terminal.integrated.profiles.linux": {
+      "giming": {
+        "path": "bash",
+        "args": ["-c", "cd ../.. && cargo run -- {{ contest_id }}"]
+      }
+    }
+    // "terminal.integrated.defaultProfile.linux": "ac-rs"
+  }
+}

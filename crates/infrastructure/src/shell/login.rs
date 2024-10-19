@@ -3,46 +3,57 @@ use std::{
     io::{self, Write},
 };
 
+use domain::error::Error;
 use rpassword::read_password;
-use usecases::service::{error::ServiceError, online_judge::OnlineJudge};
+use rustyline::{history::FileHistory, Editor};
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 use super::{commands::LoginCommand, Shell};
 
-impl<O: OnlineJudge<DetailError>> Shell<O> {
-    pub fn login(
-        &self,
-        stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
-        login_args: LoginCommand,
-    ) -> Result<(), Box<ServiceError<DetailError>>> {
-        let username = get_username(stdin_iter, login_args.username)?;
-        let password = get_password(&username, login_args.password)?;
-        self.controller.login(LoginCommand {
-            username,
-            password,
-            online_judge: login_args.online_judge,
-        })
+impl Shell {
+    pub fn login(&self, rl: &mut Editor<(), FileHistory>, args: LoginCommand) {
+        let username = match get_username(rl, args.username) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                return;
+            }
+        };
+        let password = match get_password(&username, args.password) {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                return;
+            }
+        };
+        match self.controller.login(LoginCommand { username, password }) {
+            Ok(_) => println!("login success"),
+            Err(e) => {
+                eprintln!("{}", e.error_chain());
+                println!("login failed");
+            }
+        }
     }
 }
 
 fn get_username(
-    stdin_iter: &mut impl Iterator<Item = Result<String, std::io::Error>>,
+    rl: &mut Editor<(), FileHistory>,
     username: String,
-) -> Result<String, Box<ServiceError<DetailError>>> {
+) -> Result<String, ServiceError<DetailError>> {
     let username = if username.is_empty() {
         match env::var("ATCODER_USERNAME") {
             Ok(u) => u,
             Err(_) => {
                 eprintln!(
-                    "  - tips: Set envvars to avoid prompting. For more information, run 'help login'"
+                    "  tip: Set envvars for auto login. For more information, run 'help login'"
                 );
-                print!("username: ");
-                io::stdout().flush().unwrap();
-                stdin_iter.next().unwrap().map_err(|e| {
-                    Box::new(ServiceError::LoginFailed(DetailError::InvalidInput(
-                        e.to_string(),
-                    )))
+                rl.readline("username: ").map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::Readline(
+                        "failed to read username".to_string(),
+                        e,
+                    ))
                 })?
             }
         }
@@ -50,34 +61,40 @@ fn get_username(
         username
     };
     if username.is_empty() {
-        return Err(Box::new(ServiceError::LoginFailed(
-            DetailError::InvalidInput("username is empty".to_string()),
-        )));
+        Err(ServiceError::LoginFailed(DetailError::InvalidInput(
+            "username is empty".to_string(),
+        )))
+    } else {
+        Ok(username)
     }
-    return Ok(username);
 }
 
-fn get_password(
-    username: &String,
-    password: String,
-) -> Result<String, Box<ServiceError<DetailError>>> {
+fn get_password(username: &String, password: String) -> Result<String, ServiceError<DetailError>> {
     let password = if password.is_empty() {
         match env::var("ATCODER_PASSWORD") {
             Ok(p) => p,
             Err(_) => {
                 // input from stdin
                 print!("password for {}: ", username);
-                io::stdout().flush().unwrap();
-                read_password().unwrap()
+                io::stdout().flush().map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::IO("flush stdout".to_string(), e))
+                })?;
+                read_password().map_err(|e| {
+                    ServiceError::LoginFailed(DetailError::Custom(format!(
+                        "failed to read password: {}",
+                        e
+                    )))
+                })?
             }
         }
     } else {
         password
     };
     if password.is_empty() {
-        return Err(Box::new(ServiceError::LoginFailed(
-            DetailError::InvalidInput("password is empty".to_string()),
-        )));
+        Err(ServiceError::LoginFailed(DetailError::InvalidInput(
+            "password is empty".to_string(),
+        )))
+    } else {
+        Ok(password)
     }
-    return Ok(password);
 }

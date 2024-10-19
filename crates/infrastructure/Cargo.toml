@@ -17,6 +17,10 @@ thiserror = "1.0.60"
 anyhow = "1.0.83"
 mockall = "0.12.1"
 rstest = "0.19.0"
+confy = "0.6.1"
+regex = "1.11.0"
+shellexpand = "3.1.0"
+rustyline = "14.0.0"
 
 [dev-dependencies]
 http = "1.1.0"

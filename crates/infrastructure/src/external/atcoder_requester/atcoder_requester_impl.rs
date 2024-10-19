@@ -1,9 +1,11 @@
+use std::io::Write;
+
 use reqwest::blocking::{Client, Response};
 use scraper::{Html, Selector};
 use serde::Serialize;
-use usecases::service::error::ServiceError;
+use usecases::service_error::ServiceError;
 
-use crate::error::DetailError;
+use crate::detail_error::DetailError;
 
 use super::AtcoderRequester;
 
@@ -17,7 +19,7 @@ pub struct AtcoderRequesterImpl {
 }
 
 impl AtcoderRequesterImpl {
-    pub fn new() -> Result<Self, ServiceError<Box<DetailError>>> {
+    pub fn new() -> Result<Self, ServiceError<DetailError>> {
         || -> Result<Self, DetailError> {
             let client = Client::builder().cookie_store(true).build()?;
             let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
@@ -26,14 +28,14 @@ impl AtcoderRequesterImpl {
             let csrf_token = html
                 .select(&selector)
                 .next()
-                .ok_or(DetailError::ParsingElementNotFound)?
+                .ok_or(DetailError::ParsingElementNotFound("new csrf_token"))?
                 .value()
                 .attr("value")
-                .ok_or(DetailError::ParsingElementNotFound)?
+                .ok_or(DetailError::ParsingElementNotFound("new csrf_token attr"))?
                 .to_string();
             Ok(Self { client, csrf_token })
         }()
-        .map_err(|e| ServiceError::InstantiateFailed(Box::new(e)))
+        .map_err(ServiceError::InstantiateFailed) // |e| ServiceError::InstantiateFailed(e)
     }
 }
 
@@ -44,20 +46,31 @@ struct AtcoderLoginRequest {
     csrf_token: String,
 }
 
+const DOWNLOAD: bool = false;
+
+impl AtcoderRequesterImpl {
+    fn download_testing_html(&self, url: String, path: &str) -> Result<(), DetailError> {
+        if DOWNLOAD {
+            let sent = self.client.get(url).send();
+            if sent.is_err() {
+                println!("sent: {:?}", sent);
+            }
+            let body = sent?.text()?;
+            let mut file =
+                std::fs::File::create(path).map_err(|e| DetailError::IO(path.to_string(), e))?;
+            file.write_all(body.as_bytes())
+                .map_err(|e| DetailError::IO(path.to_string(), e))?;
+        }
+        Ok(())
+    }
+}
+
 impl AtcoderRequester for AtcoderRequesterImpl {
     fn get_home(&self) -> Result<Response, DetailError> {
-        // {
-        //     let body = self
-        //         .client
-        //         .get(BASE_URL.to_string() + HOME_URL)
-        //         .send()?
-        //         .text()?;
-        //     let current_dir = std::env::current_dir().unwrap();
-        //     eprintln!("current_dir = {:?}", current_dir);
-        //     let mut file =
-        //         std::fs::File::create("tests/responses/atcoder_get_home_logged_in.html").unwrap();
-        //     file.write_all(body.as_bytes()).unwrap();
-        // }
+        self.download_testing_html(
+            "https://atcoder.jp/home".to_string(),
+            "crates/infrastructure/tests/external/atcoder_get_home_in_contest_logged_in.html",
+        )?;
         Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError> {
@@ -74,6 +87,26 @@ impl AtcoderRequester for AtcoderRequesterImpl {
     }
     fn get_contest(&self, _contest_id: &str) -> Result<Response, DetailError> {
         todo!()
+    }
+    fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
+        self.download_testing_html(
+            format!("https://atcoder.jp/contests/{}/tasks", contest_id),
+            "crates/infrastructure/tests/external/atcoder_get_tasks_in_contest.html",
+        )?;
+        Ok(self
+            .client
+            .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
+            .send()?)
+    }
+    fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError> {
+        self.download_testing_html(
+            format!("https://atcoder.jp/contests/{}/tasks_print", contest_id),
+            "crates/infrastructure/tests/external/atcoder_get_tasks_print_in_contest.html",
+        )?;
+        Ok(self
+            .client
+            .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print")
+            .send()?)
     }
     fn submit(
         &self,

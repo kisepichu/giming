@@ -1,0 +1,2 @@
+{{ contest_id }}
+{{ work_problems.0.problem.id }}
