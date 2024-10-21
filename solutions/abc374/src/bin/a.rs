@@ -39,13 +39,10 @@ macro_rules! out {
         }
     };
 }
-{% if io_spec.input_part %}
-{% else %}
-// prediction failed
 
-{% endif %}
 #[allow(unused)]
-fn solve<W: Write>(io: &mut W{% for a in io_spec.arguments %}, {{ a.var }}: {{ a.ty }}{% endfor %}) -> anyhow::Result<()> {
+fn solve<W: Write>(io: &mut W, n: usize, a: Vec<usize>, s: String) -> anyhow::Result<()> {
+    out!(io; v a, s);
     Ok(())
 }
 
@@ -68,25 +65,11 @@ impl<'a, T: fmt::Display + 'a> fmt::Display for SliceDisplay<'a, T> {
 }
 
 fn main() {
-    {{ io_spec.input_part }}let mut stdout = stdout().lock();
-    solve(&mut stdout{% for a in io_spec.arguments %}, {{ a.var }}{% endfor %}).unwrap();
-}{% if io_spec.sample_paths %}
-
-#[cfg(test)]
-mod test {
-    use proconio::{source::once::OnceSource, *};
-
-    #[rstest::rstest(input, expected,
-        {% for s in io_spec.sample_paths %}case(include_str!("../../{{ s.input }}"), include_str!("../../{{ s.output }}")),
-        {% endfor %}
-    )]
-    fn test_solve(input: &str, expected: &str) {
-        let source = OnceSource::from(input);
-        {{ io_spec.test_input_part }}
-        let mut buf = Vec::new();
-        super::solve(&mut buf, n, s).unwrap();
-        let output = String::from_utf8(buf).unwrap();
-        assert_eq!(expected.to_string(), output);
+    input! {
+        n: usize,
+        a: [usize; n],
+        s: String,
     }
+    let mut stdout = stdout().lock();
+    solve(&mut stdout, n, a, s).unwrap();
 }
-{% endif %}

@@ -26,6 +26,7 @@ impl<E: Error + 'static> Service<E> {
         }
 
         let problems = self.online_judge.get_problems_detail(&contest_id)?;
+
         let work_problems = problems
             .iter()
             .map(|p| WorkProblem {
@@ -37,9 +38,11 @@ impl<E: Error + 'static> Service<E> {
             contest_id: contest_id.clone(),
             work_problems,
         };
+
         self.repository
             .contest_repo()
             .create(&contest_id, workspace)?;
+
         Ok(InitResult { created: true })
     }
 }

@@ -23,14 +23,16 @@ impl IOInferrer {
         n: usize,
         a: [usize; n],
         s: String,
-    }"#
+    }
+"#
             .to_string(),
             test_input_part: r#"input! {
             from source,
             n: usize,
             a: [usize; n],
             s: String,
-        }"#
+        }
+"#
             .to_string(),
             sample_paths: vec![
                 SamplePath {
