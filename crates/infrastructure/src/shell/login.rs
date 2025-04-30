@@ -5,12 +5,12 @@ use std::{
 
 use domain::error::Error;
 use rpassword::read_password;
-use rustyline::{history::FileHistory, Editor};
+use rustyline::{Editor, history::FileHistory};
 use usecases::service_error::ServiceError;
 
 use crate::detail_error::DetailError;
 
-use super::{commands::LoginCommand, Shell};
+use super::{Shell, commands::LoginCommand};
 
 impl Shell {
     pub fn login(&self, rl: &mut Editor<(), FileHistory>, args: LoginCommand) {

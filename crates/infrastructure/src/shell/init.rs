@@ -3,7 +3,7 @@ use usecases::service_error::ServiceError;
 
 use crate::detail_error::DetailError;
 
-use super::{commands::InitCommand, oj_from_contest_id, to_contest_id, Shell};
+use super::{Shell, commands::InitCommand, oj_from_contest_id, to_contest_id};
 
 impl Shell {
     pub fn init(&mut self, args: InitCommand) {
@@ -32,7 +32,10 @@ impl Shell {
                 if r.created {
                     println!("workspace {} is initialized.", contest_id);
                 } else {
-                    println!("Opened workspace {}.\n  - tip: Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.", contest_id);
+                    println!(
+                        "Opened workspace {}.\n  - tip: Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.",
+                        contest_id
+                    );
                 }
                 if self.contest_id != args.contest_id {
                     println!(

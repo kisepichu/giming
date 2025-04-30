@@ -17,7 +17,7 @@ mod tests {
     use crate::{
         config::MockConfig,
         online_judge::MockOnlineJudge,
-        repository::{contest_repository::MockWorkspaceRepository, MockRepository},
+        repository::{MockRepository, contest_repository::MockWorkspaceRepository},
         service::Service,
         service_error::ServiceError,
     };

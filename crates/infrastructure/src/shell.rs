@@ -4,8 +4,8 @@ use domain::error::Error;
 use interfaces::controller::Controller;
 
 use clap::Parser;
-use rustyline::error::ReadlineError;
 use rustyline::DefaultEditor;
+use rustyline::error::ReadlineError;
 use usecases::online_judge::OnlineJudge;
 use usecases::service_error::ServiceError;
 

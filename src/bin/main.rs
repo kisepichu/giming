@@ -2,7 +2,7 @@ use clap::Parser;
 use domain::error::ResultChain;
 use infrastructure::{
     config_impl::ConfigImpl,
-    shell::{commands::Cli, Shell},
+    shell::{Shell, commands::Cli},
 };
 
 fn main() {

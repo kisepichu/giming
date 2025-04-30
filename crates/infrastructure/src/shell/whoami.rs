@@ -3,7 +3,7 @@ use usecases::service_error::ServiceError;
 
 use crate::detail_error::DetailError;
 
-use super::{commands::WhoamiCommand, Shell};
+use super::{Shell, commands::WhoamiCommand};
 
 impl Shell {
     pub fn whoami(&self, args: WhoamiCommand) {

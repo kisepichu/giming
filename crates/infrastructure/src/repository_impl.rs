@@ -1,4 +1,4 @@
-use usecases::repository::{contest_repository::WorkspaceRepository, Repository};
+use usecases::repository::{Repository, contest_repository::WorkspaceRepository};
 
 use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 

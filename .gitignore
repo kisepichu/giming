@@ -1,4 +1,5 @@
-# env.sh
+env.sh
+add.sh
 compete/target
 atcoder-tools/*
 !atcoder-tools/template

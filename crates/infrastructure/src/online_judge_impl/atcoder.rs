@@ -1,6 +1,6 @@
 use crate::detail_error::DetailError;
-use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 use crate::external::atcoder_requester::AtcoderRequester;
+use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 
 use domain::entity::{Problem, ProblemSummary, Sample};
 use scraper::{ElementRef, Html, Selector};

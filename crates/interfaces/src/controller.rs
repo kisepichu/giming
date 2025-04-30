@@ -2,7 +2,7 @@ use domain::error::Error;
 use usecases::{
     online_judge::OnlineJudge,
     repository::Repository,
-    service::{init::InitResult, Service},
+    service::{Service, init::InitResult},
     service_error::ServiceError,
 };
 
