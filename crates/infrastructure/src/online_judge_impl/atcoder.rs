@@ -50,7 +50,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                 .to_string();
             let username = href
                 .split('/')
-                .last()
+                .next_back()
                 .ok_or(DetailError::Parsing("username"))?
                 .to_string();
             Ok(username)
@@ -121,7 +121,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                         .to_string();
                     let id = url
                         .split('/')
-                        .last()
+                        .next_back()
                         .ok_or(DetailError::ParsingElementNotFound(
                             "get_problems_summary id",
                         ))?
@@ -345,7 +345,7 @@ mod tests {
 
     #[rstest::rstest(path, expected,
         case("tests/external/atcoder_get_home_logged_in.sanitized.html", Ok("kisepichu".to_string())),
-        case("tests/external/atcoder_get_home.sanitized.html", Err(ServiceError::InitFailed(DetailError::ParsingElementNotFound("whoami href")))),
+        case("tests/external/atcoder_get_home.sanitized.html", Err(ServiceError::WhoamiFailed(DetailError::ParsingElementNotFound("whoami href")))),
     )]
     fn test_whoami(
         path: &str,

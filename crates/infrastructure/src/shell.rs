@@ -16,7 +16,7 @@ use crate::online_judge_impl::atcoder::Atcoder;
 use crate::repository_impl::RepositoryImpl;
 
 pub mod commands;
-use commands::{Cli, Command, ShellCommand};
+use commands::{Cli, Command, InitCommand, ShellCommand};
 mod init;
 mod login;
 mod whoami;
@@ -25,7 +25,7 @@ fn to_contest_id(contest_id_or_url: String) -> String {
     if contest_id_or_url.starts_with("http") {
         contest_id_or_url
             .split('/')
-            .last()
+            .next_back()
             .expect(
                 "No panic because contest_id_or_url starts with http,
 so the split must have at least one element",
@@ -76,11 +76,13 @@ impl Shell {
         };
         let repository = RepositoryImpl::new(config);
 
-        Ok(Self {
+        let mut s = Self {
             controller: Controller::new(oj, Box::new(repository)),
             config,
-            contest_id,
-        })
+            contest_id: "".to_string(),
+        };
+        s.init(InitCommand { contest_id });
+        Ok(s)
     }
     fn prompt(&self) -> Result<String, String> {
         let mut prompt_context = tera::Context::new();
@@ -96,7 +98,6 @@ impl Shell {
     pub fn run(&mut self) -> Result<i32, String> {
         // let mut stdin_iter = std::io::stdin().lock().lines();
         let mut rl = DefaultEditor::new().map_err(|e| e.to_string())?;
-        #[cfg(feature = "with-file-history")]
         if rl.load_history("history.txt").is_err() {
             println!("No previous history.");
         }
@@ -113,8 +114,7 @@ impl Shell {
                                 if args.code == 0 {
                                     println!("bye");
                                 }
-                                #[cfg(feature = "with-file-history")]
-                                rl.save_history("history.txt");
+                                rl.save_history("history.txt").map_err(|e| e.to_string())?;
                                 return Ok(args.code);
                             }
                             Command::Whoami(args) => {
@@ -148,8 +148,7 @@ impl Shell {
             }
         }
 
-        #[cfg(feature = "with-file-history")]
-        rl.save_history("history.txt");
+        rl.save_history("history.txt").map_err(|e| e.to_string())?;
         Ok(0)
     }
 }

@@ -34,7 +34,22 @@ impl Shell {
                 } else {
                     println!("Opened workspace {}.\n  - tip: Run `new-solution <PROBLEM>` to recreate solution, or `new-workspace` to recreate workspace. Old ones will be archived.", contest_id);
                 }
-                self.contest_id = args.contest_id;
+                if self.contest_id != args.contest_id {
+                    println!(
+                        "{}",
+                        match system::system(
+                            format!(
+                                "code {}/{}/{}.code-workspace --new-window",
+                                self.config.contest_dir, contest_id, contest_id
+                            )
+                            .as_str(),
+                        ) {
+                            Ok(_) => "opening vscode...",
+                            Err(_) => "error opening vscode",
+                        }
+                    );
+                    self.contest_id = args.contest_id;
+                }
             }
             Err(e) => {
                 eprintln!("{}", e.error_chain());

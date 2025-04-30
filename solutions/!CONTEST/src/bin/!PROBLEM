@@ -68,7 +68,7 @@ impl<'a, T: fmt::Display + 'a> fmt::Display for SliceDisplay<'a, T> {
 }
 
 fn main() {
-    {{ io_spec.input_part }}let mut stdout = stdout().lock();
+    {{ io_spec.input_part }}    let mut stdout = stdout().lock();
     solve(&mut stdout{% for a in io_spec.arguments %}, {{ a.var }}{% endfor %}).unwrap();
 }{% if io_spec.sample_paths %}
 
@@ -84,7 +84,7 @@ mod test {
         let source = OnceSource::from(input);
         {{ io_spec.test_input_part }}
         let mut buf = Vec::new();
-        super::solve(&mut buf, n, s).unwrap();
+        super::solve(&mut buf{% for a in io_spec.arguments %}, {{ a.var }}{% endfor %}).unwrap();
         let output = String::from_utf8(buf).unwrap();
         assert_eq!(expected.to_string(), output);
     }
