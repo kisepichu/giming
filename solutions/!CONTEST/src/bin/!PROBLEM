@@ -77,7 +77,7 @@ mod test {
     use proconio::{source::once::OnceSource, *};
 
     #[rstest::rstest(input, expected,
-        {% for s in io_spec.sample_paths %}case(include_str!("../../{{ s.input }}"), include_str!("../../{{ s.output }}")),
+        {% for s in problem.samples %}case(r"{{ s.input }}", r"{{ s.output }}"),
         {% endfor %}
     )]
     fn test_solve(input: &str, expected: &str) {

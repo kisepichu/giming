@@ -22,6 +22,8 @@ impl<E: Error + 'static> Service<E> {
         }
 
         if self.repository.contest_repo().exists(&contest_id)? {
+            // self.workspace = self.repository.contest_repo().get_workspace(&contest_id)?;
+            // todo
             return Ok(InitResult { created: false });
         }
 
@@ -41,7 +43,7 @@ impl<E: Error + 'static> Service<E> {
 
         self.repository
             .contest_repo()
-            .create(&contest_id, workspace)?;
+            .create_workspace(&contest_id, &workspace)?;
 
         Ok(InitResult { created: true })
     }

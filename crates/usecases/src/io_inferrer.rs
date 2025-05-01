@@ -1,4 +1,4 @@
-use domain::entity::{Argument, IOSpec, Problem, SamplePath};
+use domain::entity::{Argument, IOSpec, Problem};
 
 pub struct IOInferrer {}
 
@@ -35,27 +35,12 @@ impl IOInferrer {
         }
 "#
             .to_string(),
-            sample_paths: vec![
-                SamplePath {
-                    input: "testcases/a/in/0.in".to_string(),
-                    output: "testcases/a/out/0.out".to_string(),
-                },
-                SamplePath {
-                    input: "testcases/a/in/1.in".to_string(),
-                    output: "testcases/a/out/1.out".to_string(),
-                },
-                SamplePath {
-                    input: "testcases/a/in/2.in".to_string(),
-                    output: "testcases/a/out/2.out".to_string(),
-                },
-            ],
         } // todo
 
         // IOSpec {
         //     arguments: vec![],
         //     input_part: "".to_string(),
         //     test_input_part: "".to_string(),
-        //     sample_paths: vec![],
         // } // todo
     }
 }

@@ -7,6 +7,10 @@ use crate::service_error::ServiceError;
 pub trait WorkspaceRepository<E: Error + 'static> {
     fn exists(&self, contest_id: &str) -> Result<bool, ServiceError<E>>;
     #[allow(clippy::needless_lifetimes)] // need for automock
-    fn create<'p>(&self, contest_id: &str, workspace: Workspace<'p>)
-    -> Result<(), ServiceError<E>>;
+    fn create_workspace<'p>(
+        &self,
+        contest_id: &str,
+        workspace: &Workspace<'p>,
+    ) -> Result<(), ServiceError<E>>;
+    fn get_workspace<'p>(&self, contest_id: &str) -> Result<Workspace<'p>, ServiceError<E>>;
 }

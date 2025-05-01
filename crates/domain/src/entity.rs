@@ -38,7 +38,6 @@ pub struct IOSpec {
     pub arguments: Vec<Argument>,
     pub input_part: String,
     pub test_input_part: String,
-    pub sample_paths: Vec<SamplePath>,
 }
 
 #[derive(Serialize)]
