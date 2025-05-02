@@ -43,9 +43,8 @@ macro_rules! out {
 {% else %}
 // prediction failed
 
-{% endif %}
-#[allow(unused)]
-fn solve<W: Write>(io: &mut W{% for a in io_spec.arguments %}, {{ a.var }}: {{ a.ty }}{% endfor %}) -> anyhow::Result<()> {
+{% endif %}{% set a = io_spec.arguments | map(attribute="var") %}
+fn solve<W: Write>({% if a is containing("w") %}io{% else %}w{% endif %}: &mut W{% for a in io_spec.arguments %}, {{ a.var }}: {{ a.ty }}{% endfor %}) -> anyhow::Result<()> {
     Ok(())
 }
 
@@ -70,7 +69,7 @@ impl<'a, T: fmt::Display + 'a> fmt::Display for SliceDisplay<'a, T> {
 fn main() {
     {{ io_spec.input_part }}    let mut stdout = stdout().lock();
     solve(&mut stdout{% for a in io_spec.arguments %}, {{ a.var }}{% endfor %}).unwrap();
-}{% if io_spec.sample_paths %}
+}{% if problem.samples %}
 
 #[cfg(test)]
 mod test {

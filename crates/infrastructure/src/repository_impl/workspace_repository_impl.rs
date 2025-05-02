@@ -43,7 +43,7 @@ impl WorkspaceRepository<DetailError> for WorkspaceRepositoryImpl {
             .try_exists()
             .map_err(|e| ServiceError::InitFailed(DetailError::IO(path.to_string(), e)))
     }
-    fn create_workspace(
+    fn create(
         &self,
         contest_id: &str,
         workspace: &Workspace,
@@ -52,11 +52,5 @@ impl WorkspaceRepository<DetailError> for WorkspaceRepositoryImpl {
         let template_path = expand(&self.config.contest_dir)? + &self.config.template_dir_name;
         self.generate_dir(&template_path, &dest_path, workspace)?;
         Ok(())
-    }
-    fn get_workspace<'p>(
-        &self,
-        _contest_id: &str,
-    ) -> Result<Workspace<'p>, ServiceError<DetailError>> {
-        todo!()
     }
 }

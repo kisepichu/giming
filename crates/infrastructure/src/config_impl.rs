@@ -11,23 +11,26 @@ pub struct ConfigImpl {
     pub contest_dir: String,
     pub template_dir_name: String,
     pub problem_file_name: String,
-    pub problem_extrustion: String,
-    pub testcases_dir_name: String,
-    pub testcase_extrustion_input: String,
-    pub testcase_extrustion_output: String,
+    pub problem_file_template: String,
+    pub testcase_in_file: String,
+    pub testcase_out_file: String,
+    pub testcase_in_template: String,
+    pub testcase_out_template: String,
 }
 
 impl Default for ConfigImpl {
     fn default() -> Self {
         Self {
-            prompt: "{{contest_id}}> ".to_string(),
+            prompt: "{{ contest_id }}> ".to_string(),
             contest_dir: "~/repos/giming/solutions".to_string(),
             template_dir_name: "!CONTEST".to_string(),
             problem_file_name: "!PROBLEM".to_string(),
-            problem_extrustion: "{{ problem.code | lower }}.rs".to_string(),
-            testcases_dir_name: "!TESTCASES".to_string(),
-            testcase_extrustion_input: "{{ problem.code }}/in/{{ testcase.index }}.in".to_string(),
-            testcase_extrustion_output: "{{ problem.code }}/out/{{ testcase.index }}.out"
+            problem_file_template: "{{ problem.code | lower }}.rs".to_string(),
+            testcase_in_file: "!TESTCASE_IN".to_string(),
+            testcase_out_file: "!TESTCASE_OUT".to_string(),
+            testcase_in_template: "{{ problem.code | lower }}/in/{{ testcase_index }}.in"
+                .to_string(),
+            testcase_out_template: "{{ problem.code | lower }}/out/{{ testcase_index }}.out"
                 .to_string(),
         }
     }

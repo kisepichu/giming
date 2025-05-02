@@ -7,6 +7,10 @@ nohup.out
 target
 *.html
 !*.sanitized.html
+*Zone.Identifier
+history.txt
+# tmp
+abc376
 
 # Added by cargo
 

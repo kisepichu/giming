@@ -8,30 +8,30 @@ impl IOInferrer {
         IOSpec {
             arguments: vec![
                 Argument {
-                    ty: "usize".to_string(),
+                    ty: "isize".to_string(),
                     var: "n".to_string(),
                 },
                 Argument {
-                    ty: "Vec<usize>".to_string(),
-                    var: "a".to_string(),
+                    ty: "isize".to_string(),
+                    var: "c".to_string(),
                 },
                 Argument {
-                    ty: "String".to_string(),
-                    var: "s".to_string(),
+                    ty: "Vec<isize>".to_string(),
+                    var: "a".to_string(),
                 },
             ],
             input_part: r#"input! {
-        n: usize,
-        a: [usize; n],
-        s: String,
+        n: isize,
+        c: isize,
+        a: [isize; n],
     }
 "#
             .to_string(),
             test_input_part: r#"input! {
             from source,
-            n: usize,
-            a: [usize; n],
-            s: String,
+            n: isize,
+            c: isize,
+            a: [isize; n],
         }
 "#
             .to_string(),
