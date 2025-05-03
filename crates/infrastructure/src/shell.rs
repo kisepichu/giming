@@ -79,7 +79,7 @@ impl Shell {
         let mut s = Self {
             controller: Controller::new(oj, Box::new(repository)),
             config,
-            contest_id: "".to_string(),
+            contest_id: contest_id.clone(),
         };
         s.init(InitCommand { contest_id });
         Ok(s)

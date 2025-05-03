@@ -21,29 +21,43 @@ impl<E: Error + 'static> Service<E> {
             self.online_judge = oj;
         }
 
-        if self.repository.contest_repo().exists(&contest_id)? {
+        if self.repository.contest_repo().exists(&contest_id)?
+            && !self
+                .repository
+                .contest_repo()
+                .exists_unstarted(&contest_id)?
+        {
             return Ok(InitResult { created: false });
         }
 
-        let problems = self.online_judge.get_problems_detail(&contest_id)?;
+        loop {
+            if let Ok(problems) = self.online_judge.get_problems_detail(&contest_id) {
+                let work_problems = problems
+                    .iter()
+                    .map(|p| WorkProblem {
+                        problem: p,
+                        io_spec: IOInferrer::infer(p),
+                    })
+                    .collect();
+                let workspace = Workspace {
+                    contest_id: contest_id.clone(),
+                    work_problems,
+                };
 
-        let work_problems = problems
-            .iter()
-            .map(|p| WorkProblem {
-                problem: p,
-                io_spec: IOInferrer::infer(p),
-            })
-            .collect();
-        let workspace = Workspace {
-            contest_id: contest_id.clone(),
-            work_problems,
-        };
+                self.repository
+                    .contest_repo()
+                    .create(&contest_id, &workspace)?;
 
-        self.repository
-            .contest_repo()
-            .create(&contest_id, &workspace)?;
-
-        Ok(InitResult { created: true })
+                return Ok(InitResult { created: true });
+            }
+            if !self.repository.contest_repo().exists(&contest_id)? {
+                self.repository
+                    .contest_repo()
+                    .create_unstarted(&contest_id)?;
+                return Ok(InitResult { created: false });
+            }
+            self.online_judge.wait_for_start(&contest_id)?;
+        }
     }
 }
 

@@ -3,11 +3,9 @@ name = "{{ contest_id }}"
 version = "0.1.0"
 edition = "2024"
 
-{% for wp in work_problems %}
 [[bin]]
-name = "{{ wp.problem.code | lower }}"
-path = "src/bin/{{ wp.problem.code | lower }}.rs"
-{% endfor %}
+name = "a"
+path = "src/bin/a.rs"
 
 [dependencies]
 anyhow = "1.0.90"

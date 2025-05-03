@@ -1,3 +1,5 @@
+use std::thread::sleep;
+
 use crate::detail_error::DetailError;
 use crate::external::atcoder_requester::AtcoderRequester;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
@@ -85,6 +87,55 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
             }
         }()
         .map_err(ServiceError::LoginFailed)
+    }
+    fn wait_for_start(&self, contest_id: &str) -> Result<(), ServiceError<DetailError>> {
+        use chrono::prelude::*;
+        || -> Result<(), DetailError> {
+            let res = self.requester.get_contest(contest_id)?;
+            let status = res.status();
+            let text = res.text()?;
+
+            if !status.is_success() {
+                return Err(DetailError::UnexpectedStatusCode(
+                    "atcoder get_contest",
+                    status,
+                ));
+            }
+
+            let html = Html::parse_document(&text);
+            let selector = Selector::parse("small.contest-duration>a>time")?;
+            let element =
+                html.select(&selector)
+                    .next()
+                    .ok_or(DetailError::ParsingElementNotFound(
+                        "wait_for_start start_time",
+                    ))?;
+            let time_str = element.text().collect::<String>();
+
+            let time_str = time_str.replace("(Sat)", "");
+            let time_str = time_str.trim();
+            let start_time = NaiveDateTime::parse_from_str(time_str, "%Y-%m-%d %H:%M")
+                .map_err(|_e| DetailError::Parsing("wait_for_start start_time"))?;
+
+            let now = Local::now().naive_local();
+            let duration = start_time.signed_duration_since(now);
+
+            match duration.to_std() {
+                Ok(d) => {
+                    println!("start_time: {}", start_time);
+                    println!("now: {}", now);
+                    println!("duration: {:?}", duration);
+                    println!("sleeping for {} seconds", d.as_secs());
+                    sleep(d);
+                }
+                Err(_) => {
+                    println!("already started");
+                }
+            }
+
+            Ok(())
+        }()
+        .map_err(ServiceError::InitFailed)
     }
     fn get_problems_summary(
         &self,

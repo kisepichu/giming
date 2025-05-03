@@ -2,10 +2,30 @@ use domain::error::Error;
 use usecases::service_error::ServiceError;
 
 use crate::detail_error::DetailError;
+use tera::Tera;
 
 use super::{Shell, commands::InitCommand, oj_from_contest_id, to_contest_id};
 
 impl Shell {
+    fn open(&self, contest_id: &str) {
+        let mut tera = Tera::default();
+        let mut tera_context = tera::Context::new();
+        tera_context.insert("contest_dir", &self.config.solutions_root);
+        tera_context.insert("contest_id", contest_id);
+        match tera.render_str(&self.config.open_command, &tera_context) {
+            Ok(command) => println!(
+                "{}",
+                match system::system(command.as_str()) {
+                    Ok(_) => "executing open_command",
+                    Err(_) => "error executing open_command",
+                }
+            ),
+            Err(e) => {
+                eprintln!("error rendering open_command: {}", e);
+            }
+        }
+    }
+
     pub fn init(&mut self, args: InitCommand) {
         let contest_id = to_contest_id(args.contest_id.clone());
         let oj_switch = match oj_from_contest_id(&contest_id, self.controller.online_judge_name()) {
@@ -37,21 +57,11 @@ impl Shell {
                         contest_id
                     );
                 }
-                if self.contest_id != args.contest_id {
-                    println!(
-                        "{}",
-                        match system::system(
-                            format!(
-                                "code {}/{}/{}.code-workspace --new-window",
-                                self.config.contest_dir, contest_id, contest_id
-                            )
-                            .as_str(),
-                        ) {
-                            Ok(_) => "opening vscode...",
-                            Err(_) => "error opening vscode",
-                        }
-                    );
-                    self.contest_id = args.contest_id;
+                self.contest_id = args.contest_id;
+
+                if std::env::var("TERM_PROGRAM").unwrap_or_default() != "vscode" {
+                    self.open(&contest_id);
+                    std::process::exit(0);
                 }
             }
             Err(e) => {

@@ -23,6 +23,13 @@
   ],
   "settings": {
     "rust-analyzer.showUnlinkedFileNotification": false,
-    "terminal.integrated.shellIntegration.enabled": true
+    "terminal.integrated.shellIntegration.enabled": true,
+    "github.copilot.enable": {
+      "*": true,
+      "plaintext": true,
+      "markdown": true,
+      "scminput": false,
+      "yaml": true
+    }
   }
 }
