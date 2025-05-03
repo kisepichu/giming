@@ -85,8 +85,15 @@ impl AtcoderRequester for AtcoderRequesterImpl {
             .form(&form_data)
             .send()?)
     }
-    fn get_contest(&self, _contest_id: &str) -> Result<Response, DetailError> {
-        todo!()
+    fn get_contest(&self, contest_id: &str) -> Result<Response, DetailError> {
+        self.download_testing_html(
+            format!("https://atcoder.jp/contests/{}", contest_id),
+            "crates/infrastructure/tests/external/atcoder_get_contest.html",
+        )?;
+        Ok(self
+            .client
+            .get(BASE_URL.to_string() + "/contests/" + contest_id)
+            .send()?)
     }
     fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(

@@ -6,7 +6,7 @@
 予定
 
 ```bash
-$ cargo run -- abc375 # コンテスト用フォルダを作成
+$ cargo run -- abc375 # コンテスト用フォルダを作成、 vscode を開く
 > login # オンラインジャッジにログイン
 > sub a # テストして ok なら提出
 ```

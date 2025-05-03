@@ -6,10 +6,7 @@ use interfaces::controller::input::{ExitInput, InitInput, LoginInput, WhoamiInpu
 #[command(version, about)]
 #[command(propagate_version = true)]
 pub struct Cli {
-    #[arg(default_value = "")]
     pub contest: String,
-    #[arg(default_value = "{{ contest_id }}>")]
-    pub prompt: String,
 }
 
 #[derive(Parser, Debug)]

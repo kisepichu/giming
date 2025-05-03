@@ -1,9 +1,8 @@
-use std::thread::sleep;
-
 use crate::detail_error::DetailError;
 use crate::external::atcoder_requester::AtcoderRequester;
 use crate::external::atcoder_requester::atcoder_requester_impl::HOME_URL;
 
+use chrono::Duration;
 use domain::entity::{Problem, ProblemSummary, Sample};
 use scraper::{ElementRef, Html, Selector};
 use usecases::{online_judge::OnlineJudge, service_error::ServiceError};
@@ -31,6 +30,19 @@ fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef
         node = node.next_sibling()?;
     }
 }
+
+fn sleep(duration: Duration) -> bool {
+    match duration.to_std() {
+        Ok(d) => {
+            std::thread::sleep(d);
+            true
+        }
+        Err(_) => false,
+    }
+}
+const INTERVAL: Duration = Duration::seconds(10);
+const EARLY_OFFSET: Duration = Duration::seconds(2);
+const INTERVAL_LIMIT: Duration = Duration::seconds(1);
 
 impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
     fn name(&self) -> &str {
@@ -110,27 +122,57 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
                     .ok_or(DetailError::ParsingElementNotFound(
                         "wait_for_start start_time",
                     ))?;
-            let time_str = element.text().collect::<String>();
-
-            let time_str = time_str.replace("(Sat)", "");
-            let time_str = time_str.trim();
-            let start_time = NaiveDateTime::parse_from_str(time_str, "%Y-%m-%d %H:%M")
+            let time_string = element.text().collect::<String>().replace("(Sat)", "");
+            let time_string = time_string
+                .split('+')
+                .next()
+                .ok_or(DetailError::Parsing("wait_for_start time_string"))?
+                .to_string();
+            let time_str = time_string.trim();
+            let start_time = NaiveDateTime::parse_from_str(time_str, "%Y-%m-%d %H:%M:%S")
                 .map_err(|_e| DetailError::Parsing("wait_for_start start_time"))?;
 
-            let now = Local::now().naive_local();
-            let duration = start_time.signed_duration_since(now);
+            sleep(INTERVAL_LIMIT);
+            loop {
+                let now = Local::now().naive_local();
+                let duration = start_time.signed_duration_since(now);
 
-            match duration.to_std() {
-                Ok(d) => {
-                    println!("start_time: {}", start_time);
-                    println!("now: {}", now);
-                    println!("duration: {:?}", duration);
-                    println!("sleeping for {} seconds", d.as_secs());
-                    sleep(d);
+                if duration.num_seconds() <= INTERVAL.num_seconds() {
+                    println!(
+                        "current time: {}, starts in: {} seconds",
+                        now.format("%Y-%m-%d %H:%M:%S"),
+                        duration.num_seconds()
+                    );
+                    if sleep(Duration::seconds(
+                        duration.num_seconds() - EARLY_OFFSET.num_seconds(),
+                    )) {
+                        let now = Local::now().naive_local();
+                        let duration = start_time.signed_duration_since(now);
+                        println!(
+                            "current time: {}, starts in: {} seconds",
+                            now.format("%Y-%m-%d %H:%M:%S"),
+                            duration.num_seconds()
+                        );
+                    } else {
+                        let now = Local::now().naive_local();
+                        println!(
+                            "current time: {}, starting",
+                            now.format("%Y-%m-%d %H:%M:%S"),
+                        );
+                    }
+                    break;
                 }
-                Err(_) => {
-                    println!("already started");
-                }
+
+                println!(
+                    "current time: {}, starts in: {} seconds",
+                    now.format("%Y-%m-%d %H:%M:%S"),
+                    duration.num_seconds()
+                );
+                sleep(Duration::seconds(
+                    duration.num_seconds()
+                        - (duration.num_seconds() - 1) / INTERVAL.num_seconds()
+                            * INTERVAL.num_seconds(),
+                ));
             }
 
             Ok(())
