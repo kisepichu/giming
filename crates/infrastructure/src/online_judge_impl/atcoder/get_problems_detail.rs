@@ -33,6 +33,7 @@ impl<R: AtcoderRequester> Atcoder<R> {
 
             if !status.is_success() {
                 if text.contains("Permission denied.") {
+                    println!("1");  
                     return Err(DetailError::PermissionDenied("atcoder get_tasks_print"));
                 }
                 return Err(DetailError::UnexpectedStatusCode("atcoder get_tasks_print", status)) 

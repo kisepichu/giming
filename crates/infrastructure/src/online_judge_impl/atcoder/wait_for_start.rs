@@ -17,6 +17,7 @@ fn sleep(duration: Duration) -> bool {
 const INTERVAL: Duration = Duration::seconds(10);
 const EARLY_OFFSET: Duration = Duration::seconds(2);
 const INTERVAL_LIMIT: Duration = Duration::seconds(1);
+const MAX_TRY: Duration = Duration::seconds(10);
 
 impl<R: AtcoderRequester> Atcoder<R> {
     fn get_start_time(&self, contest_id: &str) -> Result<NaiveDateTime, DetailError> {
@@ -60,6 +61,11 @@ impl<R: AtcoderRequester> Atcoder<R> {
                 let now = Local::now().naive_local();
                 let duration = start_time.signed_duration_since(now);
 
+                if duration.num_seconds() < -MAX_TRY.num_seconds() {
+                    return Err(DetailError::Custom(
+                        "wait_for_start: failed after MAX_TRY".to_string(),
+                    ));
+                }
                 if duration.num_seconds() <= INTERVAL.num_seconds() {
                     println!(
                         "current time: {}, starts in: {} seconds",

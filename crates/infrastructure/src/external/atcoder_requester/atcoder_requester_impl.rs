@@ -5,7 +5,7 @@ use scraper::{Html, Selector};
 use serde::Serialize;
 use usecases::service_error::ServiceError;
 
-use crate::detail_error::DetailError;
+use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
 use super::AtcoderRequester;
 
@@ -14,26 +14,25 @@ pub const LOGIN_URL: &str = "/login";
 pub const HOME_URL: &str = "/home";
 
 pub struct AtcoderRequesterImpl {
-    client: Client,
-    csrf_token: String,
+    cookies: String,
 }
 
 impl AtcoderRequesterImpl {
-    pub fn new() -> Result<Self, ServiceError<DetailError>> {
+    pub fn new(cookies: &str) -> Result<Self, ServiceError<DetailError>> {
         || -> Result<Self, DetailError> {
-            let client = Client::builder().cookie_store(true).build()?;
-            let res = client.get(BASE_URL.to_string() + LOGIN_URL).send()?;
-            let html = Html::parse_document(&res.text()?);
-            let selector = Selector::parse("input[name=csrf_token]")?;
-            let csrf_token = html
-                .select(&selector)
-                .next()
-                .ok_or(DetailError::ParsingElementNotFound("new csrf_token"))?
-                .value()
-                .attr("value")
-                .ok_or(DetailError::ParsingElementNotFound("new csrf_token attr"))?
-                .to_string();
-            Ok(Self { client, csrf_token })
+            // let mut headers = reqwest::header::HeaderMap::new();
+            // headers.insert(
+            //     reqwest::header::COOKIE,
+            //     reqwest::header::HeaderValue::from_str(cookies).unwrap(),
+            // );
+
+            Client::builder()
+                // .default_headers(headers)
+                .cookie_store(true)
+                .build()?;
+            Ok(Self {
+                cookies: cookies.to_string(),
+            })
         }()
         .map_err(ServiceError::InstantiateFailed) // |e| ServiceError::InstantiateFailed(e)
     }
@@ -49,9 +48,18 @@ struct AtcoderLoginRequest {
 const DOWNLOAD: bool = false;
 
 impl AtcoderRequesterImpl {
-    fn download_testing_html(&self, url: String, path: &str) -> Result<(), DetailError> {
-        if DOWNLOAD {
-            let sent = self.client.get(url).send();
+    fn download_testing_html(
+        &self,
+        url: String,
+        path: &str,
+        force: bool,
+    ) -> Result<(), DetailError> {
+        if DOWNLOAD || force {
+            let client = Client::builder()
+                .cookie_store(true)
+                .build()
+                .map_err(|e| DetailError::Reqwest(e))?;
+            let sent = client.get(url).send();
             if sent.is_err() {
                 println!("sent: {:?}", sent);
             }
@@ -70,28 +78,55 @@ impl AtcoderRequester for AtcoderRequesterImpl {
         self.download_testing_html(
             "https://atcoder.jp/home".to_string(),
             "crates/infrastructure/tests/external/atcoder_get_home_in_contest_logged_in.html",
+            false,
         )?;
-        Ok(self.client.get(BASE_URL.to_string() + HOME_URL).send()?)
+        let client = Client::builder()
+            .cookie_store(true)
+            .build()
+            .map_err(|e| DetailError::Reqwest(e))?;
+        Ok(client.get(BASE_URL.to_string() + HOME_URL).send()?)
     }
     fn login(&self, username: &str, password: &str) -> Result<Response, DetailError> {
-        let form_data = AtcoderLoginRequest {
-            username: username.to_string(),
-            password: password.to_string(),
-            csrf_token: self.csrf_token.clone(),
+        let cookies = {
+            let mut input = String::new();
+            std::io::stdin()
+                .read_line(&mut input)
+                .map_err(|e| DetailError::IO("stdin".to_string(), e))?;
+            input.trim().to_string()
         };
-        Ok(self
-            .client
+        // std::fs::write(&config.atcoder_cookies_path, cookies.clone())
+        //     .map_err(|e| DetailError::IO(config.atcoder_cookies_path, e))?;
+        // let mut headers = reqwest::header::HeaderMap::new();
+        // headers.insert(
+        //     reqwest::header::COOKIE,
+        //     reqwest::header::HeaderValue::from_str(&cookies).unwrap(),
+        // );
+        let client = Client::builder()
+            // .default_headers(headers)
+            .cookie_store(true)
+            .build()?;
+        // let form_data = AtcoderLoginRequest {
+        //     username: username.to_string(),
+        //     password: password.to_string(),
+        //     csrf_token: self.csrf_token.clone(),
+        // };
+
+        Ok(client
             .post(BASE_URL.to_string() + LOGIN_URL)
-            .form(&form_data)
+            // .form(&form_data)
             .send()?)
     }
     fn get_contest(&self, contest_id: &str) -> Result<Response, DetailError> {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}", contest_id),
             "crates/infrastructure/tests/external/atcoder_get_contest.html",
+            false,
         )?;
-        Ok(self
-            .client
+        let client = Client::builder()
+            // .default_headers(headers)
+            .cookie_store(true)
+            .build()?;
+        Ok(client
             .get(BASE_URL.to_string() + "/contests/" + contest_id)
             .send()?)
     }
@@ -99,9 +134,13 @@ impl AtcoderRequester for AtcoderRequesterImpl {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks", contest_id),
             "crates/infrastructure/tests/external/atcoder_get_tasks_in_contest.html",
+            false,
         )?;
-        Ok(self
-            .client
+        let client = Client::builder()
+            // .default_headers(headers)
+            .cookie_store(true)
+            .build()?;
+        Ok(client
             .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks")
             .send()?)
     }
@@ -109,9 +148,13 @@ impl AtcoderRequester for AtcoderRequesterImpl {
         self.download_testing_html(
             format!("https://atcoder.jp/contests/{}/tasks_print", contest_id),
             "crates/infrastructure/tests/external/atcoder_get_tasks_print_in_contest.html",
+            false,
         )?;
-        Ok(self
-            .client
+        let client = Client::builder()
+            // .default_headers(headers)
+            .cookie_store(true)
+            .build()?;
+        Ok(client
             .get(BASE_URL.to_string() + "/contests/" + contest_id + "/tasks_print")
             .send()?)
     }

@@ -1,6 +1,6 @@
 use reqwest::blocking::Response;
 
-use crate::detail_error::DetailError;
+use crate::{config_impl::ConfigImpl, detail_error::DetailError};
 
 #[mockall::automock]
 pub trait AtcoderRequester {

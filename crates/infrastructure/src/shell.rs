@@ -1,4 +1,4 @@
-use std::iter::once;
+use std::{fs, iter::once};
 
 use domain::error::Error;
 use interfaces::controller::Controller;
@@ -34,7 +34,14 @@ fn oj_from_contest_id(
     }
     match oj_name {
         Some("AtCoder") => {
-            let atcoder_requester = match AtcoderRequesterImpl::new() {
+            // let cookies = match std::fs::read_to_string(&config.atcoder_cookies_path) {
+            //     Ok(c) => c,
+            //     Err(_) => {
+            //         eprintln!("{} not found, not logging in", config.atcoder_cookies_path);
+            //         "".to_string()
+            //     }
+            // };
+            let atcoder_requester = match AtcoderRequesterImpl::new("") {
                 Ok(r) => r,
                 Err(e) => {
                     eprintln!("{}", e.error_chain());

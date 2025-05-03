@@ -36,6 +36,7 @@ impl<R: AtcoderRequester> Atcoder<R> {
             } else if !status.is_success() {
                 Err(DetailError::UnexpectedStatusCode("atcoder login", status))
             } else {
+                println!("text: {}", text);
                 Err(DetailError::UnexpectedResponse("atcoder login"))
             }
         }()

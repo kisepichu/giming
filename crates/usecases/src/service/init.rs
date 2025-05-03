@@ -31,25 +31,31 @@ impl<E: Error + 'static> Service<E> {
         }
 
         loop {
-            if let Ok(problems) = self.online_judge.get_problems_detail(&contest_id) {
-                let work_problems = problems
-                    .iter()
-                    .map(|p| WorkProblem {
-                        problem: p,
-                        io_spec: IOInferrer::infer(p),
-                    })
-                    .collect();
-                let workspace = Workspace {
-                    contest_id: contest_id.clone(),
-                    work_problems,
-                };
+            match self.online_judge.get_problems_detail(&contest_id) {
+                Ok(problems) => {
+                    let work_problems = problems
+                        .iter()
+                        .map(|p| WorkProblem {
+                            problem: p,
+                            io_spec: IOInferrer::infer(p),
+                        })
+                        .collect();
+                    let workspace = Workspace {
+                        contest_id: contest_id.clone(),
+                        work_problems,
+                    };
 
-                self.repository
-                    .contest_repo()
-                    .create(&contest_id, &workspace)?;
+                    self.repository
+                        .contest_repo()
+                        .create(&contest_id, &workspace)?;
 
-                return Ok(InitResult { created: true });
+                    return Ok(InitResult { created: true });
+                }
+                Err(e) => {
+                    println!("get problems failed: {}", e);
+                }
             }
+
             if !self.repository.contest_repo().exists(&contest_id)? {
                 self.repository
                     .contest_repo()

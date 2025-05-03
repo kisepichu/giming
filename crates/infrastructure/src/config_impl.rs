@@ -20,6 +20,7 @@ pub struct ConfigImpl {
     pub testcase_in_template: String,
     pub testcase_out_template: String,
     pub open_command: String,
+    pub atcoder_cookies_path: String,
 }
 
 impl Default for ConfigImpl {
@@ -54,6 +55,7 @@ impl Default for ConfigImpl {
             testcase_out_template: "{{ problem.code | lower }}/out/{{ testcase_index }}.out"
                 .to_string(),
             open_command: "code {{ contest_dir }}/{{ contest_id }}/{{ contest_id }}.code-workspace --new-window".to_string(),
+            atcoder_cookies_path: "~/.config/giming/cookies.txt".to_string(),
         }
     }
 }
