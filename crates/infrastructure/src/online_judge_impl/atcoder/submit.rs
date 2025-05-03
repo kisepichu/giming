@@ -5,7 +5,7 @@ use crate::{detail_error::DetailError, external::atcoder_requester::AtcoderReque
 use super::Atcoder;
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn submit(&self, _solution_id: String) -> Result<(), ServiceError<DetailError>> {
+    pub fn submit(&self, _solution_id: String) -> Result<(), ServiceError<DetailError>> {
         todo!()
     }
 }

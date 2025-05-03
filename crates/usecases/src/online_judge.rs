@@ -7,8 +7,8 @@ use crate::service_error::ServiceError;
 
 #[mockall::automock]
 pub trait OnlineJudge<E: Error + 'static> {
-    fn name(&self) -> &str;
     fn whoami(&self) -> Result<String, ServiceError<E>>;
+    fn name(&self) -> &str;
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<E>>;
     fn wait_for_start(&self, contest_id: &str) -> Result<(), ServiceError<E>>;
     fn get_problems_summary(

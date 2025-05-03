@@ -8,7 +8,7 @@ use crate::{
 use super::Atcoder;
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn login(
+    pub fn login(
         &self,
         username: String,
         password: String,

@@ -7,7 +7,7 @@ use crate::{detail_error::DetailError, external::atcoder_requester::AtcoderReque
 use super::Atcoder;
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn get_problems_summary(
+    pub fn get_problems_summary(
         &self,
         contest_id: &str,
     ) -> Result<Vec<ProblemSummary>, ServiceError<DetailError>> {

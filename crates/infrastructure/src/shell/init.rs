@@ -4,7 +4,7 @@ use usecases::service_error::ServiceError;
 use crate::detail_error::DetailError;
 use tera::Tera;
 
-use super::{Shell, commands::InitCommand, oj_from_contest_id, to_contest_id};
+use super::{Shell, commands::InitCommand, oj_from_contest_id, utils::to_contest_id};
 
 impl Shell {
     fn open(&self, contest_id: &str) {

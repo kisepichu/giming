@@ -20,7 +20,7 @@ fn next_div(element: ElementRef, f: fn(ElementRef) -> bool) -> Option<ElementRef
 }
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn get_problems_detail(
+    pub fn get_problems_detail(
         &self,
         contest_id: &str,
     ) -> Result<Vec<Problem>, ServiceError<DetailError>> {

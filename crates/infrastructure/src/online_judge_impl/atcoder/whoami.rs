@@ -6,7 +6,7 @@ use crate::{detail_error::DetailError, external::atcoder_requester::AtcoderReque
 use super::Atcoder;
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn whoami(&self) -> Result<String, ServiceError<DetailError>> {
+    pub fn whoami(&self) -> Result<String, ServiceError<DetailError>> {
         || -> Result<String, DetailError> {
             let res = self.requester.get_home()?;
             let text = res.text()?;

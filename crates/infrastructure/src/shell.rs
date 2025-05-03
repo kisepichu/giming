@@ -8,6 +8,7 @@ use rustyline::DefaultEditor;
 use rustyline::error::ReadlineError;
 use usecases::online_judge::OnlineJudge;
 use usecases::service_error::ServiceError;
+use utils::{oj_name_from_contest_id, to_contest_id};
 
 use crate::config_impl::ConfigImpl;
 use crate::detail_error::DetailError;
@@ -19,44 +20,35 @@ pub mod commands;
 use commands::{Cli, Command, InitCommand, ShellCommand};
 mod init;
 mod login;
+mod utils;
 mod whoami;
 
-fn to_contest_id(contest_id_or_url: String) -> String {
-    if contest_id_or_url.starts_with("http") {
-        contest_id_or_url
-            .split('/')
-            .next_back()
-            .expect(
-                "No panic because contest_id_or_url starts with http,
-so the split must have at least one element",
-            )
-            .to_string()
-    } else {
-        contest_id_or_url
-    }
-}
-
 fn oj_from_contest_id(
-    _contest_id: &str,
+    contest_id: &str,
     current: &str,
 ) -> Result<Box<dyn OnlineJudge<DetailError>>, String> {
     // todo
-    if current == "AtCoder" {
+    let oj_name = oj_name_from_contest_id(contest_id);
+    if Some(current) == oj_name {
         return Err("same online judge".to_string());
     }
-    let atcoder_requester = match AtcoderRequesterImpl::new() {
-        Ok(r) => r,
-        Err(e) => {
-            eprintln!("{}", e.error_chain());
-            return Err("oj_from_contest_id failed: AtcoderRequesterImpl::new()".to_string());
+    match oj_name {
+        Some("AtCoder") => {
+            let atcoder_requester = match AtcoderRequesterImpl::new() {
+                Ok(r) => r,
+                Err(e) => {
+                    eprintln!("{}", e.error_chain());
+                    return Err(
+                        "oj_from_contest_id failed: AtcoderRequesterImpl::new()".to_string()
+                    );
+                }
+            };
+            let atcoder = Atcoder::new(atcoder_requester);
+            Ok(Box::new(atcoder))
         }
-    };
-    let atcoder = Atcoder::new(atcoder_requester);
-    Ok(Box::new(atcoder))
-    // Err(format!(
-    //     "cannot determine the type of online judge for {}",
-    //     contest_id,
-    // ))
+        Some(oj_name) => Err(format!("unknown online judge {}", oj_name)),
+        None => Err(format!("could not find online judge for {}", contest_id)),
+    }
 }
 
 pub struct Shell {

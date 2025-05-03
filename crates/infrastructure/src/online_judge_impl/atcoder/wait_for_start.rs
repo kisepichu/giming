@@ -1,4 +1,4 @@
-use chrono::Duration;
+use chrono::{Duration, NaiveDateTime};
 use scraper::{Html, Selector};
 use usecases::service_error::ServiceError;
 
@@ -19,37 +19,41 @@ const EARLY_OFFSET: Duration = Duration::seconds(2);
 const INTERVAL_LIMIT: Duration = Duration::seconds(1);
 
 impl<R: AtcoderRequester> Atcoder<R> {
-    pub(crate) fn wait_for_start(&self, contest_id: &str) -> Result<(), ServiceError<DetailError>> {
+    fn get_start_time(&self, contest_id: &str) -> Result<NaiveDateTime, DetailError> {
+        let res = self.requester.get_contest(contest_id)?;
+        let status = res.status();
+        let text = res.text()?;
+
+        if !status.is_success() {
+            return Err(DetailError::UnexpectedStatusCode(
+                "atcoder get_contest",
+                status,
+            ));
+        }
+
+        let html = Html::parse_document(&text);
+        let selector = Selector::parse("small.contest-duration>a>time")?;
+        let element = html
+            .select(&selector)
+            .next()
+            .ok_or(DetailError::ParsingElementNotFound(
+                "wait_for_start start_time",
+            ))?;
+        let time_string = element.text().collect::<String>().replace("(Sat)", "");
+        let time_string = time_string
+            .split('+')
+            .next()
+            .ok_or(DetailError::Parsing("wait_for_start time_string"))?
+            .to_string();
+        let time_str = time_string.trim();
+        NaiveDateTime::parse_from_str(time_str, "%Y-%m-%d %H:%M:%S")
+            .map_err(|_e| DetailError::Parsing("wait_for_start start_time"))
+    }
+
+    pub fn wait_for_start(&self, contest_id: &str) -> Result<(), ServiceError<DetailError>> {
         use chrono::prelude::*;
         || -> Result<(), DetailError> {
-            let res = self.requester.get_contest(contest_id)?;
-            let status = res.status();
-            let text = res.text()?;
-
-            if !status.is_success() {
-                return Err(DetailError::UnexpectedStatusCode(
-                    "atcoder get_contest",
-                    status,
-                ));
-            }
-
-            let html = Html::parse_document(&text);
-            let selector = Selector::parse("small.contest-duration>a>time")?;
-            let element =
-                html.select(&selector)
-                    .next()
-                    .ok_or(DetailError::ParsingElementNotFound(
-                        "wait_for_start start_time",
-                    ))?;
-            let time_string = element.text().collect::<String>().replace("(Sat)", "");
-            let time_string = time_string
-                .split('+')
-                .next()
-                .ok_or(DetailError::Parsing("wait_for_start time_string"))?
-                .to_string();
-            let time_str = time_string.trim();
-            let start_time = NaiveDateTime::parse_from_str(time_str, "%Y-%m-%d %H:%M:%S")
-                .map_err(|_e| DetailError::Parsing("wait_for_start start_time"))?;
+            let start_time = self.get_start_time(contest_id)?;
 
             sleep(INTERVAL_LIMIT);
             loop {
@@ -99,3 +103,41 @@ impl<R: AtcoderRequester> Atcoder<R> {
         .map_err(ServiceError::InitFailed)
     }
 }
+
+// #[cfg(test)]
+// mod tests {
+
+//     use http::StatusCode;
+//     use reqwest::blocking::Response;
+
+//     use crate::external::atcoder_requester::MockAtcoderRequester;
+
+//     use super::*;
+
+//     #[rstest::rstest(path, status, args_contest_id, expected,
+//         case("tests/external/atcoder_get_contest.sanitized.html",
+//             StatusCode::OK,
+//             "abc376",
+//             NaiveDateTime::parse_from_str("2023-10-14 21:00:00", "%Y-%m-%d %H:%M:%S").unwrap()),
+//     )]
+//     fn test_get_start_time(
+//         path: &str,
+//         status: StatusCode,
+//         args_contest_id: &str,
+//         expected: NaiveDateTime,
+//     ) -> Result<(), String> {
+//         let body = std::fs::read_to_string(path).unwrap();
+//         let mut requester = MockAtcoderRequester::new();
+//         let mut response = http::response::Response::new(body.clone());
+//         *response.status_mut() = status;
+//         requester
+//             .expect_get_contest()
+//             .times(1)
+//             .returning(move |_| Ok(Response::from(response.clone())));
+
+//         let atcoder = Atcoder::new(requester);
+//         let result = atcoder.get_start_time(args_contest_id);
+//         assert_eq!(result, Ok(expected));
+//         Ok(())
+//     }
+// }
