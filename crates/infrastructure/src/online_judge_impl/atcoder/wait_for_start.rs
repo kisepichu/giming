@@ -104,40 +104,40 @@ impl<R: AtcoderRequester> Atcoder<R> {
     }
 }
 
-// #[cfg(test)]
-// mod tests {
+#[cfg(test)]
+mod tests {
 
-//     use http::StatusCode;
-//     use reqwest::blocking::Response;
+    use http::StatusCode;
+    use reqwest::blocking::Response;
 
-//     use crate::external::atcoder_requester::MockAtcoderRequester;
+    use crate::external::atcoder_requester::MockAtcoderRequester;
 
-//     use super::*;
+    use super::*;
 
-//     #[rstest::rstest(path, status, args_contest_id, expected,
-//         case("tests/external/atcoder_get_contest.sanitized.html",
-//             StatusCode::OK,
-//             "abc376",
-//             NaiveDateTime::parse_from_str("2023-10-14 21:00:00", "%Y-%m-%d %H:%M:%S").unwrap()),
-//     )]
-//     fn test_get_start_time(
-//         path: &str,
-//         status: StatusCode,
-//         args_contest_id: &str,
-//         expected: NaiveDateTime,
-//     ) -> Result<(), String> {
-//         let body = std::fs::read_to_string(path).unwrap();
-//         let mut requester = MockAtcoderRequester::new();
-//         let mut response = http::response::Response::new(body.clone());
-//         *response.status_mut() = status;
-//         requester
-//             .expect_get_contest()
-//             .times(1)
-//             .returning(move |_| Ok(Response::from(response.clone())));
+    #[rstest::rstest(path, status, args_contest_id, expected,
+        case("tests/external/atcoder_get_contest.sanitized.html",
+            StatusCode::OK,
+            "abc376",
+            NaiveDateTime::parse_from_str("2024-10-19 21:00:00", "%Y-%m-%d %H:%M:%S").unwrap()),
+    )]
+    fn test_get_start_time(
+        path: &str,
+        status: StatusCode,
+        args_contest_id: &str,
+        expected: NaiveDateTime,
+    ) -> Result<(), String> {
+        let body = std::fs::read_to_string(path).unwrap();
+        let mut requester = MockAtcoderRequester::new();
+        let mut response = http::response::Response::new(body.clone());
+        *response.status_mut() = status;
+        requester
+            .expect_get_contest()
+            .times(1)
+            .returning(move |_| Ok(Response::from(response.clone())));
 
-//         let atcoder = Atcoder::new(requester);
-//         let result = atcoder.get_start_time(args_contest_id);
-//         assert_eq!(result, Ok(expected));
-//         Ok(())
-//     }
-// }
+        let atcoder = Atcoder::new(requester);
+        let result = atcoder.get_start_time(args_contest_id);
+        assert_eq!(result, Ok(expected));
+        Ok(())
+    }
+}
