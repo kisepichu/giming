@@ -14,14 +14,18 @@ use super::{Shell, commands::LoginCommand};
 
 impl Shell {
     pub fn login(&self, rl: &mut Editor<(), FileHistory>, args: LoginCommand) {
-        let username = match get_username(rl, args.username) {
+        let username = match get_username(rl, args.username, self.controller.online_judge_name()) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("{}", e.error_chain());
                 return;
             }
         };
-        let password = match get_password(&username, args.password) {
+        let password = match get_password(
+            &username,
+            args.password,
+            self.controller.online_judge_name(),
+        ) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("{}", e.error_chain());
@@ -41,20 +45,32 @@ impl Shell {
 fn get_username(
     rl: &mut Editor<(), FileHistory>,
     username: String,
+    online_judge_name: &str,
 ) -> Result<String, ServiceError<DetailError>> {
     let username = if username.is_empty() {
-        match env::var("ATCODER_USERNAME") {
-            Ok(u) => u,
-            Err(_) => {
-                eprintln!(
-                    "  tip: Set envvars for auto login. For more information, run 'help login'"
-                );
-                rl.readline("username: ").map_err(|e| {
-                    ServiceError::LoginFailed(DetailError::Readline(
-                        "failed to read username".to_string(),
-                        e,
-                    ))
-                })?
+        match online_judge_name {
+            "AtCoder" => {
+                match env::var("ATCODER_USERNAME") {
+                    Ok(u) => u,
+                    Err(_) => {
+                        // "_".to_string()
+
+                        eprintln!(
+                            "  tip: Set envvars for auto login. For more information, run 'help login'"
+                        );
+                        rl.readline("username: ").map_err(|e| {
+                            ServiceError::LoginFailed(DetailError::Readline(
+                                "failed to read username".to_string(),
+                                e,
+                            ))
+                        })?
+                    }
+                }
+            }
+            oj_name => {
+                return Err(ServiceError::LoginFailed(DetailError::InvalidInput(
+                    format!("unknown online judge: {}", oj_name),
+                )));
             }
         }
     } else {
@@ -69,22 +85,39 @@ fn get_username(
     }
 }
 
-fn get_password(username: &String, password: String) -> Result<String, ServiceError<DetailError>> {
+fn get_password(
+    username: &String,
+    password: String,
+    online_judge_name: &str,
+) -> Result<String, ServiceError<DetailError>> {
     let password = if password.is_empty() {
-        match env::var("ATCODER_PASSWORD") {
-            Ok(p) => p,
-            Err(_) => {
-                // input from stdin
-                print!("password for {}: ", username);
-                io::stdout().flush().map_err(|e| {
-                    ServiceError::LoginFailed(DetailError::IO("flush stdout".to_string(), e))
-                })?;
-                read_password().map_err(|e| {
-                    ServiceError::LoginFailed(DetailError::Custom(format!(
-                        "failed to read password: {}",
-                        e
-                    )))
-                })?
+        match online_judge_name {
+            "AtCoder" => {
+                match env::var("ATCODER_PASSWORD") {
+                    Ok(p) => p,
+                    Err(_) => {
+                        // "_".to_string()
+
+                        print!("password for {}: ", username);
+                        io::stdout().flush().map_err(|e| {
+                            ServiceError::LoginFailed(DetailError::IO(
+                                "flush stdout".to_string(),
+                                e,
+                            ))
+                        })?;
+                        read_password().map_err(|e| {
+                            ServiceError::LoginFailed(DetailError::Custom(format!(
+                                "failed to read password: {}",
+                                e
+                            )))
+                        })?
+                    }
+                }
+            }
+            oj_name => {
+                return Err(ServiceError::LoginFailed(DetailError::InvalidInput(
+                    format!("unknown online judge: {}", oj_name),
+                )));
             }
         }
     } else {

@@ -29,7 +29,7 @@ impl<R: AtcoderRequester> OnlineJudge<DetailError> for Atcoder<R> {
         self.whoami()
     }
     fn login(&self, username: String, password: String) -> Result<(), ServiceError<DetailError>> {
-        self.login(username, password)
+        self.login(username.as_str(), password.as_str())
     }
     fn wait_for_start(&self, contest_id: &str) -> Result<(), ServiceError<DetailError>> {
         self.wait_for_start(contest_id)

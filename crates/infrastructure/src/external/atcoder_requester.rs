@@ -1,11 +1,16 @@
 use reqwest::blocking::Response;
 
-use crate::{config_impl::ConfigImpl, detail_error::DetailError};
+use crate::detail_error::DetailError;
 
 #[mockall::automock]
 pub trait AtcoderRequester {
     fn get_home(&self) -> Result<Response, DetailError>;
-    fn login(&self, username: &str, password: &str) -> Result<Response, DetailError>;
+    fn login(
+        &self,
+        username: &str,
+        password: &str,
+        cookies: Option<String>,
+    ) -> Result<Response, DetailError>;
     fn get_contest(&self, contest_id: &str) -> Result<Response, DetailError>;
     fn get_tasks(&self, contest_id: &str) -> Result<Response, DetailError>;
     fn get_tasks_print(&self, contest_id: &str) -> Result<Response, DetailError>;
