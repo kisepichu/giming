@@ -1,15 +1,12 @@
 use clap::{Parser, Subcommand};
 
-use interfaces::controller::input::{ExitInput, LoginInput};
+use interfaces::controller::input::{ExitInput, InitInput, LoginInput, WhoamiInput};
 
 #[derive(Parser, Debug)]
 #[command(version, about)]
 #[command(propagate_version = true)]
 pub struct Cli {
-    #[arg(default_value = "")]
     pub contest: String,
-    #[arg(default_value = "{{ contest_id }}>")]
-    pub prompt: String,
 }
 
 #[derive(Parser, Debug)]
@@ -33,13 +30,16 @@ impl ExitInput for ExitCommand {
 }
 
 #[derive(Parser, Debug)]
+pub struct WhoamiCommand {}
+
+impl WhoamiInput for WhoamiCommand {}
+
+#[derive(Parser, Debug)]
 pub struct LoginCommand {
     #[clap(default_value = "")]
     pub username: String,
     #[clap(default_value = "")]
     pub password: String,
-    #[clap(default_value = "atcoder")]
-    pub online_judge: String,
 }
 
 impl LoginInput for LoginCommand {
@@ -51,13 +51,31 @@ impl LoginInput for LoginCommand {
     }
 }
 
+#[derive(Parser, Debug)]
+pub struct InitCommand {
+    pub contest_id: String,
+}
+
+impl InitInput for InitCommand {
+    fn contest_id(&self) -> String {
+        self.contest_id.clone()
+    }
+}
+
 #[derive(Subcommand, Debug)]
 pub enum Command {
     /// Exit
+    #[clap(visible_aliases = ["quit", "q"])]
     Exit(ExitCommand),
-    /// Login
+    /// Login to the online judge
     ///
     /// Please set the following envvars to avoid prompting:
     /// `ATCODER_USERNAME` and `ATCODER_PASSWORD` for AtCoder
+    #[clap(visible_aliases = ["l"])]
     Login(LoginCommand),
+    /// Show the username of the online judge
+    Whoami(WhoamiCommand),
+    /// Initialize the directory structure for the contest
+    #[clap(visible_aliases = ["i", "switch"])]
+    Init(InitCommand),
 }

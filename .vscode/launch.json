@@ -9,12 +9,7 @@
       "request": "launch",
       "name": "Debug unit tests in library 'domain'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--lib",
-          "--package=domain"
-        ],
+        "args": ["test", "--no-run", "--lib", "--package=domain"],
         "filter": {
           "name": "domain",
           "kind": "lib"
@@ -28,12 +23,7 @@
       "request": "launch",
       "name": "Debug unit tests in library 'infrastructure'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--lib",
-          "--package=infrastructure"
-        ],
+        "args": ["test", "--no-run", "--lib", "--package=infrastructure"],
         "filter": {
           "name": "infrastructure",
           "kind": "lib"
@@ -47,12 +37,7 @@
       "request": "launch",
       "name": "Debug unit tests in library 'interfaces'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--lib",
-          "--package=interfaces"
-        ],
+        "args": ["test", "--no-run", "--lib", "--package=interfaces"],
         "filter": {
           "name": "interfaces",
           "kind": "lib"
@@ -66,12 +51,7 @@
       "request": "launch",
       "name": "Debug unit tests in library 'usecases'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--lib",
-          "--package=usecases"
-        ],
+        "args": ["test", "--no-run", "--lib", "--package=usecases"],
         "filter": {
           "name": "usecases",
           "kind": "lib"
@@ -85,16 +65,13 @@
       "request": "launch",
       "name": "Debug executable 'gm'",
       "cargo": {
-        "args": [
-          "build",
-          "--bin=gm",
-          "--package=giming"
-        ],
+        "args": ["build", "--bin=gm", "--package=giming"],
         "filter": {
           "name": "gm",
           "kind": "bin"
         }
       },
+      // "args": ["abc404"],
       "args": [],
       "cwd": "${workspaceFolder}"
     },
@@ -103,12 +80,7 @@
       "request": "launch",
       "name": "Debug unit tests in executable 'gm'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--bin=gm",
-          "--package=giming"
-        ],
+        "args": ["test", "--no-run", "--bin=gm", "--package=giming"],
         "filter": {
           "name": "gm",
           "kind": "bin"
@@ -122,11 +94,7 @@
       "request": "launch",
       "name": "Debug executable 'init.old'",
       "cargo": {
-        "args": [
-          "build",
-          "--bin=init.old",
-          "--package=giming"
-        ],
+        "args": ["build", "--bin=init.old", "--package=giming"],
         "filter": {
           "name": "init.old",
           "kind": "bin"
@@ -140,12 +108,7 @@
       "request": "launch",
       "name": "Debug unit tests in executable 'init.old'",
       "cargo": {
-        "args": [
-          "test",
-          "--no-run",
-          "--bin=init.old",
-          "--package=giming"
-        ],
+        "args": ["test", "--no-run", "--bin=init.old", "--package=giming"],
         "filter": {
           "name": "init.old",
           "kind": "bin"

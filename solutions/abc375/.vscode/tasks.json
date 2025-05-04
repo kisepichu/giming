@@ -1,0 +1,30 @@
+{
+  "version": "2.0.0",
+  "presentation": {
+    "echo": false,
+    "reveal": "always",
+    "focus": false,
+    "panel": "dedicated",
+    "showReuseMessage": true
+  },
+  "tasks": [
+    {
+      "label": "giming",
+      "type": "shell",
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "options": {
+        "shell": {
+          "executable": "bash",
+          "args": ["-c", "cd ../.. && cargo run -- abc375"]
+        }
+      },
+      "command": "",
+      "runOptions": {
+        "runOn": "folderOpen"
+      }
+    }
+  ]
+}

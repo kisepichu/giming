@@ -1,0 +1,539 @@
+
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>AtCoder Beginner Contest 376 - AtCoder</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="Content-Language" content="en">
+	<meta name="viewport" content="width=device-width,initial-scale=1.0">
+	<meta name="format-detection" content="telephone=no">
+	<meta name="google-site-verification" content="SANITIZED" />
+
+	
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-RC512FD18N"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+		gtag('set', 'SANITIZED', {
+			
+				'login_status': 'logged_out',
+			
+		});
+		gtag('config', 'G-RC512FD18N');
+	</script>
+
+	
+	<meta name="description" content="AtCoder is a programming contest site for anyone from beginners to experts. We hold weekly programming contests online.">
+	<meta name="author" content="AtCoder Inc.">
+
+	<meta property="og:site_name" content="AtCoder">
+	
+	<meta property="og:title" content="AtCoder Beginner Contest 376 - AtCoder" />
+	<meta property="og:description" content="AtCoder is a programming contest site for anyone from beginners to experts. We hold weekly programming contests online." />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://atcoder.jp/contests/abc376" />
+	<meta property="og:image" content="https://img.atcoder.jp/assets/atcoder.png" />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:site" content="@atcoder" />
+	
+	<meta property="twitter:title" content="AtCoder Beginner Contest 376 - AtCoder" />
+
+	<link href="//fonts.googleapis.com/css?family=Lato:400,700" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" type="text/css" href="//img.atcoder.jp/public/d49c595/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="//img.atcoder.jp/public/d49c595/css/base.css">
+	<link rel="shortcut icon" type="image/png" href="//img.atcoder.jp/assets/favicon.png">
+	<link rel="apple-touch-icon" href="//img.atcoder.jp/assets/atcoder.png">
+	<script src="//img.atcoder.jp/public/d49c595/js/lib/jquery-1.9.1.min.js"></script>
+	<script src="//img.atcoder.jp/public/d49c595/js/lib/bootstrap.min.js"></script>
+	<script src="//img.atcoder.jp/public/d49c595/js/cdn/js.cookie.min.js"></script>
+	<script src="//img.atcoder.jp/public/d49c595/js/cdn/moment.min.js"></script>
+	<script src="//img.atcoder.jp/public/d49c595/js/cdn/moment_js-ja.js"></script>
+	<script>
+		var LANG = "en";
+		var SANITIZED = "";
+		var csrfToken = "SANITIZED"
+	</script>
+	<script src="//img.atcoder.jp/public/d49c595/js/utils.js"></script>
+	
+	
+		<script src="//img.atcoder.jp/public/d49c595/js/contest.js"></script>
+		<link href="//img.atcoder.jp/public/d49c595/css/contest.css" rel="stylesheet" />
+		<script>
+			var SANITIZED = "abc376";
+			var SANITIZED = "Remaining Time";
+			var SANITIZED = "Contest begins in";
+			var startTime = moment("SANITIZED:00:00+09:00");
+			var endTime = moment("SANITIZED:40:00+09:00");
+		</script>
+		<style></style>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<script src="//img.atcoder.jp/public/d49c595/js/base.js"></script>
+</head>
+
+<body>
+
+<script type="text/javascript">
+	var __pParams = __pParams || [];
+	__pParams.push({client_id: '468', c_1: 'atcodercontest', c_2: 'ClientSite'});
+</script>
+<script type="text/javascript" src="https://cdn.d2-apps.net/js/tr.js" async></script>
+
+
+<div id="modal-contest-start" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Contest started</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 376 has begun.</p>
+			</div>
+			<div class="modal-footer">
+				
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				
+			</div>
+		</div>
+	</div>
+</div>
+<div id="modal-contest-end" class="modal fade" tabindex="-1" role="dialog">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title">Contest is over</h4>
+			</div>
+			<div class="modal-body">
+				<p>AtCoder Beginner Contest 376 has ended.</p>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="main-div" class="float-container">
+
+
+	<nav class="navbar navbar-inverse navbar-fixed-top">
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false">
+					<span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span>
+				</button>
+				<a class="navbar-brand" href="/home"></a>
+			</div>
+			<div class="collapse navbar-collapse" id="navbar-collapse">
+				<ul class="nav navbar-nav">
+				
+					<li><a class="contest-title" href="/contests/abc376">AtCoder Beginner Contest 376</a></li>
+				
+				</ul>
+				<ul class="nav navbar-nav navbar-right">
+					
+					<li class="dropdown">
+						<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">
+							<img src='//img.atcoder.jp/assets/top/img/flag-lang/en.png'> English <span class="caret"></span>
+						</a>
+						<ul class="dropdown-menu">
+							<li><a href="/contests/abc376?lang=ja"><img src='//img.atcoder.jp/assets/top/img/flag-lang/ja.png'> 日本語</a></li>
+							<li><a href="/contests/abc376?lang=en"><img src='//img.atcoder.jp/assets/top/img/flag-lang/en.png'> English</a></li>
+						</ul>
+					</li>
+					
+					
+						<li><a href="/register?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc376">Sign Up</a></li>
+						<li><a href="/login?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc376">Sign In</a></li>
+					
+				</ul>
+			</div>
+		</div>
+	</nav>
+
+	<form method="POST" name="form_logout" action="/logout?continue=https%3A%2F%2Fatcoder.jp%2Fcontests%2Fabc376">
+		<input type="hidden" name="csrf_token" value="SANITIZED&#43;SANITIZED" />
+	</form>
+	<div id="main-container" class="container"
+		 	style="padding-top:50px;">
+		
+
+
+<div class="row">
+	<div id="contest-nav-tabs" class="col-sm-12 mb-2 cnvtb-fixed">
+	<div>
+		<small class="contest-duration">
+			
+				Contest Duration:
+				<a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=SANITIZED&p1=248' target='blank'><time class='fixtime fixtime-full'>2024-10-19 21:00:00+0900</time></a> - <a href='http://www.timeanddate.com/worldclock/fixedtime.html?iso=SANITIZED&p1=248' target='blank'><time class='fixtime fixtime-full'>2024-10-19 22:40:00+0900</time></a> (local time)
+				(100 minutes)
+			
+		</small>
+		<small class="back-to-home pull-right"><a href="/home">Back to Home</a></small>
+	</div>
+	<ul class="nav nav-tabs">
+		<li class="active"><a href="/contests/abc376"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Top</a></li>
+		
+			<li><a href="/contests/abc376/tasks"><span class="glyphicon glyphicon-tasks" aria-hidden="true"></span> Tasks</a></li>
+		
+
+		
+			<li><a href="/contests/abc376/clarifications"><span class="glyphicon glyphicon-question-sign" aria-hidden="true"></span> Clarifications <span id="clar-badge" class="badge" ></span></a></li>
+		
+
+		
+
+		
+			<li>
+				<a class="dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-list" aria-hidden="true"></span> Results<span class="caret"></span></a>
+				<ul class="dropdown-menu">
+					<li><a href="/contests/abc376/submissions"><span class="glyphicon glyphicon-globe" aria-hidden="true"></span> All Submissions</a></li>
+					
+				</ul>
+			</li>
+		
+
+		
+			
+				
+					<li><a href="/contests/abc376/standings"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> Standings</a></li>
+				
+			
+				
+					<li><a href="/contests/abc376/standings/virtual"><span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span> Virtual Standings</a></li>
+				
+			
+		
+
+		
+
+		
+			<li><a href="/contests/abc376/editorial"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> Editorial</a></li>
+		
+		
+			
+			
+				<li><a href="https://codeforces.com/blog/entry/135246" target="_blank" rel="noopener"><span class="glyphicon glyphicon-comment" aria-hidden="true"></span> Discuss</a></li>
+			
+		
+
+		<li class="pull-right"><a id="fix-cnvtb" href="javascript:void(0)"><span class="glyphicon glyphicon-pushpin" aria-hidden="true"></span></a></li>
+	</ul>
+</div>
+	<div class="col-sm-12">
+		
+		<div class="insert-participant-box">
+			<div class="mb-2"><h1 class="text-center">AtCoder Beginner Contest 376</h1></div>
+			
+			
+			
+				
+				
+				
+				
+				
+					
+				
+			
+			
+			
+		</div>
+		<p class="small" style="color: #666;">
+			<span class="mr-2">Can Participate: All</span>
+			<span class="mr-2">Rated Range:  - 1999</span>
+			<span class="mr-2">Penalty: 5 minutes</span>
+			
+		</p>
+		
+		<div id="contest-statement"><span class="lang">
+  <span class="lang-ja">
+    <h3>コンテスト情報</h3>
+    <section>
+      <ul>
+        <li>コンテスト時間: 100 分</li>
+        <li>レーティング更新対象: 0 - <span class="user-blue">1999</span></li>
+      </ul>
+    </section>
+<hr/>
+    <h3><a href="https://atcoder.jp/contests/SANITIZED">AtCoder Career Design DAY</a>とは</h3>
+    <section>
+     <ul>
+	   AtCoderでプログラミングスキルを磨く競プロerとそのスキルや経験を求める企業が出会うオンラインイベントです。下記の企業が、競技プログラミングを行っている学生向けに会社紹介を行います。
+入社すると競プロのスキルがどう活かされるのか？業務ではどんな技術使っているのか等、盛りだくさんの内容でお届けします。</ul>
+<p>
+【出展企業】<br>
+・コクヨ株式会社<br>
+・GMOペイメントゲートウェイ株式会社<br>
+・Ｓｋｙ株式会社<br>
+・株式会社ALGO ARTIS <br>
+and more...
+</p>
+  
+<li>詳しくは<a href="https://atcoder.jp/contests/SANITIZED">こちら</a></li>
+    </section>
+
+    <hr />
+
+
+
+  
+
+    <h3>日時・場所など</h3>
+    <section>
+      <ul>
+	    <li>開催日程：2024/10/20（日）12:00～15:20</li>
+	    <li>場所：オンライン（顔出し不要、質問は随時テキストで受け付ける形式）※途中参加・退室可能です。</li>
+      </ul>
+    </section>
+
+
+
+
+    <h3>参加資格</h3>
+    <section>
+      <p>
+	    下記の条件をすべてを満たす方。
+      </p>
+      <ul>
+	    <li><span style="color:red">本イベントは全学年の大学生・大学院生・高専生・専門学校生・短大生が対象です。</span>大学院への進学を検討されている状態でも問題ありません。ぜひご参加ください。</li>
+	    <li>エンジニア職、データサイエンティスト職などの技術職を志望していること</li>
+	    <li>AtCoderユーザーで、1以上のレーティングを保有していること（1回でもコンテストに参加したことがあること）</li>
+      </ul>
+    </section>
+   <h3>ご予約の流れ</h3>
+    <section>
+      <ol>
+	<li>以下のURLから参加登録を行ってください。	    <br><a href="https://atcoder.jp/contests/SANITIZED/register/">https://atcoder.jp/contests/SANITIZED/register/</a></li>
+<span style="color:red"><font size="5">本コンテスト（AtCoder Beginner Contest 376）に参加登録をしてもイベントに予約したことにはなりません。<br>必ず上記のURLよりご予約ください。</font></span>
+	<li>その際に、個人情報のアンケートに回答ください。</li>
+	<li>イベント開始までにご入力いただいたメールアドレス宛に案内が届きます。</li>
+      </ol>
+
+    </section>
+
+    <h3>イベント特設ページ</h3>
+    <section>
+      <ul>
+	    <li>イベント特設ページは<a href="https://job.mynavi.jp/conts/s/tvs/26/z_atc_241020/">こちら</a></li>
+      </ul>
+    </section>
+  <hr />
+    <h3>配点</h3>
+    <section>
+      <div class="row">
+        <div class="span4">
+          <table class="table table-responsible table-striped table-bordered">
+            <thead>
+              <tr>
+                <th style="text-align:center">問題</th>
+                <th style="text-align:center">点数</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="text-align:center">A</td>
+                <td style="text-align:center">150</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">B</td>
+                <td style="text-align:center">250</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">C</td>
+                <td style="text-align:center">350</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">D</td>
+                <td style="text-align:center">400</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">E</td>
+                <td style="text-align:center">475</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">F</td>
+                <td style="text-align:center">550</td>
+              </tr>
+              <tr>
+                <td style="text-align:center">G</td>
+                <td style="text-align:center">650</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <h3>ルール</h3>
+    <section>
+      <ol>
+        <li>コンテスト中に問題に正解すると点数を獲得できます。</li>
+        <li>順位は総合得点で決定します。</li>
+        <li>同点の場合は提出時間の早い人が上の順位になります。</li>
+        <li>誤答を提出するたびにペナルティが加算されます。このコンテストのペナルティは5分です。詳細は画面下部の「ルール」をご覧ください。</li>
+      </ol>
+      <p style="margin-left: 20px;">
+        このコンテストは full-feedback 形式のコンテストです。コンテスト中に提出された結果だけで順位が決定します。
+      </p>
+    </section>
+
+    <h3>便利情報</h3>
+    <ul>
+      <li><a href="https://atcoder.jp/">トップページ</a></li>
+      <li><a href="https://atcoder.jp/post/37">参加方法</a></li>
+      <li><a href="https://atcoder.jp/contests/practice">提出の練習ページ</a></li>
+    </ul>
+  </span>
+
+  <span class="lang-en">
+    <h3>Contest Information</h3>
+
+    <ul>
+      <li>Duration: 100 minutes</li>
+      <li>Rated Range: 0 - <span class="user-blue">1999</span></li>
+    </ul>
+
+    <h3>Point Values</h3>
+
+    <div class="row">
+      <div class="span4">
+        <table class="table table-responsible table-striped table-bordered">
+          <thead>
+            <tr>
+              <th style="text-align:center">Task</th>
+              <th style="text-align:center">Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align:center">A</td>
+              <td style="text-align:center">150</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">B</td>
+              <td style="text-align:center">250</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">C</td>
+              <td style="text-align:center">350</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">D</td>
+              <td style="text-align:center">400</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">E</td>
+              <td style="text-align:center">475</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">F</td>
+              <td style="text-align:center">550</td>
+            </tr>
+            <tr>
+              <td style="text-align:center">G</td>
+              <td style="text-align:center">650</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <h3>Contest Rules</h3>
+    This contest is full-feedback (solutions are judged during the contest).
+    <br>
+    When you solve a problem, you get a score assigned to it.
+    Competitors are ranked first by total scores, then by penalties.
+    The penalties are computed as (the time you spend to get your current score) + (5 minutes) * (the number of incorrect attempts).
+    <br>
+
+    <h3>Useful Links</h3>
+    <ul>
+      <li><a href="https://atcoder.jp/">AtCoder top page</a></li>
+      <li><a href="https://atcoder.jp/post/2">How to participate</a></li>
+      <li><a href="https://atcoder.jp/contests/practice">Practice contest</a></li>
+    </ul>
+
+  </span>
+</span></div>
+		<script>
+			$('iframe').each(function() {
+				if ($(this).hasClass('no-responsive') || $(this).hasClass('embed-responsive-item')) return;
+				$(this).addClass('embed-responsive-item').wrap('<div class="embed-responsive SANITIZED"></div>');
+			});
+		</script>
+		
+		
+		
+	</div>
+</div>
+
+
+
+
+		
+			<hr>
+			
+			
+			
+<div class="a2a_kit SANITIZED SANITIZED pull-right" data-a2a-url="https://atcoder.jp/contests/abc376?lang=en" SANITIZED="AtCoder Beginner Contest 376 - AtCoder">
+	<a class="SANITIZED"></a>
+	<a class="SANITIZED"></a>
+	
+		<a class="SANITIZED"></a>
+	
+	<a class="a2a_dd" href="https://www.addtoany.com/share"></a>
+</div>
+
+		
+		<script async src="//static.addtoany.com/menu/page.js"></script>
+		
+	</div> 
+	<hr>
+</div> 
+
+	<div class="container" style="margin-bottom: 80px;">
+			<footer class="footer">
+			
+				<ul>
+					<li><a href="/contests/abc376/rules">Rule</a></li>
+					<li><a href="/contests/abc376/glossary">Glossary</a></li>
+					
+				</ul>
+			
+			<ul>
+				<li><a href="/tos">Terms of service</a></li>
+				<li><a href="/privacy">Privacy Policy</a></li>
+				<li><a href="/personal">Information Protection Policy</a></li>
+				<li><a href="/company">Company</a></li>
+				<li><a href="/faq">FAQ</a></li>
+				<li><a href="/contact">Contact</a></li>
+				
+			</ul>
+			<div class="text-center">
+					<small id="copyright">Copyright Since 2012 &copy;<a href="http://atcoder.co.jp">AtCoder Inc.</a> All rights reserved.</small>
+			</div>
+			</footer>
+	</div>
+	<p id="fixed-server-timer" class="contest-timer"></p>
+	<div id="scroll-page-top" style="display:none;"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span> Page Top</div>
+
+</body>
+</html>
+
+

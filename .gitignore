@@ -1,4 +1,5 @@
-# env.sh
+env.sh
+add.sh
 compete/target
 atcoder-tools/*
 !atcoder-tools/template
@@ -6,6 +7,10 @@ nohup.out
 target
 *.html
 !*.sanitized.html
+*Zone.Identifier
+history.txt
+# tmp
+abc376*
 
 # Added by cargo
 

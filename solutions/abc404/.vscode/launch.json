@@ -1,0 +1,111 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug A",
+      "cargo": {
+        "args": ["build", "--bin=abc404_a"],
+        "filter": {
+          "name": "abc404_a",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug B",
+      "cargo": {
+        "args": ["build", "--bin=abc404_b"],
+        "filter": {
+          "name": "abc404_b",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug C",
+      "cargo": {
+        "args": ["build", "--bin=abc404_c"],
+        "filter": {
+          "name": "abc404_c",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug D",
+      "cargo": {
+        "args": ["build", "--bin=abc404_d"],
+        "filter": {
+          "name": "abc404_d",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug E",
+      "cargo": {
+        "args": ["build", "--bin=abc404_e"],
+        "filter": {
+          "name": "abc404_e",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug F",
+      "cargo": {
+        "args": ["build", "--bin=abc404_f"],
+        "filter": {
+          "name": "abc404_f",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug G",
+      "cargo": {
+        "args": ["build", "--bin=abc404_g"],
+        "filter": {
+          "name": "abc404_g",
+          "kind": "bin"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    
+  ]
+}
